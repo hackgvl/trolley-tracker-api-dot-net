@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrolleyTracker", "TrolleyTracker\TrolleyTracker.csproj", "{0D90AC3F-7551-4794-8D94-FCD18F502F8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrolleyTracker.Tests", "TrolleyTracker.Tests\TrolleyTracker.Tests.csproj", "{7670A57C-FF5A-48BA-B993-6ED4DD2042B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D90AC3F-7551-4794-8D94-FCD18F502F8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D90AC3F-7551-4794-8D94-FCD18F502F8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D90AC3F-7551-4794-8D94-FCD18F502F8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D90AC3F-7551-4794-8D94-FCD18F502F8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7670A57C-FF5A-48BA-B993-6ED4DD2042B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7670A57C-FF5A-48BA-B993-6ED4DD2042B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7670A57C-FF5A-48BA-B993-6ED4DD2042B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7670A57C-FF5A-48BA-B993-6ED4DD2042B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

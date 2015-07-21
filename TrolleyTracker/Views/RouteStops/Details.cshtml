@@ -1,0 +1,42 @@
+﻿@model TrolleyTracker.Models.RouteStop
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>RouteStop</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.StopSequence)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StopSequence)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Route.ShortName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Route.ShortName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Stop.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Stop.Name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

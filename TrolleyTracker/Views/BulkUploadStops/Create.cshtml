@@ -1,0 +1,15 @@
+﻿@model TrolleyTracker.Models.BulkStopsViewModel
+
+@{
+    ViewBag.Title = "Create Stops";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.EditorFor(x => x.JSONText)
+    <input type="submit" value="OK" />
+}
+
+

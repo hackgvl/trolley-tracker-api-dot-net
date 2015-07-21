@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="TrolleyTrackerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShortName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LongName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="ntext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RouteSchedule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteID" Type="int" Nullable="false" />
+          <Property Name="DayOfWeek" Type="int" Nullable="false" />
+          <Property Name="StartTime" Type="date" Nullable="false" />
+          <Property Name="EndTime" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RouteStops">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteID" Type="int" Nullable="false" />
+          <Property Name="StopID" Type="int" Nullable="false" />
+          <Property Name="StopSequence" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Shapes">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteID" Type="int" Nullable="false" />
+          <Property Name="Lat" Type="float" Nullable="false" />
+          <Property Name="Lon" Type="float" Nullable="false" />
+          <Property Name="Sequence" Type="int" Nullable="false" />
+          <Property Name="DistanceTraveled" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stops">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Lat" Type="float" Nullable="false" />
+          <Property Name="Lon" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Trolley">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TrolleyName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Number" Type="int" Nullable="false" />
+          <Property Name="CurrentLat" Type="float" />
+          <Property Name="CurrentLon" Type="float" />
+        </EntityType>
+        <Association Name="FK_RouteSchedule_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RouteSchedule" Type="Self.RouteSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteSchedule">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteStops_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RouteStops" Type="Self.RouteStops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteStops">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteStops_Stops">
+          <End Role="Stops" Type="Self.Stops" Multiplicity="1" />
+          <End Role="RouteStops" Type="Self.RouteStops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stops">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteStops">
+              <PropertyRef Name="StopID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shapes_Routes">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Shapes" Type="Self.Shapes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Shapes">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TrolleyTrackerModelStoreContainer">
+          <EntitySet Name="Routes" EntityType="Self.Routes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RouteSchedule" EntityType="Self.RouteSchedule" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RouteStops" EntityType="Self.RouteStops" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shapes" EntityType="Self.Shapes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stops" EntityType="Self.Stops" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Trolley" EntityType="Self.Trolley" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_RouteSchedule_Routes" Association="Self.FK_RouteSchedule_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteSchedule" EntitySet="RouteSchedule" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteStops_Routes" Association="Self.FK_RouteStops_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteStops" EntitySet="RouteStops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteStops_Stops" Association="Self.FK_RouteStops_Stops">
+            <End Role="Stops" EntitySet="Stops" />
+            <End Role="RouteStops" EntitySet="RouteStops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shapes_Routes" Association="Self.FK_Shapes_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Shapes" EntitySet="Shapes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TrolleyTrackerModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LongName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="RouteStops" Relationship="Self.FK_RouteStops_Routes" FromRole="Routes" ToRole="RouteStops" />
+          <NavigationProperty Name="Shapes" Relationship="Self.FK_Shapes_Routes" FromRole="Routes" ToRole="Shapes" />
+          <NavigationProperty Name="RouteSchedules" Relationship="TrolleyTrackerModel.FK_RouteSchedule_Routes" FromRole="Route" ToRole="RouteSchedule" />
+        </EntityType>
+        <EntityType Name="RouteStop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteID" Type="Int32" Nullable="false" />
+          <Property Name="StopID" Type="Int32" Nullable="false" />
+          <Property Name="StopSequence" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_RouteStops_Routes" FromRole="RouteStops" ToRole="Routes" />
+          <NavigationProperty Name="Stop" Relationship="Self.FK_RouteStops_Stops" FromRole="RouteStops" ToRole="Stops" />
+        </EntityType>
+        <EntityType Name="Shape">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteID" Type="Int32" Nullable="false" />
+          <Property Name="Lat" Type="Double" Nullable="false" />
+          <Property Name="Lon" Type="Double" Nullable="false" />
+          <Property Name="Sequence" Type="Int32" Nullable="false" />
+          <Property Name="DistanceTraveled" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_Shapes_Routes" FromRole="Shapes" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Stop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Lat" Type="Double" Nullable="false" />
+          <Property Name="Lon" Type="Double" Nullable="false" />
+          <NavigationProperty Name="RouteStops" Relationship="Self.FK_RouteStops_Stops" FromRole="Stops" ToRole="RouteStops" />
+        </EntityType>
+        <EntityType Name="Trolley">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TrolleyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Number" Type="Int32" Nullable="false" />
+          <Property Name="CurrentLat" Type="Double" />
+          <Property Name="CurrentLon" Type="Double" />
+        </EntityType>
+        <Association Name="FK_RouteStops_Routes">
+          <End Role="Routes" Type="Self.Route" Multiplicity="1" />
+          <End Role="RouteStops" Type="Self.RouteStop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteStops">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shapes_Routes">
+          <End Role="Routes" Type="Self.Route" Multiplicity="1" />
+          <End Role="Shapes" Type="Self.Shape" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Shapes">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteStops_Stops">
+          <End Role="Stops" Type="Self.Stop" Multiplicity="1" />
+          <End Role="RouteStops" Type="Self.RouteStop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stops">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteStops">
+              <PropertyRef Name="StopID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TrolleyTrackerEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Routes" EntityType="Self.Route" />
+          <EntitySet Name="RouteStops" EntityType="Self.RouteStop" />
+          <EntitySet Name="Shapes" EntityType="Self.Shape" />
+          <EntitySet Name="Stops" EntityType="Self.Stop" />
+          <EntitySet Name="Trolleys" EntityType="Self.Trolley" />
+          <AssociationSet Name="FK_RouteStops_Routes" Association="Self.FK_RouteStops_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteStops" EntitySet="RouteStops" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shapes_Routes" Association="Self.FK_Shapes_Routes">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Shapes" EntitySet="Shapes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteStops_Stops" Association="Self.FK_RouteStops_Stops">
+            <End Role="Stops" EntitySet="Stops" />
+            <End Role="RouteStops" EntitySet="RouteStops" />
+          </AssociationSet>
+          <EntitySet Name="RouteSchedules" EntityType="TrolleyTrackerModel.RouteSchedule" />
+          <AssociationSet Name="FK_RouteSchedule_Routes" Association="TrolleyTrackerModel.FK_RouteSchedule_Routes">
+            <End Role="Route" EntitySet="Routes" />
+            <End Role="RouteSchedule" EntitySet="RouteSchedules" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="RouteSchedule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteID" Type="Int32" Nullable="false" />
+          <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Route" Relationship="TrolleyTrackerModel.FK_RouteSchedule_Routes" FromRole="RouteSchedule" ToRole="Route" />
+        </EntityType>
+        <Association Name="FK_RouteSchedule_Routes">
+          <End Type="TrolleyTrackerModel.Route" Role="Route" Multiplicity="1" />
+          <End Type="TrolleyTrackerModel.RouteSchedule" Role="RouteSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Route">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RouteSchedule">
+              <PropertyRef Name="RouteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TrolleyTrackerModelStoreContainer" CdmEntityContainer="TrolleyTrackerEntities">
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.Route">
+              <MappingFragment StoreEntitySet="Routes">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="LongName" ColumnName="LongName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RouteStops">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.RouteStop">
+              <MappingFragment StoreEntitySet="RouteStops">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="RouteID" ColumnName="RouteID" />
+                <ScalarProperty Name="StopID" ColumnName="StopID" />
+                <ScalarProperty Name="StopSequence" ColumnName="StopSequence" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shapes">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.Shape">
+              <MappingFragment StoreEntitySet="Shapes">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="RouteID" ColumnName="RouteID" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Lon" ColumnName="Lon" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="DistanceTraveled" ColumnName="DistanceTraveled" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stops">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.Stop">
+              <MappingFragment StoreEntitySet="Stops">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Lon" ColumnName="Lon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Trolleys">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.Trolley">
+              <MappingFragment StoreEntitySet="Trolley">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="TrolleyName" ColumnName="TrolleyName" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="CurrentLat" ColumnName="CurrentLat" />
+                <ScalarProperty Name="CurrentLon" ColumnName="CurrentLon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RouteSchedules">
+            <EntityTypeMapping TypeName="TrolleyTrackerModel.RouteSchedule">
+              <MappingFragment StoreEntitySet="RouteSchedule">
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
+                <ScalarProperty Name="RouteID" ColumnName="RouteID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

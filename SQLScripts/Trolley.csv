@@ -1,0 +1,5 @@
+﻿ID,TrolleyName,Number,CurrentLat,CurrentLon
+1,Trolley,1,NULL,NULL
+2,Trolley,2,NULL,NULL
+3,Trolley,999,NULL,NULL
+4,Trolley,3,NULL,NULL
