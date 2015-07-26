@@ -26,6 +26,7 @@ namespace TrolleyTracker.Models
         public string ShortName { get; set; }
         public string LongName { get; set; }
         public string Description { get; set; }
+        public bool FlagStopsOnly { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RouteStop> RouteStops { get; set; }

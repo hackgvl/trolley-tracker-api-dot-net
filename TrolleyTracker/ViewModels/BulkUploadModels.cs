@@ -2,8 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using TrolleyTracker.Models;
 
-namespace TrolleyTracker.Models
+namespace TrolleyTracker.ViewModels
 {
     public class BulkStopsViewModel
     {

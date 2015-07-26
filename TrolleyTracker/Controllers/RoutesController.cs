@@ -46,7 +46,7 @@ namespace TrolleyTracker.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ShortName,LongName,Description")] Route route)
+        public ActionResult Create([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly")] Route route)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace TrolleyTracker.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ShortName,LongName,Description")] Route route)
+        public ActionResult Edit([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly")] Route route)
         {
             if (ModelState.IsValid)
             {

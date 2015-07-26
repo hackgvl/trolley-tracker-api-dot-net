@@ -1,0 +1,35 @@
+﻿table	{
+	font-family: Tahoma;
+	font-size: xx-small;
+	border: 1px solid #007FCC;
+    border-spacing: 1px;
+    border-collapse:collapse;
+}
+td {
+    border: 1px solid #007FCC;
+}
+.heading {
+    background-color: #007FCC;
+	color: white;
+	font-weight: bold;
+    border-bottom:1px solid #7FCCFF;
+    border-right:1px solid #7FCCFF;
+    border-top:1px solid #7FCCFF;
+    border-left:1px solid #7FCCFF;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr= '#7FCCFF' , EndColorStr= '#007FCC' );
+}
+.normal {
+	text-align: center;
+	background-color: #AACCEE;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr= '#DDEEFF' , EndColorStr= '#aaccee') 
+
+}
+.normal2 {
+	font-family: tahoma; 
+	text-align: center;
+	background-color: #ddeeff;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr= '#ffffff' , EndColorStr= '#ddeeff') 
+}
+.empty {
+	background-color: #e0fff0;
+}

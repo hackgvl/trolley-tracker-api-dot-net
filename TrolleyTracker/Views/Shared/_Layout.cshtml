@@ -24,11 +24,16 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
                     <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
-                    <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
-                    <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
-                    <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
+                <p>
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
+                        <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
+                        <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
+                        <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
+                    </ul>
+                </p>
             </div>
         </div>
     </div>
@@ -36,7 +41,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year -Trolley Tracker</p>
         </footer>
     </div>
 

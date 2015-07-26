@@ -20,8 +20,21 @@ namespace TrolleyTracker.Controllers
         /// <param name="stopPoints"></param>
         public void UpdateRouteStops(TrolleyTrackerEntities db, int routeID, List<Coordinate> shapePoints, List<Stop> stops)
         {
+
+            RemovePreviousRouteStops(db, routeID);
+
+            var route = (from Route in db.Routes
+                         where Route.ID == routeID
+                         select Route).FirstOrDefault<Route>();
+
             // A stop is considered to belong to a route if it's within MinStopProximity meters of the route path
             var routeStopList = new List<Stop>();
+
+            if (route.FlagStopsOnly)
+            {
+                // No stops to generate
+                return; 
+            }
 
             for (int i=1; i< shapePoints.Count; i++)
             {
@@ -42,7 +55,6 @@ namespace TrolleyTracker.Controllers
                 }
             }
 
-            RemovePreviousRouteStops(db, routeID);
 
             for (int i=0; i < routeStopList.Count; i++)
             {

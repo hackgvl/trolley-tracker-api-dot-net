@@ -13,6 +13,7 @@
           <Property Name="ShortName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LongName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="ntext" Nullable="false" />
+          <Property Name="FlagStopsOnly" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="RouteSchedule">
           <Key>
@@ -21,8 +22,8 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RouteID" Type="int" Nullable="false" />
           <Property Name="DayOfWeek" Type="int" Nullable="false" />
-          <Property Name="StartTime" Type="date" Nullable="false" />
-          <Property Name="EndTime" Type="date" Nullable="false" />
+          <Property Name="StartTime" Type="datetime" Nullable="false" />
+          <Property Name="EndTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="RouteStops">
           <Key>
@@ -151,6 +152,7 @@
           <NavigationProperty Name="RouteStops" Relationship="Self.FK_RouteStops_Routes" FromRole="Routes" ToRole="RouteStops" />
           <NavigationProperty Name="Shapes" Relationship="Self.FK_Shapes_Routes" FromRole="Routes" ToRole="Shapes" />
           <NavigationProperty Name="RouteSchedules" Relationship="TrolleyTrackerModel.FK_RouteSchedule_Routes" FromRole="Route" ToRole="RouteSchedule" />
+          <Property Name="FlagStopsOnly" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="RouteStop">
           <Key>
@@ -263,8 +265,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RouteID" Type="Int32" Nullable="false" />
           <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
-          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Route" Relationship="TrolleyTrackerModel.FK_RouteSchedule_Routes" FromRole="RouteSchedule" ToRole="Route" />
         </EntityType>
         <Association Name="FK_RouteSchedule_Routes">
@@ -288,6 +290,7 @@
           <EntitySetMapping Name="Routes">
             <EntityTypeMapping TypeName="TrolleyTrackerModel.Route">
               <MappingFragment StoreEntitySet="Routes">
+                <ScalarProperty Name="FlagStopsOnly" ColumnName="FlagStopsOnly" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="LongName" ColumnName="LongName" />

@@ -1,0 +1,76 @@
+﻿@*@model IEnumerable<TrolleyTracker.Models.RouteSchedule>*@
+
+@model TrolleyTracker.ViewModels.RouteScheduleViewModel
+
+
+@using MvcSchedule;
+@using MvcSchedule.Objects;
+
+<link href="@ViewBag.CssFile" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Route Schedules";
+}
+
+<h2>Route Schedules</h2>
+
+<p>
+    @Html.ScheduleGeneralFor(Model.RouteSchedules,
+                             m => m.StartTime,
+                             m => m.EndTime,
+                             m => Model.DaysOfWeek[m.DayOfWeek],
+                             m => m.Route.ShortName,
+                             Model.Options,
+                             t => ((DateTime)t).ToString("hh:mm"),
+                            s => s.ToString(),
+                            d => d.ToString("dd/MM"))
+
+</p>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @*@Html.DisplayNameFor(model => model.RouteSchedules.DayOfWeek)*@
+            Day of Week
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.StartTime)*@
+            Start Time
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.EndTime)*@
+            End Time
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.Route.ShortName)*@
+            Route Name
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.RouteSchedules) {
+    <tr>
+        <td>
+            @*@Html.DisplayFor(modelItem => item.DayOfWeek)*@
+            @ViewBag.DaysOfWeek[item.DayOfWeek]
+        </td>
+        <td>
+            <!-- Html.DisplayFor(modelItem => item.StartTime) -->
+            @Html.DisplayFor(modelItem => item.StartTime, "FormatDateTimeOnly")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndTime, "FormatDateTimeOnly")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Route.ShortName)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

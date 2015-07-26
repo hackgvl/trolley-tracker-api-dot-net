@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TrolleyTracker.Models;
+using TrolleyTracker.ViewModels;
 
 namespace TrolleyTracker.Controllers
 {
@@ -61,6 +62,7 @@ namespace TrolleyTracker.Controllers
             {
                 db.Trolleys.Add(trolley);
                 db.SaveChanges();
+                TrolleyCache.UpdateTrolley(trolley);
                 return RedirectToAction("Index");
             }
 
@@ -79,8 +81,10 @@ namespace TrolleyTracker.Controllers
             {
                 return HttpNotFound();
             }
+            TrolleyCache.UpdateTrolley(trolley);
             return View(trolley);
         }
+
 
         // POST: Trolleys/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -93,6 +97,7 @@ namespace TrolleyTracker.Controllers
             {
                 db.Entry(trolley).State = EntityState.Modified;
                 db.SaveChanges();
+                TrolleyCache.UpdateTrolley(trolley);
                 return RedirectToAction("Index");
             }
             return View(trolley);
