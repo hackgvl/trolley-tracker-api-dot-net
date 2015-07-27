@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\mike\projects\netprojects\TrolleyTracker\TrolleyTracker\Models\TrolleyTrackerModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\mike\Projects\NETProjects\TrolleyTracker\TrolleyTracker\Models\TrolleyTrackerModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

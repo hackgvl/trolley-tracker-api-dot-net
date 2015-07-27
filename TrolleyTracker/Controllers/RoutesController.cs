@@ -96,7 +96,7 @@ namespace TrolleyTracker.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new HttpStatusCodeResult(HttpStatusCode.BadReqhttp://yeahthattrolley.azurewebsites.net/Trolleysuest);
             }
             Route route = db.Routes.Find(id);
             if (route == null)
