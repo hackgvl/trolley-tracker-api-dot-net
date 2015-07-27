@@ -13,9 +13,8 @@ General layout -
  * Entity Framework 6.3
 
 
-###For updatesEdits Login to the web app with pre-registered user ManageTrolley@yeahthattrolley.com , ManageTrolley7!
+Parameters may be viewed from a web browser.  For updates, Login to the web app with pre-registered user ManageTrolley@yeahthattrolley.com , ManageTrolley7!   (That is not a real Email address)
 
-  (not a real Email address)
 
 ##API
 
@@ -53,7 +52,7 @@ Return a specific route schedule.
 
 ####POST /api/v1/Trolleys/:ID/Location
 
-Updates trolley location with the posted Lat and Lon parameters - for example - 
+Updates specified trolley location with the posted Lat and Lon parameters.  This API requires BASIC authentication - for example - 
 
 curl --user Brigade:brigade --data "Lat=34.8506231&Lon=-82.4003675" http://localhost:51304/api/v1/Trolleys/5/Location 
 
