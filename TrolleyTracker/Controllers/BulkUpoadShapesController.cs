@@ -33,6 +33,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // POST: BulkUploadShapes/Create
+        [Authorize(Users = "ManageTrolley@yeahthattrolley.com")]
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
@@ -135,48 +136,48 @@ namespace TrolleyTracker.Controllers
         }
 
 
-        // GET: BulkUploadShapes/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        //// GET: BulkUploadShapes/Edit/5
+        //public ActionResult Edit(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: BulkUploadShapes/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
+        //// POST: BulkUploadShapes/Edit/5
+        //[HttpPost]
+        //public ActionResult Edit(int id, FormCollection collection)
+        //{
+        //    try
+        //    {
+        //        // TODO: Add update logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
-        // GET: BulkUploadShapes/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        //// GET: BulkUploadShapes/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: BulkUploadShapes/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
+        //// POST: BulkUploadShapes/Delete/5
+        //[HttpPost]
+        //public ActionResult Delete(int id, FormCollection collection)
+        //{
+        //    try
+        //    {
+        //        // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }

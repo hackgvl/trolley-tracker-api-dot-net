@@ -171,6 +171,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\BasicAuthenticationMessageHandler.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -185,13 +186,13 @@
     <Compile Include="Controllers\DynamicJSON.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\RouteSchedules0Controller.cs" />
     <Compile Include="Controllers\RouteSchedulesController.cs" />
     <Compile Include="Controllers\RoutesController.cs" />
     <Compile Include="Controllers\RouteStopsController.cs" />
     <Compile Include="Controllers\StopsController.cs" />
     <Compile Include="Controllers\TrolleysController.cs" />
     <Compile Include="Controllers\WebAPI\ActiveController.cs" />
+    <Compile Include="Controllers\WebAPI\LocationController.cs" />
     <Compile Include="Controllers\WebAPI\RouteSchedulesController.cs" />
     <Compile Include="Controllers\WebAPI\RoutesController.cs" />
     <Compile Include="Controllers\WebAPI\RunningController.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\TrolleyCache.cs" />
     <Compile Include="ViewModels\Location.cs" />
+    <Compile Include="ViewModels\LocationUpdate.cs" />
     <Compile Include="ViewModels\RouteDetail.cs" />
     <Compile Include="ViewModels\RouteScheduleSummary.cs" />
     <Compile Include="ViewModels\RouteSummary.cs" />
@@ -348,7 +350,6 @@
     <Content Include="Views\RouteStops\Index.cshtml" />
     <Content Include="Views\BulkUploadShapes\Create.cshtml" />
     <Content Include="Views\BulkUploadShapes\Index.cshtml" />
-    <Content Include="Views\RouteSchedules0\Index.cshtml" />
     <Content Include="Views\RouteSchedules\Create.cshtml" />
     <Content Include="Views\RouteSchedules\Delete.cshtml" />
     <Content Include="Views\RouteSchedules\Details.cshtml" />

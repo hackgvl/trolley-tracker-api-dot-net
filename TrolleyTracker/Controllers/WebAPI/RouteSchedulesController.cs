@@ -27,12 +27,6 @@ namespace TrolleyTracker.Controllers.WebAPI
             return schedules;
         }
 
-        //// GET: api/RouteSchedules/5
-        //public RouteScheduleSummary Get(int id)
-        //{
-        //    return "value";
-        //}
-
 
         // GET: api/RouteSchedules/5
         [ResponseType(typeof(RouteScheduleSummary))]

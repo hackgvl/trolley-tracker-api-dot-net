@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using TrolleyTracker.Models;
+using System.Web.Http;
 
 namespace TrolleyTracker
 {
@@ -63,6 +64,12 @@ namespace TrolleyTracker
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+
+              GlobalConfiguration.Configuration.MessageHandlers.Add(
+                new TrolleyTracker.App_Start.BasicAuthenticationMessageHandler()
+            );
         }
+
+
     }
 }

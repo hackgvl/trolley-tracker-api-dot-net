@@ -90,6 +90,7 @@ namespace TrolleyTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Users = "ManageTrolley@yeahthattrolley.com")]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,RouteID,DayOfWeek,StartTime,EndTime")] RouteSchedule routeSchedule)
         {
@@ -141,6 +142,7 @@ namespace TrolleyTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Users = "ManageTrolley@yeahthattrolley.com")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,RouteID,DayOfWeek,StartTime,EndTime")] RouteSchedule routeSchedule)
         {
@@ -175,6 +177,7 @@ namespace TrolleyTracker.Controllers
 
         // POST: RouteSchedules/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Users = "ManageTrolley@yeahthattrolley.com")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
