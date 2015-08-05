@@ -22,11 +22,13 @@ namespace TrolleyTracker.Controllers.WebAPI
             var activeRoutes = new List<RouteSummary>();
             var weekday = (int)DateTime.Now.DayOfWeek;
 
-            var todaysRouteSchedules = from route in db.Routes
+            // Note: ToList() to avoid "There is already an open DataReader associated with this Command which must be closed first." exception,
+            // even though MultipleActiveResultSets is already true in the connection string.
+            var todaysRouteSchedules = (from route in db.Routes
                                 from routeSchedule in db.RouteSchedules
                                 orderby routeSchedule.StartTime
                                 where (routeSchedule.RouteID == route.ID) && (routeSchedule.DayOfWeek == weekday)
-                                select routeSchedule;
+                                select routeSchedule).ToList<RouteSchedule>();  
 
             // Return active routes 15 minutes early so that progress from garage to starting point
             // is shown, also if trolley is a few minutes early.

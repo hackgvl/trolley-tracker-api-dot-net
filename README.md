@@ -7,7 +7,7 @@ General layout -
  * Visual Studio 2015 (Release)
  * SQL Server 2014
  * Database-First development
- * .NET 4.6
+ * .NET 4.5.2
  * ASP.NET version?
  * MVC version?
  * Entity Framework 6.3
