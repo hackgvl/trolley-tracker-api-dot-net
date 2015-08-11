@@ -8,8 +8,8 @@ General layout -
  * SQL Server 2014
  * Database-First development
  * .NET 4.5.2
- * ASP.NET version?
- * MVC version?
+ * ASP.NET version 4.x
+ * MVC version 5
  * Entity Framework 6.3
 
 
@@ -78,7 +78,9 @@ Anyone may view public data from the web app without a login.    Public procedur
 
 ###Setting up a new development environment or on a new server where the old user database was lost.
 
- 1. The application checks for the existance of the database during a log in attempt, and if not found in the **app_data** web folder, it will automatically be created and seeded with the 3 roles: Administrators, RouteManagers, and Vehicles.
+ The application checks for the existance of the database during a log in attempt, and if not found in the **app_data** web folder, it will automatically be created and seeded with the 3 roles: Administrators, RouteManagers, and Vehicles.
+
+ 1.Run the SQL Script schema and data dump to create the route data on SQL Server.
  * Bring up the web site in a browser.  It should show that it is not logged in.
  * Click on the Log In Link
  * Enter your Email and a password and click **Log in**.  The log in attempt will fail, but that action will create and seed a new database.
@@ -86,7 +88,7 @@ Anyone may view public data from the web app without a login.    Public procedur
  * Enter your Email and password and click **Register**.   Note - double check that the email address is correct; there is no counter-verification by Email to confirm a valid Email account.
  * Confirm that the browser shows your Email address as logged in in the upper right corner.
  * Click on **Role Manager**.
- * The first user in is automatically made a system administrator.
+ * The first user into the Role Manager on a new system is automatically made a system administrator.   This could be a possible security problem when rebuilding from scratch - check the list of users to be sure no other user is registered as system administrator.
  * Create a user login for the Vehicles and add it to the Vehicles role.
  * Create other user logins, or have them self-register and add them to the appropriate role(s).
 
