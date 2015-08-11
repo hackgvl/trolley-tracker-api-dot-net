@@ -17,6 +17,7 @@ namespace TrolleyTracker.Controllers.WebAPI
         private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
 
 
+
         // GET: api/Trolleys/5/Location
         public Trolley Get(int id)
         {
@@ -44,7 +45,7 @@ namespace TrolleyTracker.Controllers.WebAPI
         /// Update Trolley location
         /// </summary>
         /// <param name="value"></param>
-        [Authorize]
+        [Authorize(Roles = "Vehicles")]
         public IHttpActionResult PostLocation(int id, LocationUpdate locationUpdate)
         {
             if (!ModelState.IsValid)

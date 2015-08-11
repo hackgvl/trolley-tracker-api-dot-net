@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using TrolleyTracker.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+
 
 namespace TrolleyTracker.Controllers
 {
@@ -19,7 +21,13 @@ namespace TrolleyTracker.Controllers
         private ApplicationUserManager _userManager;
 
         public AccountController()
+            : this(new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
+        }
+
+        public AccountController(ApplicationUserManager userManager)
+        {
+            _userManager = userManager;
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -44,6 +52,10 @@ namespace TrolleyTracker.Controllers
         {
             get
             {
+                if (HttpContext == null)
+                {
+                    return _userManager;
+                }
                 return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             }
             private set

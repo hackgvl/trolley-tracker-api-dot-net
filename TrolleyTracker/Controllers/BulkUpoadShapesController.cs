@@ -33,7 +33,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // POST: BulkUploadShapes/Create
-        [Authorize(Users = "ManageTrolley@yeahthattrolley.com")]
+        [CustomAuthorize(Roles = "RouteManagers")]
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
