@@ -11,6 +11,7 @@ General layout -
  * ASP.NET version 4.x
  * MVC version 5
  * Entity Framework 6.3
+ * (Project tests have not been touched and will fail)
 
 
 Parameters may be viewed from a web browser.  For updates, Login to the web app with pre-registered user ManageTrolley@yeahthattrolley.com , ManageTrolley7!   (That is not a real Email address)
