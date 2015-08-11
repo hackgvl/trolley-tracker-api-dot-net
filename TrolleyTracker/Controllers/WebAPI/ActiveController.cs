@@ -28,14 +28,19 @@ namespace TrolleyTracker.Controllers.WebAPI
                                 from routeSchedule in db.RouteSchedules
                                 orderby routeSchedule.StartTime
                                 where (routeSchedule.RouteID == route.ID) && (routeSchedule.DayOfWeek == weekday)
-                                select routeSchedule).ToList<RouteSchedule>();  
+                                select routeSchedule).ToList<RouteSchedule>();
 
             // Return active routes 15 minutes early so that progress from garage to starting point
             // is shown, also if trolley is a few minutes early.
-            var startTimeRef = DateTime.Now.Add(new TimeSpan(0, 15, 0)).TimeOfDay;
+            // Azure server instances run with DateTime.Now set to UTC
+            var myTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");  // For Greenville, SC
+            var currentDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, myTimeZone);
+
+            var startTimeRef = currentDateTime.Add(new TimeSpan(0, 15, 0)).TimeOfDay;
+            var endTimeRef = currentDateTime.TimeOfDay;
             foreach (var routeSchedule in todaysRouteSchedules)
             {
-                if ( (startTimeRef > routeSchedule.StartTime.TimeOfDay) && (DateTime.Now.TimeOfDay < routeSchedule.EndTime.TimeOfDay) )
+                if ((startTimeRef > routeSchedule.StartTime.TimeOfDay) && (endTimeRef < routeSchedule.EndTime.TimeOfDay))
                 {
                     activeRoutes.Add(new RouteSummary(routeSchedule.Route));
                 }
