@@ -35,6 +35,13 @@ namespace TrolleyTracker
             );
 
             config.Routes.MapHttpRoute(
+                name: "TrolleyLocationDEPRECATED",
+                routeTemplate: "api/v1/trolly/{id}/{controller}",
+                defaults: new { },
+                constraints: new { id = @"\d+" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "TrolleyLocation",
                 routeTemplate: "api/v1/Trolleys/{id}/{controller}",
                 defaults: new { },

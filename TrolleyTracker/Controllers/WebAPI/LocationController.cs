@@ -27,7 +27,7 @@ namespace TrolleyTracker.Controllers.WebAPI
             }
 
             var trolley = (from Trolley t in db.Trolleys
-                           where t.ID == id
+                           where t.Number == id
                            select t).FirstOrDefault<Trolley>();
             //if (trolley == null)
             //{
@@ -54,7 +54,7 @@ namespace TrolleyTracker.Controllers.WebAPI
             }
 
             var trolley = (from Trolley t in db.Trolleys
-                           where t.ID == id
+                           where t.Number == id
                            select t).FirstOrDefault<Trolley>();
             if (trolley == null)
             {

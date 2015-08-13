@@ -24,21 +24,15 @@ API views may be entered into a browser, but the results will be in XML.  API vi
 ####GET /api/v1/Trolleys/Running
 Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.
 
-####POST /api/v1/Trolleys/:ID/Location
+####POST /api/v1/Trolleys/:Number/Location
 
 Updates specified trolley location with the posted Lat and Lon parameters.  This API requires BASIC authentication - for example - 
 
-curl --user Brigade:brigade --data "Lat=34.8506231&Lon=-82.4003675" http://yeahthattrolley.azurewebsites.net/api/v1/Trolleys/5/Location 
+curl --user Brigade:brigade --data "Lat=34.8506231&Lon=-82.4003675" http://yeahthattrolley.azurewebsites.net/api/v1/Trolleys/999/Location 
 
 Note: The URL and authorization parameters will change when the application is moved to the new server.
 
-To find out the :ID to use for the application -
- * Get the vehicle number that has been assigned where the vehicle app is running
- * Query the list of trolleys using the API /api/vx/Trolleys
- * Find the vehicle number in the 'Number' field, then use that trolley ID to post the location
- * If the 'Number' for the current vehicle is not found, the vehicle app shouldn't post location updates.   Add that trolley number to the database using the web editor.
- * NOTE: The database IDs are currently 1..3, but may change or be any number.
-
+The :Number is an arbitrary number assigned to the vehicle beacon in the settings as "Trolley ID" when installed.  This is different from the database ID.   All other API settings below use the database ID and not the trolley number.   If Greenlink has any identification for each trolley, be sure to add that to the description when installing.
 
 
 ####GET  /api/v1/Trolleys
