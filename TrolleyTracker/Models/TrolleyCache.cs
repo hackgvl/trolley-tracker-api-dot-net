@@ -33,6 +33,8 @@ namespace TrolleyTracker.Models
         {
             lock (_lock)
             {
+                AgeCacheEntries();
+
                 var runningTrolleys = new List<RunningTrolley>();
 
                 foreach (var trolley in trolleyCache.Values)

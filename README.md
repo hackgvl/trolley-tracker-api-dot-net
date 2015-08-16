@@ -14,7 +14,11 @@ General layout -
  * (Project tests have not been touched and will fail)
 
 
-Parameters may be viewed from a web browser.  For updates, Login to the web app with pre-registered user ManageTrolley@yeahthattrolley.com , ManageTrolley7!   (That is not a real Email address)
+Parameters may be viewed from a web browser.  For changes, Login to the web app with a user with a route management role - ManageTrolley@yeahthattrolley.com for example.  
+
+##Server location
+
+ The API Server is located at http://tracker.wallinginfosystems.com
 
 
 ##API
@@ -28,9 +32,9 @@ Returns list of all active trollies and their current locations.  This should be
 
 ####POST /api/v1/Trolleys/:Number/Location
 
-Updates specified trolley location with the posted Lat and Lon parameters.  This API requires BASIC authentication - for example - 
+Updates specified trolley location with the posted Lat and Lon parameters.  This API may use BASIC authentication - for example - 
 
-curl --user Brigade:brigade --data "Lat=34.8506231&Lon=-82.4003675" http://yeahthattrolley.azurewebsites.net/api/v1/Trolleys/999/Location 
+curl --user TrolleyUpdates@yeahthattrolley.com:{PASSWORD} --data "Lat=34.8506231&Lon=-82.4003675" http://tracker.wallinginfosystems.com/api/v1/Trolleys/999/Location 
 
 Note: The URL and authorization parameters will change when the application is moved to the new server.
 

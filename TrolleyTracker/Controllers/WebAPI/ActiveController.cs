@@ -18,9 +18,12 @@ namespace TrolleyTracker.Controllers.WebAPI
         public List<RouteSummary> Get()
         {
 
+            // Azure server instances run with DateTime.Now set to UTC
+            var myTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");  // For Greenville, SC
+            var currentDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, myTimeZone);
 
             var activeRoutes = new List<RouteSummary>();
-            var weekday = (int)DateTime.Now.DayOfWeek;
+            var weekday = (int)currentDateTime.DayOfWeek;
 
             // Note: ToList() to avoid "There is already an open DataReader associated with this Command which must be closed first." exception,
             // even though MultipleActiveResultSets is already true in the connection string.
@@ -32,9 +35,6 @@ namespace TrolleyTracker.Controllers.WebAPI
 
             // Return active routes 15 minutes early so that progress from garage to starting point
             // is shown, also if trolley is a few minutes early.
-            // Azure server instances run with DateTime.Now set to UTC
-            var myTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");  // For Greenville, SC
-            var currentDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, myTimeZone);
 
             var startTimeRef = currentDateTime.Add(new TimeSpan(0, 15, 0)).TimeOfDay;
             var endTimeRef = currentDateTime.TimeOfDay;

@@ -33,9 +33,8 @@
 	var lat = 34.85066;
 	var lon = -82.39901;
 	var currentZoom = 15;
-	/// var apiURL = "http://yeahthattrolley.azurewebsites.net";
-	var apiURL = "http://localhost:51304";
-
+	var apiURL = "http://" + window.location.host + "/api/v1/";
+        
 	var map; //complex object of type Leaflet Map
 
 	// Database objects
@@ -168,7 +167,7 @@ function init() {
 	}).addTo(map);
 
 
-	ajax.get(apiURL + "/api/v1/Trolleys", {}, HandleAllTrolleysData, true);
+	ajax.get(apiURL + "Trolleys", {}, HandleAllTrolleysData, true);
 
 
 	if (activeFilter) {
@@ -210,7 +209,7 @@ function HandleAllTrolleysData(trolleyData) {
 		trolleys[ID] = trolley;
 	}
 
-	ajax.get(apiURL + "/api/v1/Routes", {}, HandleAllRoutesData, true);
+	ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);
 
 }
 
@@ -229,7 +228,7 @@ function HandleAllRoutesData(routeData) {
 
 		routes[ID] = route;
 	}
- 	ajax.get(apiURL + "/api/v1/Stops", {}, HandleAllStopsData, true);
+ 	ajax.get(apiURL + "Stops", {}, HandleAllStopsData, true);
 }
 
 
@@ -259,7 +258,7 @@ function HandleAllStopsData(stopData) {
 		stops[ID] = stop;
 	}
 
- 	ajax.get(apiURL + "/api/v1/Routes/Active", {}, HandleActiveRoutesData, true);
+ 	ajax.get(apiURL + "Routes/Active", {}, HandleActiveRoutesData, true);
 }
 
 
@@ -284,11 +283,15 @@ function HandleActiveRoutesData(runningData) {
 function GetNextRoute() {
 	// Start query for detailed route data
 	if (activeFilter) {
-		// Look for next active route
+	    // Look for next active route
+	    while ( (routeIndex < routeIDs.length) && (!routes[routeIDs[routeIndex]].Active) ) {
+	        routeIndex++;
+	    }
+
 	}
 
 	if (routeIndex < routeIDs.length) {
-		ajax.get(apiURL + "/api/v1/Routes/" + routeIDs[routeIndex], {}, HandleRouteData, true);
+		ajax.get(apiURL + "Routes/" + routeIDs[routeIndex], {}, HandleRouteData, true);
 		routeIndex++;
 	} else {
 		RequestRunningTrolleyData(); // Request first update immediately
@@ -344,7 +347,7 @@ function HandleRouteData(routeData) {
 
 // ---------------------------------
 function RequestRunningTrolleyData() {
-	ajax.get(apiURL + "/api/v1/Trolleys/Running", {}, HandleRunningTrolleysData, true);
+	ajax.get(apiURL + "Trolleys/Running", {}, HandleRunningTrolleysData, true);
 }
 
 
