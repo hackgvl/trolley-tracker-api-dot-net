@@ -36,6 +36,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: Routes/Create
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
             return View();
@@ -60,6 +61,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: Routes/Edit/5
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -92,6 +94,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: Routes/Delete/5
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Delete(int? id)
         {
             if (id == null)

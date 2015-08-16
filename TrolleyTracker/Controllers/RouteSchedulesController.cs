@@ -77,6 +77,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: RouteSchedules/Create
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
             ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName");
@@ -122,6 +123,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: RouteSchedules/Edit/5
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -159,6 +161,7 @@ namespace TrolleyTracker.Controllers
         }
 
         // GET: RouteSchedules/Delete/5
+        [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Delete(int? id)
         {
             if (id == null)

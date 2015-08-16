@@ -30,7 +30,7 @@ namespace TrolleyTracker.Controllers
             if (!httpContext.Request.IsAuthenticated)
                 return false;
 
-            var rolesProvider = System.Web.Security.Roles.Providers["LocalDBRoleProvider"];
+            var rolesProvider = System.Web.Security.Roles.Providers["DBRoleProvider"];
 
             if (firstTime)
             {

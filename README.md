@@ -19,6 +19,8 @@ Parameters may be viewed from a web browser.  For updates, Login to the web app 
 
 ##API
 
+ NOTE: Refer to the Javascript located in source folder DBVisualizer / index.html for example parse sequences.   Most applications will only need a subset of those calls.
+
 API views may be entered into a browser, but the results will be in XML.  API views called from CURL return as JSON.   Applications wishing for JSON should specify in their request “Content-type: application/json; charset=utf-8”
 
 ####GET /api/v1/Trolleys/Running
@@ -65,9 +67,6 @@ Return a specific route schedule.
 
 ##User Credentials
 
-User credentials are stored separately from the main database (currently in SQL Server).  They are stored in a LocalDB file in the web site directory in the **app_data** folder as **DefaultConnection_sav.mdf**.
-
-
 Anyone may view public data from the web app without a login.    Public procedures are those controller endpoints that have no 'CustomAuthorization' parameters, such as **[CustomAuthorize(Roles = "Vehicles")**.   In order for a user to interact with that endpoint, they must be a member of that named role.
 
 
@@ -77,10 +76,8 @@ Anyone may view public data from the web app without a login.    Public procedur
 
  1.Run the SQL Script schema and data dump to create the route data on SQL Server.
  * Bring up the web site in a browser.  It should show that it is not logged in.
- * Click on the Log In Link
- * Enter your Email and a password and click **Log in**.  The log in attempt will fail, but that action will create and seed a new database.
  * Click on the **Register as a new user** link.
- * Enter your Email and password and click **Register**.   Note - double check that the email address is correct; there is no counter-verification by Email to confirm a valid Email account.
+ * Enter your Email and password and click **Register**.   Note - double check that the email address is correct; there is no counter-verification by Email to confirm a valid Email account.   This will be the system manager account - choose a meaningful name or your own email address.
  * Confirm that the browser shows your Email address as logged in in the upper right corner.
  * Click on **Role Manager**.
  * The first user into the Role Manager on a new system is automatically made a system administrator.   This could be a possible security problem when rebuilding from scratch - check the list of users to be sure no other user is registered as system administrator.
@@ -92,5 +89,5 @@ Anyone may view public data from the web app without a login.    Public procedur
 
   Suggest **ManageTrolley@yeahthattrolley.com** - role = **RouteManagers**
  
-Because the web page is not secured, the public pages can be viewed by anyone in the public with no login.  People will come across it and might register, but it will have no effect unless they bulk register a zillion user IDs and fill the database quota.
+Because the web page is not secured, the public pages can be viewed by anyone in the public with no login.  People will come across it and might register, but it will have no effect unless they bulk register a zillion user IDs and fill the database quota.   Password guessing attacks could succeed if simple passwords are used.
 
