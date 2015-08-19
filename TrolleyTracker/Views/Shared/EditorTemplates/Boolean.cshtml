@@ -1,0 +1,28 @@
+﻿@{
+    var attributes = new Dictionary<string, object> { { "class", "form-control" } };
+
+    bool? modelValue = ViewData.Model != null ? Convert.ToBoolean(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture) : ViewData.Model;
+    if (ViewData.ModelMetadata.IsNullableValueType)
+    {
+        var selectedList = new List<SelectListItem>
+        {
+            new SelectListItem {Text = "Not Set", Value = String.Empty, Selected = !modelValue.HasValue},
+            new SelectListItem {Text = "True", Value = "true", Selected = modelValue.HasValue && modelValue.Value},
+            new SelectListItem {Text = "False", Value = "false", Selected = modelValue.HasValue && !modelValue.Value},
+        };
+        @Html.DropDownList("", selectedList, attributes)
+    }
+    else
+    {
+        var display = ViewData.ModelMetadata.PropertyName;
+        if (!String.IsNullOrEmpty(ViewData.ModelMetadata.DisplayName))
+        {
+            display = ViewData.ModelMetadata.DisplayName;
+        }
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-raised btn-primary @(modelValue == true ? "active" : "")">
+                @Html.CheckBox("", modelValue ?? false) @display
+            </label>
+        </div>
+    }
+}

@@ -1,0 +1,30 @@
+﻿@{
+    // make placeholder work
+    // http://stackoverflow.com/questions/5824124/html5-placeholders-with-net-mvc-3-razor-editorfor-extension
+    // from [Display(Prompt =
+    var attributes = new Dictionary<string, object>();
+    if (!string.IsNullOrEmpty(ViewData.ModelMetadata.Watermark))
+    {
+        attributes.Add("placeholder", ViewData.ModelMetadata.Watermark);
+    }
+
+    // http://setiabud.blogspot.com/2010/08/stringlength-validator-into-maxlength.html
+    var validators = ModelValidatorProviders.Providers.GetValidators(ViewData.ModelMetadata, ViewContext);
+    var stringLengthRule = validators.SelectMany(v => v.GetClientValidationRules()).FirstOrDefault(m => m.ValidationType == "length");
+    if (stringLengthRule != null && stringLengthRule.ValidationParameters.ContainsKey("max"))
+    {
+        attributes.Add("maxlength", stringLengthRule.ValidationParameters["max"]);
+    }
+
+    // this approach would grab it from the  @Html.EditorFor(model => model.FirstName, new { MaxLength = 10})
+    // http://stackoverflow.com/questions/1625327/editorfor-and-html-properties
+    // if (ViewData["maxLength"] != null)
+    // {
+    //    attributes.Add("maxLength", (int)ViewData["maxLength"]);
+    // }
+
+    attributes.Add("class", "form-control");
+    attributes.Add("type", "email");
+}
+
+@Html.TextBox("", ViewData.TemplateInfo.FormattedModelValue, attributes)

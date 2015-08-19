@@ -9,35 +9,19 @@
 
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Trolley Tracker", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Trolley Tracker", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
-                    <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
-                    <li><a href="/DbVisualizer">DB Visualizer</a></li>
-                </ul>
-                @Html.Partial("_LoginPartial")  
-                <p>
-                    <ul class="nav navbar-nav">
-                        <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
-                        <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
-                        <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
-                        <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
-                    </ul>
-                    <div align="right">
-                        @Html.ActionLink("Role Manager", "Index", "Roles");
-                    </div>
-                </p>
+            <div class="collapse navbar-collapse">
+                @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>

@@ -1,0 +1,7 @@
+﻿@{
+    var attributes = new Dictionary<string, object> {
+        {"class", "form-control"}
+    };
+}
+
+@Html.DropDownList("", ViewData["Items"] as IEnumerable<SelectListItem>, attributes)
