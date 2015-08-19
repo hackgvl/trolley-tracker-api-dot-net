@@ -1,0 +1,9 @@
+﻿@{
+    var attributes = new Dictionary<string, object> {
+        { "placeholder", ViewData.ModelMetadata.Watermark ?? "e.g. (555)555-1212" },
+        { "class", "form-control" },
+        { "type", "tel"},
+    };
+}
+
+@Html.TextBox("", ViewData.TemplateInfo.FormattedModelValue, attributes)

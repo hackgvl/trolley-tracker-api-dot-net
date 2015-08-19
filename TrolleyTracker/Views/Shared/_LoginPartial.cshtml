@@ -1,22 +1,65 @@
 ﻿@using Microsoft.AspNet.Identity
-@if (Request.IsAuthenticated)
-{
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-    {
-    @Html.AntiForgeryToken()
+@{
+    var returnUrl = string.IsNullOrEmpty(ViewBag.ReturnUrl) ? Request.RawUrl : ViewBag.ReturnUrl;
+}
+<div class="collapse navbar-collapse navbar-ex1-collapse hidden-print">
+    <div class="pull-right">
+        <ul class="nav navbar-nav navbar-right">
+            @if (Request.IsAuthenticated)
+            {
+                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+                    <li>
+                        @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", null, htmlAttributes: new { title = "Manage" })
+                    </li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                }
+            }
+            else
+            {
+                <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            }
+        </ul>
+    </div>
+    <ul class="nav navbar-nav">
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Trolleys
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
+                <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
+            </ul>
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Routes
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
+                <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
+                <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
+                <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
+            </ul>
+        </li>
+        @*
+        <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
+        <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
+        <li><a href="/DbVisualizer">DB Visualizer</a></li>
+        <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
+        <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
+        <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
+        <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
+           *@
+        @if (Request.IsAuthenticated)
+        {
+            <li>
+                @Html.ActionLink("Role Manager", "Index", "Roles")
+            </li>
+        }
+
     </ul>
-    }
-}
-else
-{
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-    </ul>
-}
+</div>

@@ -1,0 +1,26 @@
+﻿@{
+    var attributes = new Dictionary<string, object>();
+    if (!string.IsNullOrEmpty(ViewData.ModelMetadata.Watermark))
+    {
+        attributes.Add("placeholder", ViewData.ModelMetadata.Watermark);
+    }
+    var classes = "form-control ckeditor";
+    var validators = ModelValidatorProviders.Providers.GetValidators(ViewData.ModelMetadata, ViewContext);
+    var stringLengthRule = validators.SelectMany(v => v.GetClientValidationRules()).FirstOrDefault(m => m.ValidationType == "length");
+    if (stringLengthRule != null && stringLengthRule.ValidationParameters.ContainsKey("max"))
+    {
+        attributes.Add("maxlength", stringLengthRule.ValidationParameters["max"]);
+    }
+    else if (ViewData["maxLength"] != null && (int)ViewData["maxLength"] != -1 && (int)ViewData["maxLength"] != 0)
+    {
+        attributes.Add("data-val-length-max", (int)ViewData["maxLength"]);
+        classes += " count";
+    }
+
+    attributes.Add("class", classes);
+}
+@Html.TextArea("", ViewData.TemplateInfo.FormattedModelValue.ToString(), 0, 0, attributes)
+@if (classes.Contains("count"))
+{
+    <span class="text-counter cool"></span>
+}
