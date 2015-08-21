@@ -191,6 +191,7 @@
     <Compile Include="Controllers\Coordinate.cs" />
     <Compile Include="Controllers\CustomAuthorize.cs" />
     <Compile Include="Controllers\CustomRoleProvider.cs" />
+    <Compile Include="Controllers\DBVisualizerController.cs" />
     <Compile Include="Controllers\DynamicJSON.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -264,18 +265,17 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\FadedTrolley.jpg" />
+    <Content Include="Content\json2.js" />
+    <Content Include="Content\leaflet\images\layers-2x.png" />
+    <Content Include="Content\leaflet\images\layers.png" />
+    <Content Include="Content\leaflet\images\marker-icon-2x.png" />
+    <Content Include="Content\leaflet\images\marker-icon.png" />
+    <Content Include="Content\leaflet\images\marker-shadow.png" />
+    <Content Include="Content\leaflet\leaflet-src.js" />
+    <Content Include="Content\leaflet\leaflet.css" />
+    <Content Include="Content\leaflet\leaflet.js" />
+    <Content Include="Content\leaflet\Leaflet.MakiMarkers.js" />
     <Content Include="Content\RouteScheduleSummary.css" />
-    <Content Include="DBVisualizer\index.html" />
-    <Content Include="DBVisualizer\leaflet\images\layers-2x.png" />
-    <Content Include="DBVisualizer\leaflet\images\layers.png" />
-    <Content Include="DBVisualizer\leaflet\images\marker-icon-2x.png" />
-    <Content Include="DBVisualizer\leaflet\images\marker-icon.png" />
-    <Content Include="DBVisualizer\leaflet\images\marker-shadow.png" />
-    <Content Include="DBVisualizer\leaflet\leaflet-src.js" />
-    <Content Include="DBVisualizer\leaflet\leaflet.css" />
-    <Content Include="DBVisualizer\leaflet\leaflet.js" />
-    <Content Include="DBVisualizer\leaflet\Leaflet.MakiMarkers.js" />
-    <Content Include="DBVisualizer\scripts\json2.js" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -401,6 +401,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\DBVisualizer\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

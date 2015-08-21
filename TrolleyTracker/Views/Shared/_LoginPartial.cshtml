@@ -9,12 +9,12 @@
             {
                 using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
                 {
-                    @Html.AntiForgeryToken()
+                @Html.AntiForgeryToken()
 
-                    <li>
-                        @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", null, htmlAttributes: new { title = "Manage" })
-                    </li>
-                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                <li>
+                    @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", null, htmlAttributes: new { title = "Manage" })
+                </li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                 }
             }
             else
@@ -26,8 +26,10 @@
     </div>
     <ul class="nav navbar-nav">
         <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Trolleys
-                <span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Trolleys
+                <span class="caret"></span>
+            </a>
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
                 <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
@@ -45,21 +47,22 @@
                 <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
             </ul>
         </li>
-        @*
-        <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
-        <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
-        <li><a href="/DbVisualizer">DB Visualizer</a></li>
-        <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
-        <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
-        <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
-        <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
-           *@
-        @if (Request.IsAuthenticated)
-        {
-            <li>
-                @Html.ActionLink("Role Manager", "Index", "Roles")
-            </li>
-        }
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Database
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer")</li>
+                @if (this.User.IsInRole("Administrators"))
+                {
+                    <li>
+                        @Html.ActionLink("Role Manager", "Index", "Roles")
+                    </li>
+                }
+            </ul>
+        </li>
+
 
     </ul>
 </div>

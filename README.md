@@ -18,7 +18,7 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 
 ##Server location
 
- The API Server is located at http://tracker.wallinginfosystems.com
+ The API Server is located at http://api.yeahthattrolley.com
 
 
 ##API
@@ -34,7 +34,7 @@ Returns list of all active trollies and their current locations.  This should be
 
 Updates specified trolley location with the posted Lat and Lon parameters.  This API may use BASIC authentication - for example - 
 
-curl --user TrolleyUpdates@yeahthattrolley.com:{PASSWORD} --data "Lat=34.8506231&Lon=-82.4003675" http://tracker.wallinginfosystems.com/api/v1/Trolleys/999/Location 
+curl --user TrolleyUpdates@yeahthattrolley.com:{PASSWORD} --data "Lat=34.8506231&Lon=-82.4003675" http://api.yeahthattrolley.com/api/v1/Trolleys/999/Location 
 
 Note: The URL and authorization parameters will change when the application is moved to the new server.
 
@@ -93,5 +93,5 @@ Anyone may view public data from the web app without a login.    Public procedur
 
   Suggest **ManageTrolley@yeahthattrolley.com** - role = **RouteManagers**
  
-Because the web page is not secured, the public pages can be viewed by anyone in the public with no login.  People will come across it and might register, but it will have no effect unless they bulk register a zillion user IDs and fill the database quota.   Password guessing attacks could succeed if simple passwords are used.
+Because the web page is not secured, the public pages can be viewed by anyone in the public with no login.  People will come across it and might register, and password guessing attacks could succeed if simple passwords are used.
 
