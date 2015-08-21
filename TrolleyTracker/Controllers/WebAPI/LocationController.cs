@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TrolleyTracker.Models;
@@ -48,6 +49,7 @@ namespace TrolleyTracker.Controllers.WebAPI
         [Authorize(Roles = "Vehicles")]
         public IHttpActionResult PostLocation(int id, LocationUpdate locationUpdate)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -69,7 +71,7 @@ namespace TrolleyTracker.Controllers.WebAPI
             db.SaveChanges();
             TrolleyCache.UpdateTrolley(trolley);
 
-            return CreatedAtRoute("DefaultApi", new { id = trolley.ID }, trolley);
+            return Ok(); // CreatedAtRoute("DefaultApi", new { id = trolley.ID }, trolley);
 
         }
 

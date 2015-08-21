@@ -21,5 +21,18 @@ namespace TrolleyTracker
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Application_EndRequest()
+        {
+            var context = new HttpContextWrapper(this.Context);
+
+            // If we're a web API client and forms authentication caused a 302, 
+            // then we actually need to do a 401
+            if (context.Response.StatusCode == 302 && context.Request.Path.StartsWith("/api/v") )
+            {
+                context.Response.Clear();
+                context.Response.StatusCode = 401;
+            }
+        }
     }
 }

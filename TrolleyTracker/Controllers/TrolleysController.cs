@@ -101,7 +101,6 @@ namespace TrolleyTracker.Controllers
             {
                 db.Entry(trolley).State = EntityState.Modified;
                 db.SaveChanges();
-                TrolleyCache.UpdateTrolley(trolley);
                 return RedirectToAction("Index");
             }
             return View(trolley);

@@ -1,7 +1,6 @@
 @echo off
 rem set Server=localhost:51304
-rem set Server=yeahthattrolley.azurewebsites.net
-set Server=tracker.wallinginfosystems.com
+set Server=api.yeahthattrolley.com/
 Echo List of all trolleys
 Echo .
 curl http://%Server%/api/v1/Trolleys

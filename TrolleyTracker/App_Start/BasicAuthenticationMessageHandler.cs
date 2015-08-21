@@ -4,6 +4,7 @@ using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
 using System.Text;
@@ -46,6 +47,8 @@ namespace TrolleyTracker.App_Start
                 var result = signInManager.PasswordSignIn(username, password, true, false);
                 if (result != SignInStatus.Success)
                 {
+                    // The SuppressFormsAuthenticationRedirect below has no effect currently; 302 is sent anyway
+                    HttpContext.Current.Response.SuppressFormsAuthenticationRedirect = true;  // Send 401 code instead of 302 code on fail
                     return base.SendAsync(request, cancellationToken);
                 }
             }
@@ -66,6 +69,17 @@ namespace TrolleyTracker.App_Start
             }
 
             return base.SendAsync(request, cancellationToken);
+        }
+
+        public class BasicAuthenticationAttribute : System.Web.Http.Filters.ActionFilterAttribute
+        {
+            public override void OnActionExecuting(System.Web.Http.Controllers.HttpActionContext actionContext)
+            {
+                if (actionContext.Request.Headers.Authorization == null)
+                {
+                    actionContext.Response = new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized);
+                }
+            }
         }
     }
 }
