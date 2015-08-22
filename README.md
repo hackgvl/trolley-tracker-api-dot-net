@@ -1,12 +1,12 @@
 # trolley-tracker
 
-###Experimental project to test Visual Studio 2015
+###Trolley Tracker route data management and API interface
 
 General layout - 
 
  * Visual Studio 2015 (Release)
  * SQL Server 2014
- * Database-First development
+ * Code-First development
  * .NET 4.5.2
  * ASP.NET version 4.x
  * MVC version 5
@@ -74,18 +74,21 @@ Return a specific route schedule.
 Anyone may view public data from the web app without a login.    Public procedures are those controller endpoints that have no 'CustomAuthorization' parameters, such as **[CustomAuthorize(Roles = "Vehicles")**.   In order for a user to interact with that endpoint, they must be a member of that named role.
 
 
-###Setting up a new development environment or on a new server where the old user database was lost.
+###Setting up a new development environment or on a new server where the old user database was lost.   
 
- The application checks for the existance of the database during a log in attempt, and if not found in the **app_data** web folder, it will automatically be created and seeded with the 3 roles: Administrators, RouteManagers, and Vehicles.
+**Note:** It may be possible to run from a local DB on a development system by changing the connection string in Web.Config
 
- 1.Run the SQL Script schema and data dump to create the route data on SQL Server.
- * Bring up the web site in a browser.  It should show that it is not logged in.
+ 1. Build the solution.
+ * Go to NuGet Package Manager Console
+ * Run the command **Update-Database**  .  This will call the seed to create the database from the included SQL script.
+ * Run the application which brings up the web site in a browser.  It should show that it is not logged in.
  * Click on the **Register as a new user** link.
  * Enter your Email and password and click **Register**.   Note - double check that the email address is correct; there is no counter-verification by Email to confirm a valid Email account.   This will be the system manager account - choose a meaningful name or your own email address.
  * Confirm that the browser shows your Email address as logged in in the upper right corner.
- * Click on **Role Manager**.
- * The first user into the Role Manager on a new system is automatically made a system administrator.   This could be a possible security problem when rebuilding from scratch - check the list of users to be sure no other user is registered as system administrator.
- * Create a user login for the Vehicles and add it to the Vehicles role.
+ * Under the Trolleys menu item, select Trolleys
+ * Edit a trolley.   This action adds the first user in the system as a system administrator.   The Role Manager option is now added to the Database dropdown.
+ * Click on **Database / Role Manager**.   **NOTE:** No need to go further for a local development system.
+ * Logout, Create a user login for the Vehicles and add it to the Vehicles role.
  * Create other user logins, or have them self-register and add them to the appropriate role(s).
 
    

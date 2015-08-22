@@ -47,7 +47,7 @@ namespace TrolleyTracker.Controllers
 
                     var stops = stopData.TrolleyStops;
                     var nodeArray = stops.node;
-                    var db = new TrolleyTracker.Models.TrolleyTrackerEntities();
+                    var db = new TrolleyTracker.Models.TrolleyTrackerContext();
                     int count = nodeArray.Count;
                     for (int i = 0; i < count; i++)
                     {

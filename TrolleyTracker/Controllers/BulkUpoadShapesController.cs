@@ -11,7 +11,7 @@ namespace TrolleyTracker.Controllers
 {
     public class BulkUploadShapesController : Controller
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         // GET: BulkUploadShapes
         public ActionResult Index()
@@ -50,7 +50,7 @@ namespace TrolleyTracker.Controllers
                 {
                     int routeID = Convert.ToInt32(strRouteID);
 
-                    using (var db = new TrolleyTracker.Models.TrolleyTrackerEntities())
+                    using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
                     {
                         RemoveOldShape(routeID, db);
 
@@ -118,7 +118,7 @@ namespace TrolleyTracker.Controllers
             }
         }
 
-        private void RemoveOldShape(int routeID, TrolleyTrackerEntities db)
+        private void RemoveOldShape(int routeID, TrolleyTrackerContext db)
         {
             // Slow way
             //var oldShapes = from shape in db.Shapes

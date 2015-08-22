@@ -14,7 +14,7 @@ namespace TrolleyTracker.Controllers
 {
     public class RouteSchedulesController : Controller
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         private List<string> daysOfWeek = new List<string> { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 

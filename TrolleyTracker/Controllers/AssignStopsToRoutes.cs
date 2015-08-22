@@ -18,7 +18,7 @@ namespace TrolleyTracker.Controllers
         /// <param name="routeID">Route being recalculated</param>
         /// <param name="shapePoints"></param>
         /// <param name="stopPoints"></param>
-        public void UpdateRouteStops(TrolleyTrackerEntities db, int routeID, List<Coordinate> shapePoints, List<Stop> stops)
+        public void UpdateRouteStops(TrolleyTrackerContext db, int routeID, List<Coordinate> shapePoints, List<Stop> stops)
         {
 
             RemovePreviousRouteStops(db, routeID);
@@ -69,7 +69,7 @@ namespace TrolleyTracker.Controllers
         }
 
 
-        public void UpdateStopsForRoute(TrolleyTrackerEntities db, int routeID)
+        public void UpdateStopsForRoute(TrolleyTrackerContext db, int routeID)
         {
 
             var shapes = (from Shape in db.Shapes
@@ -94,7 +94,7 @@ namespace TrolleyTracker.Controllers
 
         public void UpdateStopsForAllRoutes()
         {
-            using (var db = new TrolleyTracker.Models.TrolleyTrackerEntities())
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
                 var routes = from Route in db.Routes
                              select Route;
@@ -108,7 +108,7 @@ namespace TrolleyTracker.Controllers
 
 
 
-        private void RemovePreviousRouteStops(TrolleyTrackerEntities db, int routeID)
+        private void RemovePreviousRouteStops(TrolleyTrackerContext db, int routeID)
         {
             var routeStops = from RouteStop rs in db.RouteStops
                               where rs.RouteID == routeID

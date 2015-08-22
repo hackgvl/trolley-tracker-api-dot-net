@@ -15,7 +15,7 @@ namespace TrolleyTracker.Controllers.WebAPI
 
     public class LocationController : ApiController
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
 
 

@@ -211,9 +211,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508212353288_Initial.cs" />
+    <Compile Include="Migrations\201508212353288_Initial.Designer.cs">
+      <DependentUpon>201508212353288_Initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Route.cs" />
+    <Compile Include="Models\RouteSchedule.cs" />
+    <Compile Include="Models\RouteStop.cs" />
+    <Compile Include="Models\Shape.cs" />
+    <Compile Include="Models\Stop.cs" />
+    <Compile Include="Models\Trolley.cs" />
     <Compile Include="Models\TrolleyCache.cs" />
+    <Compile Include="Models\TrolleyTrackerContext.cs" />
     <Compile Include="ViewModels\Location.cs" />
     <Compile Include="ViewModels\LocationUpdate.cs" />
     <Compile Include="ViewModels\RouteDetail.cs" />
@@ -223,39 +234,6 @@
     <Compile Include="ViewModels\BulkUploadModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Route.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RouteSchedule.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RouteStop.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Shape.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Stop.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Trolley.cs">
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\TrolleyTrackerModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TrolleyTrackerModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\TrolleyTrackerModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TrolleyTrackerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\TrolleyTrackerModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TrolleyTrackerModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\RouteScheduleViewModel.cs" />
@@ -280,25 +258,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\TrolleyTrackerModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>TrolleyTrackerModel.edmx</DependentUpon>
-      <LastGenOutput>TrolleyTrackerModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Models\TrolleyTrackerModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>TrolleyTrackerModel.edmx</DependentUpon>
-      <LastGenOutput>TrolleyTrackerModel.cs</LastGenOutput>
-    </Content>
+    <Content Include="Migrations\InitialTableSeedInserts.sql" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Models\TrolleyTrackerModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>TrolleyTrackerModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\TrolleyTrackerModel.edmx.diagram">
-      <DependentUpon>TrolleyTrackerModel.edmx</DependentUpon>
-    </Content>
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - Zip Deploy.pubxml" />
@@ -322,6 +284,7 @@
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -414,6 +377,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201508212353288_Initial.resx">
+      <DependentUpon>201508212353288_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

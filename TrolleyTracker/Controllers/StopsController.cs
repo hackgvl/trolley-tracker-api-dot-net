@@ -12,7 +12,7 @@ namespace TrolleyTracker.Controllers
 {
     public class StopsController : Controller
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         // GET: Stops
         public ActionResult Index()

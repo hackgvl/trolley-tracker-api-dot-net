@@ -13,7 +13,7 @@ namespace TrolleyTracker.Controllers
 {
     public class TrolleysController : Controller
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         //// GET: Trolleys
         //public ActionResult Index()

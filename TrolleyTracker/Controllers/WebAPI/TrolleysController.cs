@@ -14,7 +14,7 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class TrolleysController : ApiController
     {
-        private TrolleyTrackerEntities db = new TrolleyTrackerEntities();
+        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         // GET: api/Trolleys
         public IQueryable<Trolley> GetTrolleys()

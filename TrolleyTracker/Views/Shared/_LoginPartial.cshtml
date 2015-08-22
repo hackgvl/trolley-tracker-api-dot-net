@@ -54,7 +54,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer")</li>
-                @if (this.User.IsInRole("Administrators"))
+                @if (new TrolleyTracker.Controllers.CustomRoleProvider().IsUserInRole(this.User.Identity.GetUserName(), "Administrators"))
                 {
                     <li>
                         @Html.ActionLink("Role Manager", "Index", "Roles")
