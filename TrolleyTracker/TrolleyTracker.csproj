@@ -261,9 +261,9 @@
     <Content Include="Migrations\InitialTableSeedInserts.sql" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - Zip Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -361,10 +361,10 @@
     <Content Include="Views\Shared\EditorTemplates\Password.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\PhoneNumber.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\String.cshtml" />
+    <Content Include="Views\DBVisualizer\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\DBVisualizer\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

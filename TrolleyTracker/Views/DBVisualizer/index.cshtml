@@ -44,6 +44,7 @@
 	// Constants
 	var Gray = "#888888";
 	var Green = "#00cc00";
+	var DarkGreen = "#006600";
 
 	var activeFilter = false; // Restrict display to active items.
 
@@ -311,7 +312,7 @@ function HandleRouteData(routeData) {
 		var ID = stopArray[i].ID;
 		var stop = stops[ID];
 		if (routes[routeID].Active) {
-			stop.Marker.setIcon(GetStopIcon(Green));
+			stop.Marker.setIcon(GetStopIcon(DarkGreen));
 			stop.Marker.setOpacity(1.0);  // Ensure that stop is shown
 		}
 	}
