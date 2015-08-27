@@ -57,7 +57,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer")</li>
-                @if (User.IsInRole("Administrators"))
+                @if (User.IsInRole("Administrators")) 
                 {
                     <li>
                         @Html.ActionLink("Role Manager", "Index", "Roles")
