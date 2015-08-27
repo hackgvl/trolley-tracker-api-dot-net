@@ -190,6 +190,7 @@
     <Compile Include="Controllers\BulkUpoadShapesController.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
     <Compile Include="Controllers\CustomAuthorize.cs" />
+    <Compile Include="Controllers\CustomRoleProvider.cs" />
     <Compile Include="Controllers\DBVisualizerController.cs" />
     <Compile Include="Controllers\DynamicJSON.cs" />
     <Compile Include="Controllers\HomeController.cs" />

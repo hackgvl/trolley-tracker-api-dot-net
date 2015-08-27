@@ -43,11 +43,8 @@
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
                 <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
-                @if (User.IsInRole("Administrators"))
-                {
                 <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
                 <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
-                }
             </ul>
         </li>
         <li class="dropdown">
@@ -57,7 +54,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer")</li>
-                @if (User.IsInRole("Administrators"))
+                @if (new TrolleyTracker.Controllers.CustomRoleProvider().IsUserInRole(this.User.Identity.GetUserName(), "Administrators"))
                 {
                     <li>
                         @Html.ActionLink("Role Manager", "Index", "Roles")
