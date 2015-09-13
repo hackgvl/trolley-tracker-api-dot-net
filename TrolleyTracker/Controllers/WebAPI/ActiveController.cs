@@ -19,8 +19,7 @@ namespace TrolleyTracker.Controllers.WebAPI
         {
 
             // Azure server instances run with DateTime.Now set to UTC
-            var myTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");  // For Greenville, SC
-            var currentDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, myTimeZone);
+            var currentDateTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
 
             var activeRoutes = new List<RouteSummary>();
             var weekday = (int)currentDateTime.DayOfWeek;

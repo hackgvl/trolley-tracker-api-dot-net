@@ -172,7 +172,7 @@ function init() {
 
 
 	if (activeFilter) {
-		document.getElementById("DataFilterLink").innerHTML = '<a href=".">Show all data</a>';
+		document.getElementById("DataFilterLink").innerHTML = '<a href="?">Show all data</a>';
 	} else {
 		document.getElementById("DataFilterLink").innerHTML = '<a href="?ActiveFilter=1">Show active items only</a>';
 	}
@@ -194,10 +194,11 @@ function HandleAllTrolleysData(trolleyData) {
 		trolley.Number = trolleyList[i].Number;
 		trolley.Lat = trolleyList[i].CurrentLat;
 		trolley.Lon = trolleyList[i].CurrentLon;
+		trolley.LastBeaconTime = trolleyList[i].LastBeaconTime;
 		trolley.Running = false;  // Until set running later
 
 		var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
-		var title = trolley.TrolleyName + " " + trolley.Number;
+		var title = trolley.TrolleyName + " " + trolley.Number + "<br/>Last seen on " + trolley.LastBeaconTime;
 		var marker = L.marker(latLng, { title: title, icon: GetBusIcon(Gray) });
 		marker.bindPopup(title).openPopup();
 		if (activeFilter) {

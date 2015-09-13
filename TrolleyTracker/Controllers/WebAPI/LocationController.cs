@@ -30,15 +30,10 @@ namespace TrolleyTracker.Controllers.WebAPI
             var trolley = (from Trolley t in db.Trolleys
                            where t.Number == id
                            select t).FirstOrDefault<Trolley>();
-            //if (trolley == null)
-            //{
-            //    return null;
-            //}
 
             return trolley;
         }
 
-        //         public IHttpActionResult PostLocation(int id, [FromBody] postString)
 
 
         // POST: api/Trolleys/1/Location
@@ -68,6 +63,7 @@ namespace TrolleyTracker.Controllers.WebAPI
 
             trolley.CurrentLat = locationUpdate.Lat;
             trolley.CurrentLon = locationUpdate.Lon;
+            trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
             db.SaveChanges();
             TrolleyCache.UpdateTrolley(trolley);
 

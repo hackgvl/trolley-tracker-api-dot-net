@@ -18,7 +18,7 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 
 ##Server location
 
- The API Server is located at http://api.yeahthattrolley.com
+ The API and web Server is located at http://api.yeahthattrolley.com
 
 
 ##API
@@ -79,14 +79,10 @@ Anyone may view public data from the web app without a login.    Public procedur
 **Note:** It may be possible to run from a local DB on a development system by changing the connection string in Web.Config
 
  1. Build the solution.
- * Go to NuGet Package Manager Console
- * Run the command **Update-Database**  .  This will call the seed to create the database from the included SQL script.
  * Run the application which brings up the web site in a browser.  It should show that it is not logged in.
  * Click on the **Register as a new user** link.
  * Enter your Email and password and click **Register**.   Note - double check that the email address is correct; there is no counter-verification by Email to confirm a valid Email account.   This will be the system manager account - choose a meaningful name or your own email address.
- * Confirm that the browser shows your Email address as logged in in the upper right corner.
- * Under the Trolleys menu item, select Trolleys
- * Edit a trolley.   This action adds the first user in the system as a system administrator.   The Role Manager option is now added to the Database dropdown.
+ * Confirm that the browser shows your Email address as logged in in the upper right corner.  The first user in the system is the system administrator.   The Role Manager option is now added to the Database dropdown.
  * Click on **Database / Role Manager**.   **NOTE:** No need to go further for a local development system.
  * Logout, Create a user login for the Vehicles and add it to the Vehicles role.
  * Create other user logins, or have them self-register and add them to the appropriate role(s).

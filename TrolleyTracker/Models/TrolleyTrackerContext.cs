@@ -10,10 +10,10 @@
             : base("name=TrolleyTrackerContext")
         {
 
-            Database.SetInitializer<TrolleyTrackerContext>(new CreateDatabaseIfNotExists<TrolleyTrackerContext>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TrolleyTrackerContext, TrolleyTracker.Migrations.Configuration>());
 
         }
-    
+
         public virtual DbSet<Route> Routes { get; set; }
         public virtual DbSet<RouteStop> RouteStops { get; set; }
         public virtual DbSet<Shape> Shapes { get; set; }

@@ -10,5 +10,6 @@ namespace TrolleyTracker.Models
         public int Number { get; set; }
         public Nullable<double> CurrentLat { get; set; }
         public Nullable<double> CurrentLon { get; set; }
+        public Nullable<DateTime> LastBeaconTime { get; set; }
     }
 }

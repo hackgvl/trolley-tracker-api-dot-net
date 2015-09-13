@@ -201,6 +201,7 @@
     <Compile Include="Controllers\RouteStopsController.cs" />
     <Compile Include="Controllers\StopsController.cs" />
     <Compile Include="Controllers\TrolleysController.cs" />
+    <Compile Include="Controllers\UTCToLocalTime.cs" />
     <Compile Include="Controllers\WebAPI\ActiveController.cs" />
     <Compile Include="Controllers\WebAPI\LocationController.cs" />
     <Compile Include="Controllers\WebAPI\RouteSchedulesController.cs" />
@@ -214,6 +215,10 @@
     <Compile Include="Migrations\201508212353288_Initial.cs" />
     <Compile Include="Migrations\201508212353288_Initial.Designer.cs">
       <DependentUpon>201508212353288_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.cs" />
+    <Compile Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.Designer.cs">
+      <DependentUpon>201509131933071_AddTrolleyBeaconTimestamp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -384,6 +389,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201508212353288_Initial.resx">
       <DependentUpon>201508212353288_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.resx">
+      <DependentUpon>201509131933071_AddTrolleyBeaconTimestamp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

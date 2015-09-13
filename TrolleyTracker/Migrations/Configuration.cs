@@ -12,7 +12,7 @@ namespace TrolleyTracker.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(TrolleyTracker.Models.TrolleyTrackerContext context)
@@ -36,6 +36,11 @@ namespace TrolleyTracker.Migrations
             //
         }
 
+        /// <summary>
+        /// Populate database with starting dataset.   Note: this script must always be updated so that it can
+        /// be applied to the latest model.
+        /// </summary>
+        /// <param name="context"></param>
         private void InitialSeedFromScript(TrolleyTrackerContext context)
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory.Replace(@"\bin", string.Empty) + @"\Migrations";
