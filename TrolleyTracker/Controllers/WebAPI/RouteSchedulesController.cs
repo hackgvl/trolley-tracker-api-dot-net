@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -18,7 +19,9 @@ namespace TrolleyTracker.Controllers.WebAPI
         // GET: api/RouteSchedules
         public List<RouteScheduleSummary> Get()
         {
-            var routeSchedules = db.RouteSchedules;
+            var routeSchedules = from rs in db.RouteSchedules.Include(rs => rs.Route)
+                                 orderby rs.DayOfWeek, rs.StartTime ascending
+                                 select rs;
             var schedules = new List<RouteScheduleSummary>();
             foreach(var routeSchedule in routeSchedules)
             {
