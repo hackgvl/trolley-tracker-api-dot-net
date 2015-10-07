@@ -17,6 +17,10 @@ namespace TrolleyTracker.ViewModels
             this.Description = stop.Description;
             this.Lat = stop.Lat;
             this.Lon = stop.Lon;
+            if (stop.Picture != null)
+            {
+                StopImageURL = System.Web.VirtualPathUtility.ToAbsolute("~/") + String.Format("Stops/Picture/{0}", stop.ID);
+            }
 
         }
 
@@ -31,5 +35,7 @@ namespace TrolleyTracker.ViewModels
         public double Lat { get; set; }
         [DataMember]
         public double Lon { get; set; }
+        [DataMember]
+        public string StopImageURL { get; set; }
     }
 }

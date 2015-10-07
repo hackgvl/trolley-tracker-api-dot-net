@@ -20,6 +20,8 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 
  The API and web Server is located at http://api.yeahthattrolley.com
 
+ There is a Dev server located at http://yeahthattrolley.azurewebsites.net/ .  The purpose of the dev server is for testing client apps when there is no current trolley running.  The schedule may be changed as needed to activate route(s).
+
 
 ##API
 
@@ -67,6 +69,20 @@ Returns a list of route schedules.   Mostly for information, but probably no dir
 
 ####GET /api/v1/RouteSchedules/:ID
 Return a specific route schedule.
+
+
+##Stop editor
+
+Stops have been moved out onto a map display.    If the user has edit privileges:
+
+ * Hover the mouse over a stop for the stop title
+ * Right click on a stop to remove it.
+ * Left click and drag on a stop to move to a different position.
+ * Left click to see or edit information about the stop, including a photo
+ * Photos should be resized before uploading - make them as small as possible for fastest client download.  The editor shows them in a small non-proportional thumbnail, but the photo URL from the web API shows them in full size.
+
+
+Stops List (text) is the old summary screen, placed there for reference, but may be removed if not needed in the future.
 
 
 ##User Credentials

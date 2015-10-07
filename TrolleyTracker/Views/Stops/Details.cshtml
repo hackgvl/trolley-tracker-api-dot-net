@@ -43,6 +43,22 @@
             @Html.DisplayFor(model => model.Lon)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.Picture)
+        </dt>
+
+        <dd>
+            @*@Html.DisplayFor(model => model.Picture)*@
+            @{
+                if (Model.Picture != null)
+                {
+                    string imageBase64 = Convert.ToBase64String(Model.Picture);
+                    string imageSrc = string.Format("data:image/gif;base64,{0}", imageBase64);
+                    <img src="@imageSrc" width="100" height="100" />
+                }
+            }
+        </dd>
+
     </dl>
 </div>
 <p>

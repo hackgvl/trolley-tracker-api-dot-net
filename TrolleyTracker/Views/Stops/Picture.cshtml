@@ -1,0 +1,8 @@
+﻿@{
+            if (Model.Picture != null)
+            {
+                string imageBase64 = Convert.ToBase64String(Model.Picture);
+                string imageSrc = string.Format("data:image/gif;base64,{0}", imageBase64);
+        <img src="@imageSrc" />
+    }
+}

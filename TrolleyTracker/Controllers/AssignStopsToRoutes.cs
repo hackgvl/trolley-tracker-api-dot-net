@@ -46,10 +46,26 @@ namespace TrolleyTracker.Controllers
                     var distance = FindDistanceToSegment(stopPosition, shapePoints[i], shapePoints[i - 1], out closest);
                     if (distance < MinStopProximity)
                     {
-                        if (!routeStopList.Contains(stop))
+
+                        var angle = AngleBetween3Points(shapePoints[i - 1], closest, stopPosition);
+
+                        // See if it is a right angle (Minimum distance to route shape segment)
+                        if (Math.Abs(Math.Abs(angle) - 90.0) < 5.0)
                         {
-                            routeStopList.Add(stop);
+
+                            if (angle < 0)
+                            {
+                                // Stop is on the right side of the path
+                                if (!routeStopList.Contains(stop))
+                                {
+                                    routeStopList.Add(stop);
+                                }
+                            }
                         }
+
+
+
+
                         //break;   //  Bug? How to handle case of ordering multiple stops in a long straight segment
                     }
                 }
@@ -123,6 +139,33 @@ namespace TrolleyTracker.Controllers
         }
 
 
+
+        /// <summary>
+        /// Find the angle between stop and A-B segment.   Used to ensure
+        /// that stop is only used if it's on the right side of the route
+        /// </summary>
+        /// <param name="A">p1 coordinate</param>
+        /// <param name="B">Closest point on route segment</param>
+        /// <param name="C">Stop position</param>
+        /// <returns></returns>
+        double AngleBetween3Points(Coordinate A, Coordinate B, Coordinate C)
+        {
+            double atanAB = Math.Atan2(B.Lon - A.Lon, B.Lat - A.Lat);
+            double atanBC = Math.Atan2(B.Lon - C.Lon, B.Lat - C.Lat);
+            double diff = atanBC - atanAB;
+
+            double angleAB = atanAB * 180 / Math.PI;
+            double angleBC = atanBC * 180 / Math.PI;
+            double diffAngle = diff * 180 / Math.PI;
+
+            if (diff > (Math.PI * 2.0)) diff -= (Math.PI * 2.0);
+            else if (diff < -(Math.PI * 2.0)) diff += (Math.PI * 2.0);
+
+            // Convert to degrees
+            diff *= 180 / Math.PI;
+
+            return diff;
+        }
 
 
         // Calculate the distance between

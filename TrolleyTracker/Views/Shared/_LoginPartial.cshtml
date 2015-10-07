@@ -33,6 +33,7 @@
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
                 <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
+                <li>@Html.ActionLink("Stops List (text)", "List", "Stops")</li>
             </ul>
         </li>
         <li class="dropdown">
@@ -46,7 +47,6 @@
                 @if (User.IsInRole("Administrators"))
                 {
                     <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>
-                    <li>@Html.ActionLink("Bulk Stop Upload", "Create", "BulkUploadStops")</li>
                 }
             </ul>
         </li>
@@ -56,7 +56,7 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer")</li>
+                <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer", new { ActiveFilter = 1}, null)</li>
                 @if (User.IsInRole("Administrators")) 
                 {
                     <li>

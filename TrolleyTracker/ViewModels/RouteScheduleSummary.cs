@@ -21,6 +21,7 @@ namespace TrolleyTracker.ViewModels
             this.DayOfWeek = daysOfWeek[routeSchedule.DayOfWeek];
             this.StartTime = routeSchedule.StartTime.ToShortTimeString();
             this.EndTime = routeSchedule.EndTime.ToShortTimeString();
+            this.RouteLongName = routeSchedule.Route.LongName;
         }
 
         [DataMember]
@@ -33,5 +34,7 @@ namespace TrolleyTracker.ViewModels
         public string StartTime { get; set; }
         [DataMember]
         public string EndTime { get; set; }
+        [DataMember]
+        public string RouteLongName { get; set; }
     }
 }

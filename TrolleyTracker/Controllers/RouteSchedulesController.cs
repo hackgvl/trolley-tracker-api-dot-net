@@ -29,6 +29,7 @@ namespace TrolleyTracker.Controllers
 
             ViewBag.DaysOfWeek = daysOfWeek;
 
+            ViewBag.ServerTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow).ToString("MM-dd-yyyy HH:mm:ss");
 
             ViewBag.CssFile = Url.Content("~/Content/RouteScheduleSummary.css");
             var vm = new RouteScheduleViewModel();

@@ -190,7 +190,6 @@
     <Compile Include="Controllers\AccessDeniedController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssignStopsToRoutes.cs" />
-    <Compile Include="Controllers\BulkUploadStopsController.cs" />
     <Compile Include="Controllers\BulkUpoadShapesController.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
     <Compile Include="Controllers\CustomAuthorize.cs" />
@@ -223,6 +222,10 @@
     <Compile Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.cs" />
     <Compile Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.Designer.cs">
       <DependentUpon>201509131933071_AddTrolleyBeaconTimestamp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510070101518_StopPhoto_requiredFields.cs" />
+    <Compile Include="Migrations\201510070101518_StopPhoto_requiredFields.Designer.cs">
+      <DependentUpon>201510070101518_StopPhoto_requiredFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -278,10 +281,8 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Properties\PublishProfiles\Publish to Azure.pubxml" />
     <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\yeahthattrolley - FTP %283%29.pubxml" />
+    <None Include="Properties\PublishProfiles\yeahthattrolley - Publish to Azure.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -344,8 +345,6 @@
     <Content Include="Views\Stops\Details.cshtml" />
     <Content Include="Views\Stops\Edit.cshtml" />
     <Content Include="Views\Stops\Index.cshtml" />
-    <Content Include="Views\BulkUploadStops\Create.cshtml" />
-    <Content Include="Views\BulkUploadStops\Index.cshtml" />
     <Content Include="Views\Routes\Create.cshtml" />
     <Content Include="Views\Routes\Delete.cshtml" />
     <Content Include="Views\Routes\Details.cshtml" />
@@ -382,9 +381,13 @@
     <Content Include="Views\Shared\EditorTemplates\PhoneNumber.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\String.cshtml" />
     <Content Include="Views\DBVisualizer\index.cshtml" />
+    <Content Include="Views\Stops\List.cshtml" />
+    <Content Include="Views\Stops\CreateAtPosition.cshtml" />
+    <Content Include="Views\Stops\Picture.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Picture\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -401,6 +404,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509131933071_AddTrolleyBeaconTimestamp.resx">
       <DependentUpon>201509131933071_AddTrolleyBeaconTimestamp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510070101518_StopPhoto_requiredFields.resx">
+      <DependentUpon>201510070101518_StopPhoto_requiredFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

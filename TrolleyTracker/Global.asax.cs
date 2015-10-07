@@ -33,6 +33,12 @@ namespace TrolleyTracker
                 context.Response.Clear();
                 context.Response.StatusCode = 401;
             }
+
+            // Remove cookies from WebAPI response - they're not needed or used by our clients
+            if (context.Request.Path.StartsWith("/api/v"))
+            {
+                Context.Response.Cookies.Clear();
+            }
         }
     }
 }
