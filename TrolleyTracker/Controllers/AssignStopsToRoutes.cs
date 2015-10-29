@@ -42,6 +42,7 @@ namespace TrolleyTracker.Controllers
                 {
                     var stop = stops[s];
                     var stopPosition = new Coordinate(0, stop.Lat, stop.Lon, null);
+
                     Coordinate closest = null;
                     var distance = FindDistanceToSegment(stopPosition, shapePoints[i], shapePoints[i - 1], out closest);
                     if (distance < MinStopProximity)
@@ -49,8 +50,10 @@ namespace TrolleyTracker.Controllers
 
                         var angle = AngleBetween3Points(shapePoints[i - 1], closest, stopPosition);
 
+                        if (angle > 180.0) angle = angle - 360.0; // Convert to negative angle
+
                         // See if it is a right angle (Minimum distance to route shape segment)
-                        if (Math.Abs(Math.Abs(angle) - 90.0) < 5.0)
+                        if (  (Math.Abs(Math.Abs(angle) - 90.0) < 5.0) )
                         {
 
                             if (angle < 0)
