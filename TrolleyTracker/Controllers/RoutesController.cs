@@ -4,8 +4,9 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
+using System.IO;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using TrolleyTracker.Models;
 
 namespace TrolleyTracker.Controllers
@@ -58,6 +59,48 @@ namespace TrolleyTracker.Controllers
             }
 
             return View(route);
+        }
+
+        // GET: Routes/RouteShape/5
+        public ActionResult RouteShape(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            // Include raw street data
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory.Replace(@"\bin", string.Empty) + @"\StreetData";
+            var filePath = baseDir + "\\AllStreetPaths.osm";
+
+            string xml = "";
+            using (var streetFile = new StreamReader(filePath))
+            {
+                xml = streetFile.ReadToEnd();
+                streetFile.Close();
+            }
+            // Replace single quotes with double quotes so that javascript can define variable in single quotes
+            xml = xml.Replace('\'', '"');
+            xml = xml.Replace("\r\n", "");
+
+            ViewData["StreetDataXML"] = xml;
+
+            var routeShape = from shape in db.Shapes
+                          orderby shape.Sequence
+                          where (shape.RouteID == id)
+                          select shape;
+
+            var shapeList = new List<Coordinate>();
+            foreach(var point in routeShape)
+            {
+                var coord = new Coordinate(-1, point.Lat, point.Lon, null);
+                shapeList.Add(coord);
+            }
+            string shapeJSON = new JavaScriptSerializer().Serialize(shapeList);
+
+            ViewData["RouteShapeJSON"] = shapeJSON;
+
+            return PartialView();
         }
 
         // GET: Routes/Edit/5

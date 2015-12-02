@@ -11,7 +11,6 @@ General layout -
  * ASP.NET version 4.x
  * MVC version 5
  * Entity Framework 6.3
- * (Project tests have not been touched and will fail)
 
 
 Parameters may be viewed from a web browser.  For changes, Login to the web app with a user with a route management role - ManageTrolley@yeahthattrolley.com for example.  

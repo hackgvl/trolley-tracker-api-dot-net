@@ -384,6 +384,8 @@
     <Content Include="Views\Stops\List.cshtml" />
     <Content Include="Views\Stops\CreateAtPosition.cshtml" />
     <Content Include="Views\Stops\Picture.cshtml" />
+    <Content Include="StreetData\AllStreetPaths.osm" />
+    <Content Include="Views\Routes\RouteShape.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,509 @@
+﻿<html>
+
+<head>
+    <title>Trolley Tracker Route Shape</title>
+    <meta charset="utf-8" />
+    <META NAME="Keywords" CONTENT="Trolley,Trolley Tracker,Greenville SC">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/Content/leaflet/leaflet.css" />
+
+    <script src="~/Content/leaflet/leaflet-src.js"></script>
+    <script src="~/Content/leaflet/Leaflet.MakiMarkers.js"></script>
+    <script src="~/Content/json2.js"></script>
+
+    @Scripts.Render("~/bundles/jquery")
+
+    @Html.AntiForgeryToken()
+
+    <style>
+        #map {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1;
+        }
+
+        #hyperlink {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            z-index: 2;
+        }
+
+        .leaflet-div-icon2
+        {
+          background:red;
+          border:5px solid rgba(255,255,255,0.5);
+          color:blue;
+          font-weight:bold;
+          text-align:center;
+          border-radius:50%;
+          line-height:30px;
+        }
+    </style>
+
+
+    <script>
+
+        /*if (this.name == "StopChild") {
+            if (document.referrer.indexOf("CreateAtPosition") > -1 ) {
+                this.window.opener.location.reload(); // Redraw, showing new stop -- Could just add marker
+            }
+            this.close();  // Redirect refresh from editor - close child window and return to parent stop map
+        } */
+
+        var lat = 34.85066;
+        var lon = -82.39901;
+        var currentZoom = 15;
+        var apiURL = location.protocol + '//' + window.location.host + "/api/v1/";
+
+        var map; //complex object of type Leaflet Map
+        var dragStartPosition;
+        var popup;  // Currently open popup
+        var newStopPosition;
+
+        var draggableMarkers = 'false';
+        @if (User.IsInRole("RouteManagers")) {
+            <text>
+        draggableMarkers = 'true';
+        </text>
+        }
+
+        // Street data objects
+        var nodes;  // A point describing part of a street shape
+        var ways; // A street path defined by a series of nodes
+        var intersections; // A node which connects 2 or more streets
+
+        // Database objects
+        var stops;
+
+
+        // Constants
+        var Gray = "#888888";
+        var Green = "#00cc00";
+        var DarkGreen = "#006600";
+
+
+        function GetBusIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "bus", color: markerColor, size: "m" });
+            return markerIcon;
+        }
+
+        function GetStopIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+            return markerIcon;
+        }
+
+
+        // Return array of keys for an associative array
+        function GetKeys(associativeArray) {
+            var keys = [];
+            for (var key in associativeArray) {
+                if (associativeArray.hasOwnProperty(key)) {
+                    keys.push(key);
+                }
+            }
+            return keys;
+        }
+
+
+
+        var ajax = {};
+        ajax.x = function () {
+            if (typeof XMLHttpRequest !== 'undefined') {
+                return new XMLHttpRequest();
+            }
+            var versions = [
+                "MSXML2.XmlHttp.6.0",
+                "MSXML2.XmlHttp.5.0",
+                "MSXML2.XmlHttp.4.0",
+                "MSXML2.XmlHttp.3.0",
+                "MSXML2.XmlHttp.2.0",
+                "Microsoft.XmlHttp"
+            ];
+
+            var xhr;
+            for (var i = 0; i < versions.length; i++) {
+                try {
+                    xhr = new ActiveXObject(versions[i]);
+                    break;
+                } catch (e) {
+                }
+            }
+            return xhr;
+        };
+
+
+
+        ajax.send = function (url, callback, method, data, sync) {
+            var x = ajax.x();
+            x.open(method, url, sync);
+            x.setRequestHeader("Accept", "application/json");
+            x.onreadystatechange = function () {
+                if (x.readyState == 4) {
+                    callback(x.responseText)
+                }
+            };
+            if (method == 'POST') {
+                x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            }
+            x.send(data)
+        };
+
+        ajax.get = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url + (query.length ? '?' + query.join('&') : ''), callback, 'GET', null, sync)
+        };
+
+        ajax.post = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url, callback, 'POST', query.join('&'), sync)
+        };
+
+        //Initialise the 'map' object
+        function init() {
+
+            params = getQueryParams(document.location.search);
+
+            if (params['mlat'] && params['mlon'] && params['zoom']) {
+                currentZoom = params['zoom'];
+                lat = params['mlat'];
+                lon = parms['mlon'];
+            }
+
+
+            //map = L.map('map', {
+            //	center: [lat, lon],
+            //		zoom: currentZoom
+            //});
+
+            map = L.map('map').setView([lat, lon], currentZoom);
+
+
+            var southWest = new L.LatLng(36.48396, -84.76368),
+            northEast = new L.LatLng(33.21611, -80.1432),
+            bounds = new L.LatLngBounds(southWest, northEast);
+
+            map.setMaxBounds(bounds);
+
+            L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,' +
+                    "Tiles Courtesy of <a href='http://open.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>",
+                maxZoom: 18,
+                id: 'mapquest.streets'
+            }).addTo(map);
+
+
+            @if (User.IsInRole("RouteManagers")) {
+                <text>
+            map.on('contextmenu', function (event) {
+                newStopPosition = event.latlng;
+                popup = L.popup().setContent('<a href="javascript:CreateStop()">Create New Stop here</a>').setLatLng(newStopPosition);
+                popup.openOn(map);
+                //CreateStopAt(event.latlng);
+            });
+            </text>
+            }
+
+            //ajax.get(apiURL + "Trolleys", {}, HandleAllTrolleysData, true);
+            //HandleAllStopsData();
+            PrepareStreetData();
+            
+            // TODO - modify vector edit routines to edit typical path...
+            DrawRoutePath();
+
+            return;
+
+        }
+
+        function DrawRoutePath() {
+            var routeShapeJSON = '@Html.Raw(ViewData["RouteShapeJSON"]) '; 
+
+            var shapeList = JSON.parse(routeShapeJSON);
+            var latlngs = [];
+            for (i = 0; i < shapeList.length; i++) {
+                var latLon = new L.LatLng(shapeList[i].Lat, shapeList[i].Lon);
+                latlngs[i] = latLon;
+            }
+
+            var routePolyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+        }
+
+        function PrepareStreetData() {
+
+            var startTime = (new Date()).getTime(); // For debugging
+
+            var xmlStreetData = '@Html.Raw(ViewData["StreetDataXML"]) ';
+            var streetDataDoc = $.parseXML(xmlStreetData);
+
+            nodes = {};
+            $(streetDataDoc).find("osm").find("node").each(function (index) {
+                var newNode = new Object();
+                var ID = $(this).attr("id");
+                newNode.ID = ID;
+                newNode.lat = $(this).attr("lat");
+                newNode.lon = $(this).attr("lon");
+                newNode.refCount = 0;
+                newNode.wayList = new Array();  // List of ways that use this node
+
+                nodes[ID] = newNode;
+
+            }
+            );
+
+            // Build list of OSM ways - an OSM way *may* span multiple intersections or less than 1 intersection
+            ways = {};
+            $(streetDataDoc).find("osm").find("way").each(function (index) {
+                var newWay = new Object();
+                var wayID = $(this).attr("id");
+                var nodeList = new Array();
+                $(this).find("nd").each(function (index) {
+                    var nodeID = $(this).attr("ref");
+                    nodeList.push(nodeID);
+                    if (nodes[nodeID]) {  // Some street lines extend beyond bounding box and will not have all nodes defined
+
+                        nodes[nodeID].refCount++;
+                        nodes[nodeID].wayList.push(wayID);
+                    }
+                }
+                );
+
+
+                newWay.ID = wayID;
+                newWay.nodeList = nodeList;
+
+                ways[wayID] = newWay;
+
+            }
+            );
+
+            CreateStreetNetwork();
+
+            var milliseconds = (new Date()).getTime() - startTime;
+            DebugLog("Street prepare time: " + milliseconds + " milliseconds");
+
+        }
+
+        // Create intersections and all street segments that connect between them
+        function CreateStreetNetwork() {
+            intersections = {};  // List of nodes where cross-streets meet
+
+            var wayIDs = GetKeys(ways);
+            for (var i = 0; i < wayIDs.length; i++) {
+                var way = ways[wayIDs[i]];
+                for (var nodeIndex = 0; nodeIndex < way.nodeList.length; nodeIndex++) {
+                    var nodeID = way.nodeList[nodeIndex];
+                    if (nodes[nodeID]) {
+                        var node = nodes[nodeID];
+                        if (node.refCount > 1) {
+                            // This might be an intersection
+                            var middleOfWay = (nodeIndex > 0) && (nodeIndex < way.nodeList.length - 1);
+                            if (middleOfWay || node.refCount > 2) {
+                                var nodeID = node.ID;
+                                if (!intersections[nodeID]) {
+                                    // Create intersection node
+                                    intersections[nodeID] = nodeID;
+
+                                    //var myIcon = L.divIcon({ className: 'leaflet-div-icon' });
+                                    //L.marker([node.lat, node.lon], { icon: myIcon }).addTo(map);
+
+                                    var circle = L.circle([node.lat, node.lon], 3, {
+                                        color: 'blue',
+                                        fillColor: '#f03',
+                                        fillOpacity: 0.5
+                                    }).addTo(map);
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+
+            }
+
+
+
+
+        }
+
+
+            var childStopWindow
+
+            function CreateStop() {
+                if (childStopWindow) childStopWindow.close();
+                CloseLeafletPopup();
+                childStopWindow = window.open("/Stops/CreateAtPosition?Lat=" + newStopPosition.lat + "&Lon=" + newStopPosition.lng, 'StopChild', 'width=400,height=700');
+            }
+
+
+
+
+
+            function eventStopClick(e) {
+                if (childStopWindow) childStopWindow.close();  // Close any possible previous window so that new window opens on top
+
+                @if (User.IsInRole("RouteManagers")) {
+            <text>
+                childStopWindow = window.open("/Stops/Edit/" + this.stop.ID, 'StopChild', 'width=400,height=700');
+                </text>
+            } else
+            {
+                <text>
+                childStopWindow = window.open("/Stops/Details/" + this.stop.ID, 'StopChild', 'width=400,height=700');
+                </text>
+            }
+            }
+
+
+
+            // handler for GET / api / v1 / Stops
+            function HandleAllStopsData() {
+                var stopList = JSON.parse(stopsJSON).Stops;
+                stops = {};
+                for (i = 0; i < stopList.length; i++) {
+                    var ID = stopList[i].ID;
+                    var stop = new Object();
+                    stop.ID = ID;
+                    stop.Name = stopList[i].Name;
+                    stop.Lat = stopList[i].Lat;
+                    stop.Lon = stopList[i].Lon;
+
+                    var latLng = new L.LatLng(stop.Lat, stop.Lon);
+                    var title = stop.Name;
+                    var marker = L.marker(latLng, { title: title, icon: GetStopIcon(Green), draggable: draggableMarkers });
+                    //marker.bindPopup(title).openPopup();
+                    marker.addTo(map);
+
+                    marker.stop = stop  // For later use during the click event
+                    marker.on('click', eventStopClick);
+
+                @if (User.IsInRole("RouteManagers")) {
+                        <text>
+                        marker.on('contextmenu', function (e) {
+                        popup = L.popup().setContent('<p>Delete ' + this.stop.Name + '?  <a href="javascript:DeleteStop(' + this.stop.ID  + ');">[Yes]</a> </p> <a href="javascript:CloseLeafletPopup();"><center>[No]</center></a>').setLatLng(this.getLatLng());
+                        popup.openOn(map);
+                    });
+                                </text>
+                            }
+
+
+                    marker.on('dragend', function (event) {
+                        var marker = event.target;
+                        var position = marker.getLatLng();
+                        if (confirm("Move stop to this position?")) {
+                            UpdateStopPosition(marker.stop, position);
+                        } else {
+                            // Revert to previous location
+                            marker.setLatLng(dragStartPosition);
+                        }
+                    });
+
+                    marker.on('dragstart', function (event) {
+                        // Save position in case user doesn't want to move it
+                        var marker = event.target;
+                        dragStartPosition = marker.getLatLng();
+                    });
+
+                    stop.Marker = marker;
+
+                    stops[ID] = stop;
+                }
+
+            }
+
+            function UpdateStopPosition(stop, position) {
+                var rv = document.getElementsByTagName("input")[0].value;
+                post('/Stops/UpdatePosition/' + stop.ID, {Lat: position.lat, Lon: position.lng, __RequestVerificationToken: rv });
+                // This should probably be more Ajax-y to eliminate the screen refresh
+            }
+
+            function CloseLeafletPopup() {
+                $(".leaflet-popup-close-button")[0].click();
+            }
+
+            function DeleteStop(stopID) {
+                var rv = document.getElementsByTagName("input")[0].value;
+                post('/Stops/Delete/' + stopID, { __RequestVerificationToken: rv});
+                //CloseLeafletPopup(); -- not needed; form will refresh
+            }
+
+
+            function DebugLog(message) {
+                if (window.console) console.log(message);
+            }
+
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+
+                for (var key in params) {
+                    if (params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+
+                        form.appendChild(hiddenField);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+
+            function getQueryParams(qs) {
+                qs = qs.split("+").join(" ");
+
+                var params = {}, tokens,
+                    re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(qs)) {
+                    params[decodeURIComponent(tokens[1])]
+                        = decodeURIComponent(tokens[2]);
+                }
+
+                return params;
+            }
+
+
+
+            function ScrollMapTo(lon, lat, zoom) {
+
+                var mapCenter = new L.LatLng(lat, lon);
+                map.setView(mapCenter, zoom);
+
+            }
+
+    </script>
+
+</head>
+<body>
+
+    <div style="width:100%; height:100%" id="map">
+    </div>
+    <div id="hyperlink">
+<a href="~/">Back to Home</a>
+    </div>
+
+    <div>
+        <script>
+	init();
+
+        </script>
+    </div>
+</body>
+</html>
