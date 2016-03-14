@@ -32,10 +32,10 @@ namespace TrolleyTracker.Controllers.WebAPI
                                 where (routeSchedule.RouteID == route.ID) && (routeSchedule.DayOfWeek == weekday)
                                 select routeSchedule).ToList<RouteSchedule>();
 
-            // Return active routes 15 minutes early so that progress from garage to starting point
+            // Return active routes 5 minutes early so that progress from garage to starting point
             // is shown, also if trolley is a few minutes early.
 
-            var startTimeRef = currentDateTime.Add(new TimeSpan(0, 15, 0)).TimeOfDay;
+            var startTimeRef = currentDateTime.Add(new TimeSpan(0, 5, 0)).TimeOfDay;
             var endTimeRef = currentDateTime.TimeOfDay;
             foreach (var routeSchedule in todaysRouteSchedules)
             {

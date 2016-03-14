@@ -15,9 +15,13 @@ namespace TrolleyTracker.Models
         private static readonly object _lock = new object();
 
         private static Dictionary<int, RunningTrolley> trolleyCache;
+        private static bool routeIsActive;  // True if any route is currently active
 
         private const int CacheCheckInterval = 60; // Seconds between cache check
         private const int MaxCacheAge = 300;  // Seconds before removing from cache
+
+        private const int MinRouteCheckInterval = 10; // Minimum minutes between check
+        private static DateTime lastRouteCheck;
 
         private static DateTime lastCacheCheck;
 
@@ -25,24 +29,47 @@ namespace TrolleyTracker.Models
         {
             trolleyCache = new Dictionary<int, RunningTrolley>();
             lastCacheCheck = DateTime.Now;
+            lastRouteCheck = DateTime.Now;
         }
 
 
 
-        public static List<RunningTrolley> GetRunningTrolleys()
+        public static List<RunningTrolley> GetRunningTrolleys(bool isDebug)
         {
+
+            CheckActiveRoutes();
+
             lock (_lock)
             {
-                AgeCacheEntries();
-
                 var runningTrolleys = new List<RunningTrolley>();
-
-                foreach (var trolley in trolleyCache.Values)
+                if (routeIsActive || isDebug)
                 {
-                    runningTrolleys.Add(trolley);
+                    AgeCacheEntries();
+                    foreach (var trolley in trolleyCache.Values)
+                    {
+                        runningTrolleys.Add(trolley);
+                    }
                 }
 
                 return runningTrolleys;
+            }
+        }
+
+
+        private static void CheckActiveRoutes()
+        {
+            if ((DateTime.Now - lastRouteCheck).TotalMinutes < MinRouteCheckInterval)
+            {
+                return;
+            }
+            // Check on :01, :16, :31 and :46...
+            if (DateTime.Now.Minute % 15 == 1)
+            {
+                var activeController = new TrolleyTracker.Controllers.WebAPI.ActiveController();
+                var runningList = activeController.Get();
+                routeIsActive = runningList.Count > 0;
+
+                lastRouteCheck = DateTime.Now;
             }
         }
 

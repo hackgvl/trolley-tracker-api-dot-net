@@ -349,7 +349,7 @@ function HandleRouteData(routeData) {
 
 // ---------------------------------
 function RequestRunningTrolleyData() {
-	ajax.get(apiURL + "Trolleys/Running", {}, HandleRunningTrolleysData, true);
+	ajax.get(apiURL + "Trolleys/Running?debug=true", {}, HandleRunningTrolleysData, true);
 }
 
 

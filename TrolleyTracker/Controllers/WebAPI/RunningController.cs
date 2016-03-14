@@ -14,7 +14,13 @@ namespace TrolleyTracker.Controllers.WebAPI
         // Mapped as - GET: api/Trolleys/Running
         public List<RunningTrolley> Get()
         {
-            return TrolleyCache.GetRunningTrolleys();
+            return TrolleyCache.GetRunningTrolleys(false);
+        }
+
+        // Mapped as - GET: api/Trolleys/Running?debug=true
+        public List<RunningTrolley> Get(bool debug)
+        {
+            return TrolleyCache.GetRunningTrolleys(true);
         }
 
     }
