@@ -29,6 +29,8 @@ namespace TrolleyTracker.Models
         {
             trolleyCache = new Dictionary<int, RunningTrolley>();
             lastCacheCheck = DateTime.Now;
+
+            SetRoutesActive();
             lastRouteCheck = DateTime.Now;
         }
 
@@ -65,12 +67,17 @@ namespace TrolleyTracker.Models
             // Check on :01, :16, :31 and :46...
             if (DateTime.Now.Minute % 15 == 1)
             {
-                var activeController = new TrolleyTracker.Controllers.WebAPI.ActiveController();
-                var runningList = activeController.Get();
-                routeIsActive = runningList.Count > 0;
+                SetRoutesActive();
 
                 lastRouteCheck = DateTime.Now;
             }
+        }
+
+        private static void SetRoutesActive()
+        {
+            var activeController = new TrolleyTracker.Controllers.WebAPI.ActiveController();
+            var runningList = activeController.Get();
+            routeIsActive = runningList.Count > 0;
         }
 
         /// <summary>
