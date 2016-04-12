@@ -29,7 +29,8 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 API views may be entered into a browser, but the results will be in XML.  API views called from CURL return as JSON.   Applications wishing for JSON should specify in their request “Content-type: application/json; charset=utf-8”
 
 ####GET /api/v1/Trolleys/Running
-Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.
+Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.  
+No trolleys will be returned if no route is currently scheduled.   To see any active trolley beacon, regardless of schedule, append a debug parameter formatted as GET /api/v1/Trolleys/Running?debug=true
 
 ####POST /api/v1/Trolleys/:Number/Location
 

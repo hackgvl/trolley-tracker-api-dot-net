@@ -1,0 +1,58 @@
+﻿@model TrolleyTracker.Models.RouteScheduleOverride
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>RouteScheduleOverride</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Route.ShortName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Route.ShortName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OverrideDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OverrideDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OverrideType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OverrideType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

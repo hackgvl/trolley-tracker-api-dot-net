@@ -16,42 +16,17 @@ namespace TrolleyTracker.Controllers
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
-        private List<string> daysOfWeek = new List<string> { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-
-
         // GET: RouteSchedules
         public ActionResult Index()
         {
             //var routeSchedules = db.RouteSchedules.Include(r => r.Route);
-            var routeSchedules = from rs in db.RouteSchedules.Include(rs => rs.Route)
-                            orderby rs.DayOfWeek, rs.StartTime ascending
-                            select rs;
 
-            ViewBag.DaysOfWeek = daysOfWeek;
+            ViewBag.DaysOfWeek = BuildScheduleView.daysOfWeek;
 
             ViewBag.ServerTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow).ToString("MM-dd-yyyy HH:mm:ss");
 
             ViewBag.CssFile = Url.Content("~/Content/RouteScheduleSummary.css");
-            var vm = new RouteScheduleViewModel();
-            vm.RouteSchedules =  (System.Data.Entity.Infrastructure.DbQuery<RouteSchedule>) routeSchedules;
-            vm.Options = new MvcScheduleGeneralOptions
-            {
-                Layout = LayoutEnum.Horizontal,
-                SeparateDateHeader = false,
-                FullTimeScale = true,
-                TimeScaleInterval = 60,
-                StartOfTimeScale = new TimeSpan(6, 0, 0),
-                EndOfTimeScale = new TimeSpan(23, 59, 59),
-                IncludeEndValue = false,
-                ShowValueMarks = true,
-                ItemCss = "normal",
-                AlternatingItemCss = "normal2",
-                RangeHeaderCss = "heading",
-                TitleCss = "heading",
-                AutoSortTitles = false,
-                BackgroundCss = "empty"
-            };
-            return View(vm);
+            return View(BuildScheduleView.ConfigureScheduleView(db, false));
 
 
 
@@ -68,7 +43,7 @@ namespace TrolleyTracker.Controllers
             }
             RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
 
-            ViewBag.StrWeekday = daysOfWeek[routeSchedule.DayOfWeek];
+            ViewBag.StrWeekday = BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek];
 
             if (routeSchedule == null)
             {
@@ -81,7 +56,8 @@ namespace TrolleyTracker.Controllers
         [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName");
+            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName");
 
             ViewBag.DayOfWeek = GetWeekDaySelectorFor(4);
 
@@ -136,7 +112,8 @@ namespace TrolleyTracker.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeSchedule.RouteID);
+            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName", routeSchedule.RouteID);
             ViewBag.DayOfWeek = GetWeekDaySelectorFor(routeSchedule.DayOfWeek);
             return View(routeSchedule);
         }
@@ -174,7 +151,7 @@ namespace TrolleyTracker.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.StrWeekday = daysOfWeek[routeSchedule.DayOfWeek];
+            ViewBag.StrWeekday = BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek];
 
             return View(routeSchedule);
         }
@@ -203,19 +180,19 @@ namespace TrolleyTracker.Controllers
 
         private SelectList GetWeekDaySelectorFor(int dayOfWeek)
         {
-                    return new SelectList(new[]
-                                          {
-                                              new{DayOfWeek="0",Name="Sunday"},
-                                              new{DayOfWeek="1",Name="Monday"},
-                                              new{DayOfWeek="2",Name="Tuesday"},
-                                              new{DayOfWeek="3",Name="Wednesday"},
-                                              new{DayOfWeek="4",Name="Thursday"},
-                                              new{DayOfWeek="5",Name="Friday"},
-                                              new{DayOfWeek="6",Name="Saturday"},
-                                          },
-                            "DayOfWeek", "Name", dayOfWeek);
+            return new SelectList(new[]
+                                  {
+                                        new{DayOfWeek="0",Name="Sunday"},
+                                        new{DayOfWeek="1",Name="Monday"},
+                                        new{DayOfWeek="2",Name="Tuesday"},
+                                        new{DayOfWeek="3",Name="Wednesday"},
+                                        new{DayOfWeek="4",Name="Thursday"},
+                                        new{DayOfWeek="5",Name="Friday"},
+                                        new{DayOfWeek="6",Name="Saturday"},
+            },
+            "DayOfWeek", "Name", dayOfWeek);
 
 
+        }
     }
-}
 }

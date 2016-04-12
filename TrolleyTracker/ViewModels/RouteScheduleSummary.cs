@@ -18,10 +18,31 @@ namespace TrolleyTracker.ViewModels
         {
             this.ID = routeSchedule.ID;
             this.RouteID = routeSchedule.RouteID;
-            this.DayOfWeek = daysOfWeek[routeSchedule.DayOfWeek];
+            this.DayOfWeek = daysOfWeek[routeSchedule.DayOfWeek % 7];
             this.StartTime = routeSchedule.StartTime.ToShortTimeString();
             this.EndTime = routeSchedule.EndTime.ToShortTimeString();
             this.RouteLongName = routeSchedule.Route.LongName;
+            this.RouteShortName = routeSchedule.Route.ShortName;
+        }
+
+        public RouteScheduleSummary(RouteScheduleOverride routeScheduleOverride)
+        {
+            this.ID = routeScheduleOverride.ID;
+            if (routeScheduleOverride.NewRouteID.HasValue)
+            {
+                this.RouteID = (int)routeScheduleOverride.NewRouteID;
+                this.RouteLongName = routeScheduleOverride.NewRoute.LongName;
+                this.RouteShortName = routeScheduleOverride.NewRoute.ShortName;
+            }
+            else
+            {
+                this.RouteID = (int)routeScheduleOverride.OverriddenRouteID;
+                this.RouteLongName = routeScheduleOverride.OverriddenRoute.LongName;
+                this.RouteShortName = routeScheduleOverride.OverriddenRoute.ShortName;
+            }
+            this.DayOfWeek = daysOfWeek[(int)routeScheduleOverride.OverrideDate.DayOfWeek];
+            this.StartTime = routeScheduleOverride.StartTime.ToShortTimeString();
+            this.EndTime = routeScheduleOverride.EndTime.ToShortTimeString();
         }
 
         [DataMember]
@@ -36,5 +57,6 @@ namespace TrolleyTracker.ViewModels
         public string EndTime { get; set; }
         [DataMember]
         public string RouteLongName { get; set; }
+        public string RouteShortName { get; set; }
     }
 }

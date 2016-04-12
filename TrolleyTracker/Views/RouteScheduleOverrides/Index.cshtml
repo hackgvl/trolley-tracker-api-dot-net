@@ -1,0 +1,100 @@
+﻿@*@model IEnumerable<TrolleyTracker.Models.RouteScheduleOverride>*@
+
+@model TrolleyTracker.ViewModels.RouteScheduleViewModel
+
+@using MvcSchedule;
+@using MvcSchedule.Objects;
+
+<link href="@ViewBag.CssFile" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Route Schedule Overrides";
+}
+
+<h2>@Html.ActionLink("Fixed Schedule", "Index", "RouteSchedules")</h2>
+
+<p>
+    @Html.ScheduleGeneralFor(Model.RouteSchedules,
+                             m => m.StartTime,
+                             m => m.EndTime,
+                             m => Model.DaysOfWeek[m.DayOfWeek],
+                             m => m.Route.ShortName,
+                             Model.Options,
+                             t => ((DateTime)t).ToString("hh:mm"),
+                            s => s.ToString(),
+                            d => d.ToString("dd/MM"))
+
+</p>
+<h2>Effective Schedule - Next 2 Weeks</h2>
+
+<p>
+    @Html.ScheduleGeneralFor(Model.EffectiveRouteSchedules,
+                             m => DateTime.Parse(m.StartTime),
+                             m => DateTime.Parse(m.EndTime),
+                             m => m.DayOfWeek,
+                             m => m.RouteShortName,
+                             Model.Options,
+                             t => ((DateTime)t).ToString("hh:mm"),
+                            s => s.ToString(),
+                            d => d.ToString("dd/MM"))
+
+</p>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @*@Html.DisplayNameFor(model => model.RouteScheduleOverrides.Route.ShortName)*@
+            Route Name
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.OverrideDate)*@
+            Override Date
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.StartTime)*@
+            Start Time
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.EndTime)*@
+            End Time
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.OverrideType)*@
+            Override Type
+        </th>
+        <th>
+            Applies to
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.RouteScheduleOverrides) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.NewRoute.ShortName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OverrideDate, "FormatDateOnly")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartTime, "FormatDateTimeOnly")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndTime, "FormatDateTimeOnly")
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OverrideType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OverriddenRoute.ShortName)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

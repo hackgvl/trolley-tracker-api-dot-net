@@ -8,8 +8,11 @@ namespace TrolleyTracker
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            //BundleTable.EnableOptimizations = true; // To enable bundling in debug mode
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                        "~/Scripts/jquery-{version}.js",
+                        "~/Scripts/jquery-ui*"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
@@ -19,12 +22,21 @@ namespace TrolleyTracker
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
+//            bundles.Add(new ScriptBundle("~/bundles/moment").Include(
+//                        "~/Scripts/moment.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                      "~/Scripts/moment.js",
                       "~/Scripts/bootstrap.js",
+                      "~/Scripts/bootstrap-datetimepicker.js",
+                      "~/Scripts/DatePickerReady.js",
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
+                      "~/Content/bootstrap-theme.css",
+                      "~/Content/themes/base/datepicker.css",
+                      "~/Content/bootstrap-datetimepicker.css",
                       "~/Content/site.css"));
         }
     }

@@ -19,9 +19,21 @@ namespace TrolleyTracker.Controllers.WebAPI
         // GET: api/RouteSchedules
         public List<RouteScheduleSummary> Get()
         {
-            var routeSchedules = from rs in db.RouteSchedules.Include(rs => rs.Route)
-                                 orderby rs.DayOfWeek, rs.StartTime ascending
-                                 select rs;
+            var currentDateTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+
+            var fixedRouteSchedules = (from route in db.Routes
+                                             from routeSchedule in db.RouteSchedules
+                                             orderby routeSchedule.StartTime
+                                             where (routeSchedule.RouteID == route.ID) 
+                                             select routeSchedule).ToList<RouteSchedule>();
+
+            var today = currentDateTime.Date;
+            var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides
+                                             orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
+                                             select rso).ToList<RouteScheduleOverride>();
+
+            var routeSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 7, fixedRouteSchedules, routeScheduleOverrideList);
+
             var schedules = new List<RouteScheduleSummary>();
             foreach(var routeSchedule in routeSchedules)
             {

@@ -20,6 +20,7 @@
         public virtual DbSet<Stop> Stops { get; set; }
         public virtual DbSet<Trolley> Trolleys { get; set; }
         public virtual DbSet<RouteSchedule> RouteSchedules { get; set; }
+        public virtual DbSet<RouteScheduleOverride> RouteScheduleOverrides { get; set; }
 
         public System.Data.Entity.DbSet<TrolleyTracker.ViewModels.RunningTrolley> RunningTrolleys { get; set; }
     }

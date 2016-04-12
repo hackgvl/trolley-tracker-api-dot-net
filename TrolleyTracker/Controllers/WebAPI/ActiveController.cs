@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using TrolleyTracker.ViewModels;
 using TrolleyTracker.Models;
+using System.Data.Entity;
 
 namespace TrolleyTracker.Controllers.WebAPI
 {
@@ -26,12 +27,22 @@ namespace TrolleyTracker.Controllers.WebAPI
 
             // Note: ToList() to avoid "There is already an open DataReader associated with this Command which must be closed first." exception,
             // even though MultipleActiveResultSets is already true in the connection string.
-            var todaysRouteSchedules = (from route in db.Routes
+            var todaysFixedRouteSchedules = (from route in db.Routes
                                 from routeSchedule in db.RouteSchedules
                                 orderby routeSchedule.StartTime
                                 where (routeSchedule.RouteID == route.ID) && (routeSchedule.DayOfWeek == weekday)
                                 select routeSchedule).ToList<RouteSchedule>();
 
+            var today = currentDateTime.Date;
+            var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides
+                                             orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
+                                             where rso.OverrideDate == today
+                                             select rso).ToList<RouteScheduleOverride>();
+
+
+            var todaysRouteSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 1, todaysFixedRouteSchedules, routeScheduleOverrideList);
+
+            // Get today's effective routes
             // Return active routes 5 minutes early so that progress from garage to starting point
             // is shown, also if trolley is a few minutes early.
 

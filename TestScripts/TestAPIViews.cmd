@@ -10,8 +10,12 @@ Echo Single Trolley Location
 curl http://%Server%/api/v1/Trolleys/5/Location
 pause
 Echo .
-Echo All running trollies and locations
+Echo CLIENT - All running trollies and locations
 curl http://%Server%/api/v1/Trolleys/Running
+pause
+Echo .
+Echo DEBUG - All running trollies and locations
+curl http://%Server%/api/v1/Trolleys/Running?debug=true
 pause
 Echo .
 Echo List of routes

@@ -43,7 +43,8 @@
             </a>
             <ul class="dropdown-menu">
                 <li>@Html.ActionLink("Routes", "Index", "Routes")</li>
-                <li>@Html.ActionLink("Route Schedules", "Index", "RouteSchedules")</li>
+                <li>@Html.ActionLink("Fixed Route Schedules", "Index", "RouteSchedules")</li>
+                <li>@Html.ActionLink("Special Route Schedules", "Index", "RouteScheduleOverrides")</li>
                 @if (User.IsInRole("Administrators"))
                 {
                     <li>@Html.ActionLink("Route Shape Upload", "Create", "BulkUploadShapes")</li>

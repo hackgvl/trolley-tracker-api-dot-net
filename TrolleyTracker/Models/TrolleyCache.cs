@@ -60,16 +60,16 @@ namespace TrolleyTracker.Models
 
         private static void CheckActiveRoutes()
         {
-            if ((DateTime.Now - lastRouteCheck).TotalMinutes < MinRouteCheckInterval)
+            var elapsedMinutes = (int)((DateTime.Now - lastRouteCheck).TotalMinutes);
+            if (elapsedMinutes < MinRouteCheckInterval)
             {
                 return;
             }
             // Check on :01, :16, :31 and :46...
-            if (DateTime.Now.Minute % 15 == 1)
+            if ((DateTime.Now.Minute % 15 == 1) || (elapsedMinutes > 30))
             {
-                SetRoutesActive();
-
                 lastRouteCheck = DateTime.Now;
+                SetRoutesActive();
             }
         }
 
