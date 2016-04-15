@@ -13,6 +13,7 @@ namespace TrolleyTracker.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(TrolleyTracker.Models.TrolleyTrackerContext context)
