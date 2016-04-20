@@ -405,7 +405,6 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
-    <None Include="Properties\PublishProfiles\Publish to Azure.pubxml" />
     <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - Publish to Azure.pubxml" />
@@ -526,6 +525,7 @@
     <Content Include="Views\RouteScheduleOverrides\Edit.cshtml" />
     <Content Include="Views\RouteScheduleOverrides\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FormatDateOnly.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
