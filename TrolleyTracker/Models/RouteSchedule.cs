@@ -2,7 +2,7 @@ namespace TrolleyTracker.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
     public partial class RouteSchedule
     {
         public RouteSchedule()
@@ -41,7 +41,9 @@ namespace TrolleyTracker.Models
         public int ID { get; set; }
         public int RouteID { get; set; }
         public int DayOfWeek { get; set; }
+        [DataType(DataType.Time)]
         public System.DateTime StartTime { get; set; }
+        [DataType(DataType.Time)]
         public System.DateTime EndTime { get; set; }
     
         public virtual Route Route { get; set; }
