@@ -11,8 +11,10 @@ namespace TrolleyTracker.Controllers
     {
         public static DateTime LocalTimeFromUTC(DateTime utcTime)
         {
+            // For other time zones, obtain Windows Zone Id string from registry 
+            // using method at http://stackoverflow.com/questions/14149346/what-value-should-i-pass-into-timezoneinfo-findsystemtimezonebyidstring ,
             var myTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");  // For Greenville, SC
-            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, myTimeZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, myTimeZone);  // This step applies Daylight Saving Time, when applicable
         }
     }
 }
