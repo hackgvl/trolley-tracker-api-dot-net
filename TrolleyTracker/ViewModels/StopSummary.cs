@@ -21,7 +21,7 @@ namespace TrolleyTracker.ViewModels
             {
                 StopImageURL = System.Web.VirtualPathUtility.ToAbsolute("~/") + String.Format("Stops/Picture/{0}", stop.ID);
             }
-
+            LastTrolleyArrivalTime = new Dictionary<int, DateTime>();
         }
 
 
@@ -37,5 +37,7 @@ namespace TrolleyTracker.ViewModels
         public double Lon { get; set; }
         [DataMember]
         public string StopImageURL { get; set; }
+        [DataMember]
+        public Dictionary<int, DateTime> LastTrolleyArrivalTime { get; set; }
     }
 }

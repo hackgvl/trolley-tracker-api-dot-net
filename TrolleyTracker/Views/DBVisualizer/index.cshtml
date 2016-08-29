@@ -160,11 +160,11 @@ function init() {
 
 	map.setMaxBounds(bounds);
 
-	L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,' + 
-			"Tiles Courtesy of <a href='http://open.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>",
+    // Tile access key below is limited - for similar applications, apply for a developer key at http://www.mapbox.com
+    L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg', {
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
 		maxZoom: 18,
-		id: 'mapquest.streets'
+		id: 'mapbox.streets'
 	}).addTo(map);
 
 

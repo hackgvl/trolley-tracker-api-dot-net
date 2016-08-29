@@ -66,6 +66,7 @@ namespace TrolleyTracker.Controllers.WebAPI
             trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
             db.SaveChanges();
             TrolleyCache.UpdateTrolley(trolley);
+            StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
 
             return Ok(); // CreatedAtRoute("DefaultApi", new { id = trolley.ID }, trolley);
 

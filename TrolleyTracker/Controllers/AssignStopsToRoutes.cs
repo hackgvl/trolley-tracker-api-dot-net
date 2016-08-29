@@ -41,7 +41,7 @@ namespace TrolleyTracker.Controllers
                 for (int s=0; s< stops.Count; s++)
                 {
                     var stop = stops[s];
-                    var stopPosition = new Coordinate(0, stop.Lat, stop.Lon, null);
+                    var stopPosition = new Coordinate(stop.Lat, stop.Lon);
 
                     Coordinate closest = null;
                     var distance = FindDistanceToSegment(stopPosition, shapePoints[i], shapePoints[i - 1], out closest);
@@ -99,7 +99,7 @@ namespace TrolleyTracker.Controllers
             var shapePoints = new List<Coordinate>();
             foreach (var shape in shapes)
             {
-                var coord = new Coordinate(0, shape.Lat, shape.Lon, null);
+                var coord = new Coordinate(shape.Lat, shape.Lon);
                 shapePoints.Add(coord);
             }
 
@@ -191,24 +191,23 @@ namespace TrolleyTracker.Controllers
             // Calculate the t that minimizes the distance.
             double t = ((stopPosition.Lon - p1.Lon) * dx + (stopPosition.Lat - p1.Lat) * dy) / (dx * dx + dy * dy);
 
-            Dictionary<string, string> tagList = null;
             // See if this represents one of the segment's
             // end points or a point in the middle.
             if (t < 0)
             {
-                closest = new Coordinate(-1, p1.Lat, p1.Lon, tagList);
+                closest = new Coordinate(p1.Lat, p1.Lon);
                 dx = stopPosition.Lon - p1.Lon;
                 dy = stopPosition.Lat - p1.Lat;
             }
             else if (t > 1)
             {
-                closest = new Coordinate(-1, p2.Lat, p2.Lon, tagList);
+                closest = new Coordinate(p2.Lat, p2.Lon);
                 dx = stopPosition.Lon - p2.Lon;
                 dy = stopPosition.Lat - p2.Lat;
             }
             else
             {
-                closest = new Coordinate(-1, p1.Lat + t * dy, p1.Lon + t * dx, tagList);
+                closest = new Coordinate(p1.Lat + t * dy, p1.Lon + t * dx);
                 dx = stopPosition.Lon - closest.Lon;
                 dy = stopPosition.Lat - closest.Lat;
             }

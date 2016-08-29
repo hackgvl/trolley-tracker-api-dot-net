@@ -20,26 +20,26 @@ namespace TrolleyTracker.Controllers.WebAPI
         // GET: api/Stops
         public List<StopSummary> GetStops()
         {
-            var stops = db.Stops;
-            var stopList = new List<StopSummary>();
-            foreach(var stop in stops)
-            {
-                stopList.Add(new StopSummary(stop));
-            }
-            return stopList;
+            //var stops = db.Stops;
+            //var stopList = new List<StopSummary>();
+            //foreach(var stop in stops)
+            //{
+            //    stopList.Add(new StopSummary(stop));
+            //}
+            //return stopList;
+            return StopArrivalTime.StopSummaryListWithArrivalTimes;
         }
 
         // GET: api/Stops/5
         [ResponseType(typeof(StopSummary))]
         public IHttpActionResult GetStop(int id)
         {
-            Stop stop = db.Stops.Find(id);
-            if (stop == null)
+            var stopSummary = StopArrivalTime.GetStopSummaryWithArrivalTimes(id);
+            if (stopSummary == null)
             {
                 return NotFound();
             }
 
-            var stopSummary = new StopSummary(stop);
             return Ok(stopSummary);
         }
 

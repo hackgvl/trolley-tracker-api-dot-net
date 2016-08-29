@@ -82,7 +82,7 @@ namespace TrolleyTracker.Controllers
                                 var lon = Convert.ToDouble(strLon);
                                 var lat = Convert.ToDouble(strLat);
 
-                                var thisCoordinate = new Coordinate(0, lat, lon, null);
+                                var thisCoordinate = new Coordinate(lat, lon);
                                 double distance = 0.0;
                                 if (lastCoordinate != null)
                                 {

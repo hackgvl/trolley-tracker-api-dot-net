@@ -93,7 +93,7 @@ namespace TrolleyTracker.Controllers
             var shapeList = new List<Coordinate>();
             foreach(var point in routeShape)
             {
-                var coord = new Coordinate(-1, point.Lat, point.Lon, null);
+                var coord = new Coordinate(point.Lat, point.Lon);
                 shapeList.Add(coord);
             }
             string shapeJSON = new JavaScriptSerializer().Serialize(shapeList);

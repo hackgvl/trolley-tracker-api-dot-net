@@ -9,26 +9,19 @@ namespace TrolleyTracker.Controllers
     {
         public double Lat { get; set; }
         public double Lon { get; set; }
-        public Int64 NodeID { get; set; }
-        public Dictionary<string, string> TagList { get; set; }
-
         public int StopID { get; set; }
 
-        public Coordinate(Int64 nodeID, double lat, double lon, Dictionary<string, string> tagList)
+        public Coordinate(double lat, double lon)
         {
             StopID = -1; // Unassigned
-            NodeID = nodeID;
             Lat = lat;
             Lon = lon;
-            TagList = tagList;
         }
-        public Coordinate(Int64 nodeID, string lat, string lon, Dictionary<string, string> tagList)
+        public Coordinate(string lat, string lon)
         {
             StopID = -1; // Unassigned
-            NodeID = nodeID;
             Lat = Convert.ToDouble(lat);
             Lon = Convert.ToDouble(lon);
-            TagList = tagList;
         }
 
         public double DegreeToRadians(double degrees)

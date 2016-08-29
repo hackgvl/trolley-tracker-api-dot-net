@@ -13,6 +13,7 @@ namespace TrolleyTracker
             // Web API configuration and services
 
             TrolleyTracker.Models.TrolleyCache.Initialize();
+            TrolleyTracker.Models.StopArrivalTime.Initialize();
 
             // Web API routes
             config.MapHttpAttributeRoutes();

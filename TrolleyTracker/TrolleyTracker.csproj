@@ -245,6 +245,7 @@
     <Compile Include="Models\RouteStop.cs" />
     <Compile Include="Models\Shape.cs" />
     <Compile Include="Models\Stop.cs" />
+    <Compile Include="Models\StopArrivalTime.cs" />
     <Compile Include="Models\Trolley.cs" />
     <Compile Include="Models\TrolleyCache.cs" />
     <Compile Include="Models\TrolleyTrackerContext.cs" />
