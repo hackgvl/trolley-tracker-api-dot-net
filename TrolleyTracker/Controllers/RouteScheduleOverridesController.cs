@@ -142,7 +142,7 @@ namespace TrolleyTracker.Controllers
 
         private void PurgeOldOverrides()
         {
-            var purgeDate = DateTime.Now.AddDays(-14);
+            var purgeDate = DateTime.Now.AddDays(-7);
             var oldRouteScheduleOverrides = from rso in db.RouteScheduleOverrides
                                             where rso.OverrideDate < purgeDate
                                             select rso;
