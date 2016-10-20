@@ -196,10 +196,10 @@ namespace TrolleyTracker.Controllers
                     (specialSchedule.OverriddenRouteID == routeSchedule.RouteID) )
                 {
                     // This route is targeted
-                    if (routeSchedule.StartTime.TimeOfDay == specialSchedule.StartTime.TimeOfDay &&
-                        routeSchedule.EndTime.TimeOfDay == specialSchedule.EndTime.TimeOfDay)
+                    if (routeSchedule.StartTime.TimeOfDay >= specialSchedule.StartTime.TimeOfDay &&
+                        routeSchedule.EndTime.TimeOfDay <= specialSchedule.EndTime.TimeOfDay)
                     {
-                        // Exact overlap - replace with new / cancel all
+                        // Exact overlap or completely contained - replace with new / cancel all
                         keepFixedRoute = false;
                     } else
                     {
