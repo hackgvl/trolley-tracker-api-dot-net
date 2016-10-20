@@ -59,7 +59,16 @@ namespace TrolleyTracker.Controllers.WebAPI
 
             foreach (var stop in stops)
             {
-                routeDetail.Stops.Add(new StopSummary(stop));
+                // Use arrival times if available
+                var stopWithArrivalTime = StopArrivalTime.GetStopSummaryWithArrivalTimes(stop.ID);
+                if (stopWithArrivalTime != null)
+                {
+                    routeDetail.Stops.Add(stopWithArrivalTime);
+                }
+                else
+                {
+                    routeDetail.Stops.Add(new StopSummary(stop));
+                }
             }
 
             var shapes = from shape in db.Shapes
