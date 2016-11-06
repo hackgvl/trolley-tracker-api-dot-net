@@ -17,6 +17,7 @@ namespace TrolleyTracker.Controllers.WebAPI
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
+        private Dictionary<int, DateTime> lastTrolleyWriteTime = new Dictionary<int, DateTime>();
 
 
         // GET: api/Trolleys/5/Location
@@ -64,7 +65,17 @@ namespace TrolleyTracker.Controllers.WebAPI
             trolley.CurrentLat = locationUpdate.Lat;
             trolley.CurrentLon = locationUpdate.Lon;
             trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
-            db.SaveChanges();
+            if (lastTrolleyWriteTime.ContainsKey(trolley.Number))
+            {
+                if ((DateTime.Now - lastTrolleyWriteTime[trolley.Number]).TotalSeconds > 30.0)
+                {
+                    db.SaveChanges();
+                    lastTrolleyWriteTime[trolley.Number] = DateTime.Now;
+                }
+            } else
+            {
+                lastTrolleyWriteTime.Add(trolley.Number, DateTime.Now);
+            }
             TrolleyCache.UpdateTrolley(trolley);
             StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
 
