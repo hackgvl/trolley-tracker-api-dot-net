@@ -406,6 +406,7 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
+    <Content Include="Content\leaflet\leaflet-src.map" />
     <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - Publish to Azure.pubxml" />

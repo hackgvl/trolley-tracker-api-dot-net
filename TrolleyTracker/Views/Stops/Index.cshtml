@@ -1,4 +1,5 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 
 <head>
     <title>Trolley Tracker Stops</title>
@@ -179,6 +180,9 @@
 
             map.setMaxBounds(bounds);
 
+            //First, specify your Mapbox API access token
+            L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg";
+
             // Tile access key below is limited - for similar applications, apply for a developer key at http://www.mapbox.com
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg', {
                 attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -195,6 +199,7 @@
                 popup.openOn(map);
                 //CreateStopAt(event.latlng);
             });
+
             </text>
             }
 
