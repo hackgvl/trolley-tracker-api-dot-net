@@ -178,14 +178,16 @@ namespace TrolleyTracker.Controllers
 
 
         /// <summary>
-        /// Based on the possible overlap of the special schedule, the result could be 0, 1, 2, or 3 new schedule time slots.
+        /// Based on the possible overlap of the special schedule, the result could be 0, 1, 2, or 3 or more new schedule time slots.
         /// </summary>
-        /// <param name="routeSchedule"></param>
+        /// <param name="originalRouteSchedule"></param>
         /// <param name="specialSchedules"></param>
-        /// <param name="dayLabel"></param>
         /// <returns></returns>
-        private static List<RouteSchedule> ModifyRouteScheduleForOverlap(RouteSchedule routeSchedule, IEnumerable<RouteScheduleOverride> specialSchedules)
+        public static List<RouteSchedule> ModifyRouteScheduleForOverlap(RouteSchedule originalRouteSchedule, IEnumerable<RouteScheduleOverride> specialSchedules)
         {
+
+            RouteSchedule routeSchedule = new RouteSchedule(originalRouteSchedule);  // Schedule might be modified in this procedure
+
             var schedules = new List<RouteSchedule>();
 
             bool keepFixedRoute = true;
@@ -214,15 +216,21 @@ namespace TrolleyTracker.Controllers
                                 var newSchedule = new RouteSchedule(routeSchedule);
                                 newSchedule.EndTime = specialSchedule.StartTime;
                                 schedules.Add(newSchedule);
-                                keepFixedRoute = false;
-                            }
-                            if (routeSchedule.EndTime.TimeOfDay > specialSchedule.EndTime.TimeOfDay)
+                                // See if fixed schedule extends beyond end of special schedule (may be further modified by another special schedule later)
+                                if (routeSchedule.EndTime.TimeOfDay <= specialSchedule.EndTime.TimeOfDay)
+                                {
+                                    keepFixedRoute = false;  // Completely replaced /removed
+                                } else
+                                {
+                                    routeSchedule.StartTime = specialSchedule.EndTime;
+                                }
+
+
+                            } else if (routeSchedule.EndTime.TimeOfDay > specialSchedule.EndTime.TimeOfDay)
                             {
                                 // End part of orignal schedule is to be retained
-                                var newSchedule = new RouteSchedule(routeSchedule);
-                                newSchedule.StartTime = specialSchedule.EndTime;
-                                schedules.Add(newSchedule);
-                                keepFixedRoute = false;
+                                routeSchedule.StartTime = specialSchedule.EndTime;
+
                             }
                             // Check for beginning or end aligned with special case
                             if ( (routeSchedule.StartTime == specialSchedule.StartTime) ||
