@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -14,6 +15,8 @@ namespace TrolleyTracker.Controllers
     public class TrolleysController : Controller
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //// GET: Trolleys
         //public ActionResult Index()
@@ -64,6 +67,9 @@ namespace TrolleyTracker.Controllers
             {
                 db.Trolleys.Add(trolley);
                 db.SaveChanges();
+
+                logger.Info($"Created trolley # {trolley.Number} '{trolley.TrolleyName}'");
+
                 TrolleyCache.UpdateTrolley(trolley);
                 return RedirectToAction("Index");
             }
@@ -101,6 +107,8 @@ namespace TrolleyTracker.Controllers
             {
                 db.Entry(trolley).State = EntityState.Modified;
                 db.SaveChanges();
+                logger.Info($"Updated trolley # {trolley.Number} '{trolley.TrolleyName}'");
+
                 return RedirectToAction("Index");
             }
             return View(trolley);
@@ -129,6 +137,10 @@ namespace TrolleyTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Trolley trolley = db.Trolleys.Find(id);
+
+            logger.Info($"Deleted trolley # {trolley.Number} '{trolley.TrolleyName}'");
+
+
             db.Trolleys.Remove(trolley);
             db.SaveChanges();
             return RedirectToAction("Index");

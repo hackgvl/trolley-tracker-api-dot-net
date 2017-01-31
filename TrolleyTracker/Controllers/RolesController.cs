@@ -5,12 +5,15 @@ using System.Web;
 using System.Web.Mvc;
 using TrolleyTracker.Models;
 using Microsoft.AspNet.Identity;
+using NLog;
 
 namespace TrolleyTracker.Controllers
 {
     public class RolesController : Controller
     {
         ApplicationDbContext context = new ApplicationDbContext();
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //
         // GET: /Roles/
@@ -44,6 +47,9 @@ namespace TrolleyTracker.Controllers
                 });
                 context.SaveChanges();
                 ViewBag.ResultMessage = "Role created successfully !";
+
+                logger.Info($"Created Role '{roleName}'");
+
                 return RedirectToAction("Index");
             }
             catch
@@ -74,6 +80,8 @@ namespace TrolleyTracker.Controllers
                 context.Entry(role).State = System.Data.Entity.EntityState.Modified;
                 context.SaveChanges();
 
+                logger.Info($"Changed Role '{role.Name}'");
+
                 return RedirectToAction("Index");
             }
             catch
@@ -88,6 +96,7 @@ namespace TrolleyTracker.Controllers
         public ActionResult Delete(string RoleName)
         {
             var thisRole = context.Roles.Where(r => r.Name.Equals(RoleName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            logger.Info($"Deleted Role '{thisRole.Name}'");
             context.Roles.Remove(thisRole);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -114,6 +123,7 @@ namespace TrolleyTracker.Controllers
             var account = new AccountController();
             account.UserManager.AddToRole(user.Id, RoleName);
 
+            logger.Info($"Added user {UserName} to role {RoleName}");
             ViewBag.ResultMessage = "Role created successfully !";
 
             // prepopulat roles for the view dropdown
@@ -166,6 +176,9 @@ namespace TrolleyTracker.Controllers
             {
                 account.UserManager.RemoveFromRole(user.Id, RoleName);
                 ViewBag.ResultMessage = "Role removed from this user successfully !";
+
+                logger.Info($"Removed user {UserName} from role {RoleName}");
+
             }
             else
             {

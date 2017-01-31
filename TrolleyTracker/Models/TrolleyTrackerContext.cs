@@ -23,5 +23,8 @@
         public virtual DbSet<RouteScheduleOverride> RouteScheduleOverrides { get; set; }
 
         public System.Data.Entity.DbSet<TrolleyTracker.ViewModels.RunningTrolley> RunningTrolleys { get; set; }
+
+        // NLog writes to this table with direct SQL
+        public virtual DbSet<Log> Logs { get; set; }
     }
 }

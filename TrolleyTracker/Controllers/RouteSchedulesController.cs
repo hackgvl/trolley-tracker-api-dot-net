@@ -9,12 +9,15 @@ using System.Web.Mvc;
 using TrolleyTracker.Models;
 using TrolleyTracker.ViewModels;
 using MvcSchedule.Objects;
+using NLog;
 
 namespace TrolleyTracker.Controllers
 {
     public class RouteSchedulesController : Controller
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: RouteSchedules
         public ActionResult Index()
@@ -79,6 +82,10 @@ namespace TrolleyTracker.Controllers
                 routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
                 db.RouteSchedules.Add(routeSchedule);
                 db.SaveChanges();
+
+                routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+                logger.Info($"Created fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
+
                 return RedirectToAction("Index");
             }
 
@@ -132,6 +139,10 @@ namespace TrolleyTracker.Controllers
                 routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
                 db.Entry(routeSchedule).State = EntityState.Modified;
                 db.SaveChanges();
+
+                routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+                logger.Info($"Updated fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
+
                 return RedirectToAction("Index");
             }
             ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeSchedule.RouteID);
@@ -163,6 +174,8 @@ namespace TrolleyTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
+            routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+            logger.Info($"Deleted fixed route schedule '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
             db.RouteSchedules.Remove(routeSchedule);
             db.SaveChanges();
             return RedirectToAction("Index");

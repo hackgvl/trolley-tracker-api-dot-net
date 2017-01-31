@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -13,6 +14,8 @@ namespace TrolleyTracker.Controllers
     public class RouteScheduleOverridesController : Controller
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: RouteScheduleOverrides
         public ActionResult Index()
@@ -132,6 +135,9 @@ namespace TrolleyTracker.Controllers
                 db.RouteScheduleOverrides.Add(routeScheduleOverride);
                 db.SaveChanges();
                 PurgeOldOverrides();
+
+                logger.Info($"Created special schedule ID #{routeScheduleOverride.ID} type '{routeScheduleOverride.OverrideType.ToString()}' at '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
+
                 return RedirectToAction("Index");
             }
 
@@ -143,12 +149,18 @@ namespace TrolleyTracker.Controllers
         private void PurgeOldOverrides()
         {
             var purgeDate = DateTime.Now.AddDays(-7);
-            var oldRouteScheduleOverrides = from rso in db.RouteScheduleOverrides
+            var oldRouteScheduleOverrides = (from rso in db.RouteScheduleOverrides
                                             where rso.OverrideDate < purgeDate
-                                            select rso;
+                                            select rso).ToList<RouteScheduleOverride>();
 
-            oldRouteScheduleOverrides.ToList().ForEach(rso => db.RouteScheduleOverrides.Remove(rso));
+            oldRouteScheduleOverrides.ForEach(rso => db.RouteScheduleOverrides.Remove(rso));
             db.SaveChanges();
+
+            int nPurged = oldRouteScheduleOverrides.Count<RouteScheduleOverride>();
+            if (nPurged > 0)
+            {
+                logger.Info($"Purged {nPurged} special schedules");
+            }
 
         }
 
@@ -211,6 +223,9 @@ namespace TrolleyTracker.Controllers
                 routeScheduleOverride.EndTime = ExtractTimeValue(routeScheduleOverride.EndTime);
                 db.Entry(routeScheduleOverride).State = EntityState.Modified;
                 db.SaveChanges();
+
+                logger.Info($"Edited special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
+
                 return RedirectToAction("Index");
             }
             ViewBag.NewRouteID = new SelectList(RouteSelectList(""), "ID", "ShortName", routeScheduleOverride.NewRouteID);

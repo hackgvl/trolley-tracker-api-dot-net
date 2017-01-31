@@ -8,6 +8,7 @@ using System.IO;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using TrolleyTracker.Models;
+using NLog;
 
 namespace TrolleyTracker.Controllers
 {
@@ -15,10 +16,16 @@ namespace TrolleyTracker.Controllers
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         // GET: Routes
         public ActionResult Index()
         {
-            return View(db.Routes.ToList());
+            var routes = from r in db.Routes
+                        orderby r.ShortName
+                        select r;
+
+            return View(routes.ToList());
         }
 
         // GET: Routes/Details/5
@@ -55,6 +62,9 @@ namespace TrolleyTracker.Controllers
             {
                 db.Routes.Add(route);
                 db.SaveChanges();
+
+                logger.Info($"Created route '{route.ShortName}' ({route.Description})");
+
                 return RedirectToAction("Index");
             }
 
@@ -131,6 +141,7 @@ namespace TrolleyTracker.Controllers
             {
                 db.Entry(route).State = EntityState.Modified;
                 db.SaveChanges();
+                logger.Info($"Updated route '{route.ShortName}' ({route.Description})");
                 return RedirectToAction("Index");
             }
             return View(route);
@@ -159,6 +170,7 @@ namespace TrolleyTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Route route = db.Routes.Find(id);
+            logger.Info($"Deleted route '{route.ShortName}' ({route.Description})");
             db.Routes.Remove(route);
             db.SaveChanges();
             return RedirectToAction("Index");

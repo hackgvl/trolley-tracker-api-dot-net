@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace TrolleyTracker.Controllers
     public class BulkUploadShapesController : Controller
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: BulkUploadShapes
         public ActionResult Index()
@@ -106,6 +109,9 @@ namespace TrolleyTracker.Controllers
 
                         var assignStops = new AssignStopsToRoutes();
                         assignStops.UpdateStopsForRoute(db, routeID);
+
+                        var route = db.Routes.Find(routeID);
+                        logger.Info($"Modified route shape of '{route.Description}' - '{route.LongName}'");
                     }
 
                 }

@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using TrolleyTracker.Models;
 using TrolleyTracker.ViewModels;
 using System.Drawing;
+using NLog;
 
 namespace TrolleyTracker.Controllers
 {
@@ -17,12 +18,20 @@ namespace TrolleyTracker.Controllers
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+
         // GET: Stops
         public ActionResult Index()
         {
             //return PartialView(db.Stops.ToList());
             var stopsView = new List<StopSummary>();
-            foreach(var stop in db.Stops)
+
+            var stops = from s in db.Stops
+                           orderby s.Name
+                           select s;
+
+            foreach (var stop in stops)
             {
                 stopsView.Add(new StopSummary(stop));
             }
@@ -37,7 +46,11 @@ namespace TrolleyTracker.Controllers
         // GET: Stops/List
         public ActionResult List()
         {
-            return View(db.Stops.ToList());
+            var stops = from s in db.Stops
+                        orderby s.Name
+                        select s;
+
+            return View(stops.ToList());
         }
 
         // GET: Stops/Details/5
@@ -109,6 +122,7 @@ namespace TrolleyTracker.Controllers
 
                 db.Stops.Add(stop);
                 db.SaveChanges();
+                logger.Info($"Created stop '{stop.Name}' - '{stop.Description}' at {stop.Lat}, {stop.Lon}");
                 return RedirectToAction("Index");
             }
 
@@ -152,6 +166,9 @@ namespace TrolleyTracker.Controllers
                 }
                 db.Stops.Add(stop);
                 db.SaveChanges();
+
+                logger.Info($"Created stop '{stop.Name}' - '{stop.Description}' at {stop.Lat}, {stop.Lon}" );
+
                 return RedirectToAction("Index");
             }
 
@@ -205,6 +222,9 @@ namespace TrolleyTracker.Controllers
                 //db.Entry(stop).State = EntityState.Modified;
 
                 db.SaveChanges();
+
+                logger.Info($"Updated stop '{newStop.Name}' - '{newStop.Description}' at {newStop.Lat}, {newStop.Lon}");
+
                 return RedirectToAction("Index");
             }
             return View(stop);
@@ -233,6 +253,9 @@ namespace TrolleyTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Stop stop = db.Stops.Find(id);
+
+            logger.Info($"Deleted stop '{stop.Name}' - '{stop.Description}'");
+
             db.Stops.Remove(stop);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -248,6 +271,7 @@ namespace TrolleyTracker.Controllers
             stop.Lat = Lat;
             stop.Lon = Lon;
             db.SaveChanges();
+            logger.Info($"Updated stop position '{stop.Name}' - '{stop.Description}' at {stop.Lat}, {stop.Lon}");
             return RedirectToAction("Index");
         }
 

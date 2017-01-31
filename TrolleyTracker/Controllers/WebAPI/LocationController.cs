@@ -17,7 +17,7 @@ namespace TrolleyTracker.Controllers.WebAPI
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
-        private Dictionary<int, DateTime> lastTrolleyWriteTime = new Dictionary<int, DateTime>();
+        private static Dictionary<int, DateTime> lastTrolleyWriteTime = new Dictionary<int, DateTime>();
 
 
         // GET: api/Trolleys/5/Location
