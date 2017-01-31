@@ -118,8 +118,12 @@ namespace TrolleyTracker.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ViewBag.Message = "Shape save exception";
+
+                logger.Error(ex, "Exception saving route shape");
+                ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName");
                 return View();
             }
         }
