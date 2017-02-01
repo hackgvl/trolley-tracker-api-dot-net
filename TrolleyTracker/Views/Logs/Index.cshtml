@@ -1,0 +1,102 @@
+﻿@model IEnumerable<TrolleyTracker.Models.Log>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<style type="text/css">
+.messageColumn {
+    width: 40%; 
+}
+    </style>
+
+<h2>Logs - newest first</h2>
+
+<p>
+    @if (ViewBag.totalPageCount != null)
+    {
+        for (int i = 0; i < ViewBag.totalPageCount; i++)
+        {
+            int displayPage = i + 1;
+
+            <ul class="pagination">
+                <li>@Html.ActionLink(@displayPage.ToString(), "Index", "Logs", new { pageIndex = @i }, null)</li>
+            </ul>
+        }
+    }
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Logged)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Level)
+        </th>
+        <th class="messageColumn">
+            @Html.DisplayNameFor(model => model.Message)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Username)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RemoteAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Callsite)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Exception)
+        </th>
+       <!-- <th></th> -->
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Logged)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Level)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Message)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Username)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RemoteAddress)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Callsite)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Exception)
+        </td>
+        <!--
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+            -->
+    </tr>
+}
+
+</table>
+
+<p>
+    @if (ViewBag.totalPageCount != null)
+    {
+        for (int i = 0; i < ViewBag.totalPageCount; i++)
+        {
+            int displayPage = i + 1;
+
+            <ul class="pagination">
+                <li>@Html.ActionLink(@displayPage.ToString(), "Index", "Logs", new { pageIndex = @i }, null)</li>
+            </ul>
+        }
+    }
+</p>

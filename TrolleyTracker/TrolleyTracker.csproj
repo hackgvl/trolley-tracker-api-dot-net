@@ -210,6 +210,7 @@
     <Compile Include="Controllers\DBVisualizerController.cs" />
     <Compile Include="Controllers\DynamicJSON.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LogsController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\RouteScheduleOverridesController.cs" />
@@ -437,7 +438,7 @@
     <Content Include="Scripts\jquery-2.2.1.min.js" />
     <Content Include="Scripts\jquery-2.2.1.min.map" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\yeahthattrolley - Publish to Azure.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
@@ -548,6 +549,11 @@
     <Content Include="Views\RouteScheduleOverrides\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FormatDateOnly.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
+    <Content Include="Views\Logs\Create.cshtml" />
+    <Content Include="Views\Logs\Delete.cshtml" />
+    <Content Include="Views\Logs\Details.cshtml" />
+    <Content Include="Views\Logs\Edit.cshtml" />
+    <Content Include="Views\Logs\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
