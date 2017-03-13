@@ -1,445 +1,526 @@
 ﻿<html>
-	
+
 <head>
-	<title>Trolley Tracker Database view</title>
-	<meta charset="utf-8" />
-	<META NAME="Keywords" CONTENT="Trolley,Trolley Tracker,Greenville SC">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="~/Content/leaflet/leaflet.css" />
+    <title>Trolley Tracker Database view</title>
+    <meta charset="utf-8" />
+    <META NAME="Keywords" CONTENT="Trolley,Trolley Tracker,Greenville SC">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/Content/leaflet/leaflet.css" />
 
-	<script src="~/Content/leaflet/leaflet.js"></script>
-	<script src="~/Content/leaflet/Leaflet.MakiMarkers.js"></script>
-	<script src="~/Content/json2.js"></script>
+    <script src="~/Content/leaflet/leaflet.js"></script>
+    <script src="~/Content/leaflet/Leaflet.MakiMarkers.js"></script>
+    <script src="~/Content/json2.js"></script>
 
-<style>
-#map {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  z-index: 1;
-}
-#hyperlink {
-  position: absolute;
-  left: 20px;
-  top: 100px;
-  z-index: 2;
-}
-
-</style>
-
-
-	<script>
-
-	var lat = 34.85066;
-	var lon = -82.39901;
-	var currentZoom = 15;
-	var apiURL = location.protocol + '//' + window.location.host + "/api/v1/";
-        
-	var map; //complex object of type Leaflet Map
-
-	// Database objects
-	var trolleys, routes, stops;
-	var routeIDs;  // Array of all route IDs
-
-	// Constants
-	var Gray = "#888888";
-	var Green = "#00cc00";
-	var DarkGreen = "#006600";
-
-	var activeFilter = false; // Restrict display to active items.
-
-function GetBusIcon(markerColor) {
-	var markerIcon = L.MakiMarkers.icon({icon: "bus", color: markerColor, size: "m"});
-	return markerIcon;
-}
-
-function GetStopIcon(markerColor) {
-	var markerIcon = L.MakiMarkers.icon({icon: "embassy", color: markerColor, size: "s"});
-	return markerIcon;
-}
-
-
-// Return array of keys for an associative array
-function GetKeys(associativeArray) {
-	var keys = [];
-	for (var key in associativeArray) {
-	  if (associativeArray.hasOwnProperty(key)) {
-		keys.push(key);
-	  }
-	}
-	return keys;
-}
-
-
-
-var ajax = {};
-ajax.x = function() {
-    if (typeof XMLHttpRequest !== 'undefined') {
-        return new XMLHttpRequest();  
-    }
-    var versions = [
-        "MSXML2.XmlHttp.6.0",
-        "MSXML2.XmlHttp.5.0",   
-        "MSXML2.XmlHttp.4.0",  
-        "MSXML2.XmlHttp.3.0",   
-        "MSXML2.XmlHttp.2.0",  
-        "Microsoft.XmlHttp"
-    ];
-
-    var xhr;
-    for(var i = 0; i < versions.length; i++) {  
-        try {  
-            xhr = new ActiveXObject(versions[i]);  
-            break;  
-        } catch (e) {
-        }  
-    }
-    return xhr;
-};
-
-ajax.send = function(url, callback, method, data, sync) {
-    var x = ajax.x();
-    x.open(method, url, sync);
-	x.setRequestHeader("Accept","application/json");
-    x.onreadystatechange = function() {
-        if (x.readyState == 4) {
-            callback(x.responseText)
+    <style>
+        #map {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1;
         }
-    };
-    if (method == 'POST') {
-        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    }
-    x.send(data)
-};
 
-ajax.get = function(url, data, callback, sync) {
-    var query = [];
-    for (var key in data) {
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-    }
-    ajax.send(url + (query.length ? '?' + query.join('&') : ''), callback, 'GET', null, sync)
-};
-
-ajax.post = function(url, data, callback, sync) {
-    var query = [];
-    for (var key in data) {
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-    }
-    ajax.send(url, callback, 'POST', query.join('&'), sync)
-};
-
-//Initialise the 'map' object
-function init() {
-
-	params = getQueryParams(document.location.search);
-
-	if (params['mlat'] && params['mlon'] && params['zoom']) {
-		currentZoom = params['zoom'];
-		lat = params['mlat'];
-		lon = parms['mlon'];
-	}
-
-	if (params['ActiveFilter']) {
-		if (params['ActiveFilter'] == 1) {
-			activeFilter = true;
-		}
-	}
+        #hyperlink {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            z-index: 2;
+        }
+    </style>
 
 
-	//map = L.map('map', {
-	//	center: [lat, lon],
-	//		zoom: currentZoom
-	//});
+    <script>
 
-	map = L.map('map').setView([lat, lon], currentZoom);
+        var lat = 34.85066;
+        var lon = -82.39901;
+        var currentZoom = 15;
+        var apiURL = location.protocol + '//' + window.location.host + "/api/v1/";
+
+        var map; //complex object of type Leaflet Map
+
+        // Database objects
+        var trolleys, routes, stops;
+        var routeIDs;  // Array of all route IDs
+        var originalRouteList, originalRoutePolyLines, trolleyIntervalTimer;
+        var updateCount = 0;
+
+        // Constants
+        var Gray = "#888888";
+        var Green = "#00cc00";
+        var DarkGreen = "#006600";
+
+        var activeFilter = false; // Restrict display to active items.
+
+        function GetBusIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "bus", color: markerColor, size: "m" });
+            return markerIcon;
+        }
+
+        function GetStopIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+            return markerIcon;
+        }
 
 
-	var southWest = new L.LatLng(36.48396, -84.76368),
-    northEast = new L.LatLng(33.21611, -80.1432),
-    bounds = new L.LatLngBounds(southWest, northEast);
-
-	map.setMaxBounds(bounds);
-
-    //First, specify your Mapbox API access token
-	L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg";
-
-    // Tile access key below is limited - for similar applications, apply for a developer key at http://www.mapbox.com
-    L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg', {
-		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-		maxZoom: 18,
-		id: 'mapbox.streets'
-	}).addTo(map);
+        // Return array of keys for an associative array
+        function GetKeys(associativeArray) {
+            var keys = [];
+            for (var key in associativeArray) {
+                if (associativeArray.hasOwnProperty(key)) {
+                    keys.push(key);
+                }
+            }
+            return keys;
+        }
 
 
-	ajax.get(apiURL + "Trolleys", {}, HandleAllTrolleysData, true);
+
+        var ajax = {};
+        ajax.x = function () {
+            if (typeof XMLHttpRequest !== 'undefined') {
+                return new XMLHttpRequest();
+            }
+            var versions = [
+                "MSXML2.XmlHttp.6.0",
+                "MSXML2.XmlHttp.5.0",
+                "MSXML2.XmlHttp.4.0",
+                "MSXML2.XmlHttp.3.0",
+                "MSXML2.XmlHttp.2.0",
+                "Microsoft.XmlHttp"
+            ];
+
+            var xhr;
+            for (var i = 0; i < versions.length; i++) {
+                try {
+                    xhr = new ActiveXObject(versions[i]);
+                    break;
+                } catch (e) {
+                }
+            }
+            return xhr;
+        };
+
+        ajax.send = function (url, callback, method, data, sync) {
+            var x = ajax.x();
+            x.open(method, url, sync);
+            x.setRequestHeader("Accept", "application/json");
+            x.onreadystatechange = function () {
+                if (x.readyState == 4) {
+                    callback(x.responseText)
+                }
+            };
+            if (method == 'POST') {
+                x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            }
+            x.send(data)
+        };
+
+        ajax.get = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url + (query.length ? '?' + query.join('&') : ''), callback, 'GET', null, sync)
+        };
+
+        ajax.post = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url, callback, 'POST', query.join('&'), sync)
+        };
+
+        //Initialise the 'map' object
+        function init() {
+
+            params = getQueryParams(document.location.search);
+
+            if (params['mlat'] && params['mlon'] && params['zoom']) {
+                currentZoom = params['zoom'];
+                lat = params['mlat'];
+                lon = parms['mlon'];
+            }
+
+            if (params['ActiveFilter']) {
+                if (params['ActiveFilter'] == 1) {
+                    activeFilter = true;
+                }
+            }
 
 
-	if (activeFilter) {
-		document.getElementById("DataFilterLink").innerHTML = '<a href="?">Show all data</a>';
-	} else {
-		document.getElementById("DataFilterLink").innerHTML = '<a href="?ActiveFilter=1">Show active items only</a>';
-	}
+            //map = L.map('map', {
+            //	center: [lat, lon],
+            //		zoom: currentZoom
+            //});
 
-	return;
+            map = L.map('map').setView([lat, lon], currentZoom);
 
-}
+
+            var southWest = new L.LatLng(36.48396, -84.76368),
+                northEast = new L.LatLng(33.21611, -80.1432),
+                bounds = new L.LatLngBounds(southWest, northEast);
+
+            map.setMaxBounds(bounds);
+
+            //First, specify your Mapbox API access token
+            L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg";
+
+            // Tile access key below is limited - for similar applications, apply for a developer key at http://www.mapbox.com
+            L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets'
+            }).addTo(map);
+
+
+            ajax.get(apiURL + "Trolleys", {}, HandleAllTrolleysData, true);
+
+
+            if (activeFilter) {
+                document.getElementById("DataFilterLink").innerHTML = '<a href="?">Show all data</a>';
+            } else {
+                document.getElementById("DataFilterLink").innerHTML = '<a href="?ActiveFilter=1">Show active items only</a>';
+            }
+
+            return;
+
+        }
 
         // handler for GET /api/v1/Trolleys
-function HandleAllTrolleysData(trolleyData) {
-	var trolleyList =  JSON.parse(trolleyData);
-	// Convert to list indexed by database ID
-	trolleys = {};
-	for (i=0; i<trolleyList.length; i++) {
-		var ID = trolleyList[i].ID;
-		var trolley = new Object();
-		trolley.ID = ID;
-		trolley.TrolleyName = trolleyList[i].TrolleyName;
-		trolley.Number = trolleyList[i].Number;
-		trolley.Lat = trolleyList[i].CurrentLat;
-		trolley.Lon = trolleyList[i].CurrentLon;
-		trolley.LastBeaconTime = trolleyList[i].LastBeaconTime;
-		trolley.Running = false;  // Until set running later
+        function HandleAllTrolleysData(trolleyData) {
+            var trolleyList = JSON.parse(trolleyData);
+            // Convert to list indexed by database ID
+            trolleys = {};
+            for (i = 0; i < trolleyList.length; i++) {
+                var ID = trolleyList[i].ID;
+                var trolley = new Object();
+                trolley.ID = ID;
+                trolley.TrolleyName = trolleyList[i].TrolleyName;
+                trolley.Number = trolleyList[i].Number;
+                trolley.Lat = trolleyList[i].CurrentLat;
+                trolley.Lon = trolleyList[i].CurrentLon;
+                trolley.LastBeaconTime = trolleyList[i].LastBeaconTime;
+                trolley.Running = false;  // Until set running later
 
-		var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
-		var title = trolley.TrolleyName + " " + trolley.Number + "<br/>Last seen on " + trolley.LastBeaconTime;
-		var marker = L.marker(latLng, { title: title, icon: GetBusIcon(Gray) });
-		marker.bindPopup(title).openPopup();
-		if (activeFilter) {
-		    marker.setOpacity(0.0);
-		}
-		marker.addTo(map);
+                var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
+                var title = trolley.TrolleyName + " " + trolley.Number + "<br/>Last seen on " + trolley.LastBeaconTime;
+                var marker = L.marker(latLng, { title: title, icon: GetBusIcon(Gray) });
+                marker.bindPopup(title).openPopup();
+                if (activeFilter) {
+                    marker.setOpacity(0.0);
+                }
+                marker.addTo(map);
 
-		trolley.Marker = marker;
+                trolley.Marker = marker;
 
-		trolleys[ID] = trolley;
-	}
+                trolleys[ID] = trolley;
+            }
 
-	ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);
+            ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);
 
-}
+        }
 
         // handler for GET /api/v1/Routes
-function HandleAllRoutesData(routeData) {
-	var routeList =  JSON.parse(routeData);
-	routes = {};
-	routeIDs = new Array();
-	for (i=0; i<routeList.length; i++) {
-		var ID = routeList[i].ID;
-		routeIDs[i] = ID;
-		var route=  new Object();
-		route.ID = ID;
-		route.ShortName = routeList[i].ShortName;
-		route.Active = false;
+        function HandleAllRoutesData(routeData) {
+            var routeList = JSON.parse(routeData);
+            routes = {};
+            routeIDs = new Array();
+            for (i = 0; i < routeList.length; i++) {
+                var ID = routeList[i].ID;
+                routeIDs[i] = ID;
+                var route = new Object();
+                route.ID = ID;
+                route.ShortName = routeList[i].ShortName;
+                route.Active = false;
 
-		routes[ID] = route;
-	}
- 	ajax.get(apiURL + "Stops", {}, HandleAllStopsData, true);
-}
-
-
-// handler for GET / api / v1 / Stops
-function HandleAllStopsData(stopData) {
-	var stopList =  JSON.parse(stopData);
-	stops = {};
-	for (i=0; i<stopList.length; i++) {
-		var ID = stopList[i].ID;
-		var stop=  new Object();
-		stop.ID = ID;
-		stop.Name = stopList[i].Name;
-		stop.Lat = stopList[i].Lat;
-		stop.Lon = stopList[i].Lon;
-
-		var latLng = new L.LatLng(stop.Lat, stop.Lon);
-		var title = stop.Name;
-		var marker = L.marker(latLng, { title: title, icon: GetStopIcon(Gray) });
-		marker.bindPopup(title).openPopup();
-		if (activeFilter) {
-			marker.setOpacity(0.0);  // All are invisible to start
-		}
-		marker.addTo(map);
-
-		stop.Marker = marker;
-
-		stops[ID] = stop;
-	}
-
- 	ajax.get(apiURL + "Routes/Active", {}, HandleActiveRoutesData, true);
-}
+                routes[ID] = route;
+            }
+            ajax.get(apiURL + "Stops", {}, HandleAllStopsData, true);
+        }
 
 
-var routeIndex =0;
+        // handler for GET / api / v1 / Stops
+        function HandleAllStopsData(stopData) {
+            var stopList = JSON.parse(stopData);
+            stops = {};
+            for (i = 0; i < stopList.length; i++) {
+                var ID = stopList[i].ID;
+                var stop = new Object();
+                stop.ID = ID;
+                stop.Name = stopList[i].Name;
+                stop.Lat = stopList[i].Lat;
+                stop.Lon = stopList[i].Lon;
+
+                var latLng = new L.LatLng(stop.Lat, stop.Lon);
+                var title = stop.Name;
+                var marker = L.marker(latLng, { title: title, icon: GetStopIcon(Gray) });
+                marker.bindPopup(title).openPopup();
+                if (activeFilter) {
+                    marker.setOpacity(0.0);  // All are invisible to start
+                }
+                marker.addTo(map);
+
+                stop.Marker = marker;3
+
+                stops[ID] = stop;
+            }
+
+            ajax.get(apiURL + "Routes/Active", {}, HandleActiveRoutesData, true);
+        }
+
+
+        var routeIndex = 0;
 
         // handler for GET /api/v1/Routes/Active
-function HandleActiveRoutesData(runningData) {
-	var routeList =  JSON.parse(runningData);
-	
-	for (i=0; i<routeList.length; i++) {
-		var ID = routeList[i].ID;
-		var route = routes[ID];
+        function HandleActiveRoutesData(runningData) {
 
-		route.Active = true;
-	}
+            originalRoutePolyLines = {};
+            var routeList = JSON.parse(runningData);
+            originalRouteList = routeList;
 
-	routeIndex = 0;
-	GetNextRoute();
+            for (i = 0; i < routeList.length; i++) {
+                var ID = routeList[i].ID;
+                var route = routes[ID];
 
-}
+                route.Active = true;
+            }
 
-function GetNextRoute() {
-	// Start query for detailed route data
-	if (activeFilter) {
-	    // Look for next active route
-	    while ( (routeIndex < routeIDs.length) && (!routes[routeIDs[routeIndex]].Active) ) {
-	        routeIndex++;
-	    }
+            routeIndex = 0;
+            GetNextRoute();
 
-	}
+        }
 
-	if (routeIndex < routeIDs.length) {
-		ajax.get(apiURL + "Routes/" + routeIDs[routeIndex], {}, HandleRouteData, true);
-		routeIndex++;
-	} else {
-		RequestRunningTrolleyData(); // Request first update immediately
-		// Begin querying running trolleys on a timer
-		setInterval(RequestRunningTrolleyData, 5000); // And periodically thereafter
-		
-	}
-}
+        function GetNextRoute() {
+            // Start query for detailed route data
+            if (activeFilter) {
+                // Look for next active route
+                while ((routeIndex < routeIDs.length) && (!routes[routeIDs[routeIndex]].Active)) {
+                    routeIndex++;
+                }
+
+            }
+
+            if (routeIndex < routeIDs.length) {
+                ajax.get(apiURL + "Routes/" + routeIDs[routeIndex], {}, HandleRouteData, true);
+                routeIndex++;
+            } else {
+                RequestRunningTrolleyData(); // Request first update immediately
+                // Begin querying running trolleys on a timer
+                trolleyIntervalTimer = setInterval(RequestRunningTrolleyData, 5000); // And periodically thereafter
+
+            }
+        }
 
         // Handler for GET /api/v1/Routes/:ID
-function HandleRouteData(routeData) {
-	var routeData = JSON.parse(routeData);
-	var routeID = routeData.ID;
-	// Mark active stops in a different color
-	var stopArray=routeData.Stops;
-	for (i=0; i< stopArray.length; i++) {
-		var ID = stopArray[i].ID;
-		var stop = stops[ID];
-		if (routes[routeID].Active) {
-			stop.Marker.setIcon(GetStopIcon(DarkGreen));
-			stop.Marker.setOpacity(1.0);  // Ensure that stop is shown
-		}
-	}
+        function HandleRouteData(routeData) {
+            var routeData = JSON.parse(routeData);
+            var routeID = routeData.ID;
+            // Mark active stops in a different color
+            var stopArray = routeData.Stops;
+            for (i = 0; i < stopArray.length; i++) {
+                var ID = stopArray[i].ID;
+                var stop = stops[ID];
+                if (routes[routeID].Active) {
+                    stop.Marker.setIcon(GetStopIcon(DarkGreen));
+                    stop.Marker.setOpacity(1.0);  // Ensure that stop is shown
+                }
+            }
 
-	if (!activeFilter || routes[routeID].Active) {
-		// Show route trace
-	
-		var vertices = [];
-		var shapeArray=routeData.RouteShape;
-		for(i=0; i<shapeArray.length; i++) {
-			var mapPoint = new L.LatLng(shapeArray[i].Lat, shapeArray[i].Lon);
-			vertices.push(mapPoint);
-		}
+            if (!activeFilter || routes[routeID].Active) {
+                // Show route trace
 
-		var routeColor = 'blue';
-		if (routes[routeID].Active) {
-			routeColor = 'green';
-		}
-		var routeLine = new L.Polyline(vertices, {
-			color: routeColor,
-			weight: 3,
-			opacity: 0.5,
-			smoothFactor: 1
-		});
+                var vertices = [];
+                var shapeArray = routeData.RouteShape;
+                for (i = 0; i < shapeArray.length; i++) {
+                    var mapPoint = new L.LatLng(shapeArray[i].Lat, shapeArray[i].Lon);
+                    vertices.push(mapPoint);
+                }
 
-		map.addLayer(routeLine);
-	}
+                var routeColor = 'blue';
+                if (routes[routeID].Active) {
+                    routeColor = 'green';
+                }
+                var routeLine = new L.Polyline(vertices, {
+                    color: routeColor,
+                    weight: 3,
+                    opacity: 0.5,
+                    smoothFactor: 1
+                });
 
-	 GetNextRoute();
-}
+                map.addLayer(routeLine);
+
+                originalRoutePolyLines[routeID] = routeLine;
+            }
+
+            GetNextRoute();
+        }
 
 
 
-// ---------------------------------
-function RequestRunningTrolleyData() {
-	ajax.get(apiURL + "Trolleys/Running?debug=true", {}, HandleRunningTrolleysData, true);
-}
+        // ---------------------------------
+        function RequestRunningTrolleyData() {
+            updateCount++;
+            if (updateCount >= 12) {
+                updateCount = 0;
+                ajax.get(apiURL + "Routes/Active", {}, RecheckActiveRoutesData, true);
+            } else {
+                ajax.get(apiURL + "Trolleys/Running?debug=true", {}, HandleRunningTrolleysData, true);
+            }
+        }
 
+        // handler for GET /api/v1/Routes/Active
+        function RecheckActiveRoutesData(runningData) {
+
+            // Check for changes against original Route List
+            var routeList = JSON.parse(runningData);
+            var changed = false;
+            if (originalRouteList.length != routeList.length) {
+                changed = true;
+            }
+
+            if (!changed) {
+                for (i = 0; i < routeList.length; i++) {
+                    if (originalRouteList[i].ID != routeList[i].ID) {
+                        changed = true;
+                    }
+3                }
+            }
+
+            if (changed) {
+                originalRouteList = routeList;
+
+                // Redraw route shapes
+                RemoveExistingRouteLines();
+
+                MarkAllRoutesInactive();
+                // Mark new set of active routes
+                for (i = 0; i < routeList.length; i++) {
+                    var ID = routeList[i].ID;
+                    var route = routes[ID];
+
+                    route.Active = true;
+                }
+
+                // Temporarily stop trolley timer - it will be restarted after routes arrive
+                clearInterval(trolleyIntervalTimer);
+
+                routeIndex = 0;
+                GetNextRoute();
+            }
+
+        }
+
+        function MarkAllRoutesInactive() {
+            var routeIDs = GetKeys(routes);
+            for (i = 0; i < routeIDs.length; i++) {
+                var ID = routeIDs[i];
+                var route = routes[ID];
+
+                route.Active = false;
+            }
+
+            // Hide all stops
+            var stopIDs = GetKeys(stops);
+            for (i = 0; i < stopIDs.length; i++) {
+                var ID = stopIDs[i];
+                var stop = stops[ID];
+                stop.Marker.setOpacity(0.0);
+            }
+
+
+        }
+
+        function RemoveExistingRouteLines() {
+            var visibleRouteIDs = GetKeys(originalRoutePolyLines);
+            for (var i = 0; i < visibleRouteIDs.length; i++) {
+                map.removeLayer(originalRoutePolyLines[visibleRouteIDs[i]]);
+            }
+        }
+        
 
         // handler for GET /api/v1/Trolleys/Running
-function HandleRunningTrolleysData(runningData) {
+        function HandleRunningTrolleysData(runningData) {
 
-	// First mark all trolleys as not running
-	var trolleyIDs= GetKeys(trolleys);
-	for (var i=0; i<trolleyIDs.length; i++) {
-		trolleys[trolleyIDs[i]].Running = false;
-	}
+            // First mark all trolleys as not running
+            var trolleyIDs = GetKeys(trolleys);
+            for (var i = 0; i < trolleyIDs.length; i++) {
+                trolleys[trolleyIDs[i]].Running = false;
+            }
 
-	var trolleyList =  JSON.parse(runningData);
-	
-	for (i=0; i<trolleyList.length; i++) {
-		var ID = trolleyList[i].ID;
-		var trolley = trolleys[ID];
+            var trolleyList = JSON.parse(runningData);
 
-		trolley.Running = true;
-		trolley.Lat = trolleyList[i].Lat;
-		trolley.Lon = trolleyList[i].Lon;
-		trolley.Marker.setIcon(GetBusIcon(Green));
-		trolley.Marker.setOpacity(1.0);
-		var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
-		trolley.Marker.setLatLng(latLng);
-	}
+            for (i = 0; i < trolleyList.length; i++) {
+                var ID = trolleyList[i].ID;
+                var trolley = trolleys[ID];
 
-	// Mark all non-running trolleys as gray
-	// (To show as stopped for a long-running page
-	for (var i=0; i<trolleyIDs.length; i++) {
-		var trolley = trolleys[trolleyIDs[i]];
-		if (!trolley.Running) {
-			if (activeFilter) {
-				trolley.Marker.setOpacity(0.0);
-			}
-			else {
-				trolley.Marker.setOpacity(1.0);
-				trolley.Marker.setIcon(GetBusIcon(Gray));
-			}
-		}
-	}
+                trolley.Running = true;
+                trolley.Lat = trolleyList[i].Lat;
+                trolley.Lon = trolleyList[i].Lon;
+                trolley.Marker.setIcon(GetBusIcon(Green));
+                trolley.Marker.setOpacity(1.0);
+                var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
+                trolley.Marker.setLatLng(latLng);
+            }
 
-
-}
+            // Mark all non-running trolleys as gray
+            // (To show as stopped for a long-running page
+            for (var i = 0; i < trolleyIDs.length; i++) {
+                var trolley = trolleys[trolleyIDs[i]];
+                if (!trolley.Running) {
+                    if (activeFilter) {
+                        trolley.Marker.setOpacity(0.0);
+                    }
+                    else {
+                        trolley.Marker.setOpacity(1.0);
+                        trolley.Marker.setIcon(GetBusIcon(Gray));
+                    }
+                }
+            }
 
 
+        }
 
-function getQueryParams(qs) {
-    qs = qs.split("+").join(" ");
 
-    var params = {}, tokens,
-        re = /[?&]?([^=]+)=([^&]*)/g;
 
-    while (tokens = re.exec(qs)) {
-        params[decodeURIComponent(tokens[1])]
-            = decodeURIComponent(tokens[2]);
-    }
+        function getQueryParams(qs) {
+            qs = qs.split("+").join(" ");
 
-    return params;
-}
+            var params = {}, tokens,
+                re = /[?&]?([^=]+)=([^&]*)/g;
 
-function ScrollMapTo(lon, lat, zoom) {
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])]
+                    = decodeURIComponent(tokens[2]);
+            }
 
-	var mapCenter = new L.LatLng(lat, lon);
-	map.setView(mapCenter, zoom);
+            return params;
+        }
 
-}
+        function ScrollMapTo(lon, lat, zoom) {
 
-</script>
+            var mapCenter = new L.LatLng(lat, lon);
+            map.setView(mapCenter, zoom);
+
+        }
+
+    </script>
 
 </head>
 <body>
-	
-<div style="width:100%; height:100%" id="map">
-</div>
-<div id="hyperlink">
-	 <div id="DataFilterLink"></div>
-	<a href="~/">Back to Home</a>
-</div>
 
-	<div>
-	<script>
+    <div style="width:100%; height:100%" id="map">
+    </div>
+    <div id="hyperlink">
+        <div id="DataFilterLink"></div>
+        <a href="~/">Back to Home</a>
+    </div>
 
-	init();
-	
-	</script>
-</div>
+    <div>
+        <script>
+
+            init();
+
+        </script>
+    </div>
 </body>
 </html>
-
