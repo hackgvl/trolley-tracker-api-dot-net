@@ -4,10 +4,10 @@
 
 General layout - 
 
- * Visual Studio 2015 (Release)
+ * Visual Studio 2017 (Release), Visual Studio 2015 might still work
  * SQL Server 2014
  * Code-First development
- * .NET 4.5.2
+ * .NET 4.6.2
  * ASP.NET version 4.x
  * MVC version 5
  * Entity Framework 6.3
@@ -26,7 +26,7 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 
  NOTE: Refer to the Javascript located in source folder DBVisualizer / index.html for example parse sequences.   Most applications will only need a subset of those calls.
 
-API views may be entered into a browser, but the results will be in XML.  API views called from CURL return as JSON.   Applications wishing for JSON should specify in their request “Content-type: application/json; charset=utf-8”
+API views may be entered into a browser and the results will be in XML.  API views called from CURL and specified with text/xml return as XML.   Applications wishing for JSON should specify in their request “Content-type: application/json; charset=utf-8”
 
 ####GET /api/v1/Trolleys/Running
 Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.  
