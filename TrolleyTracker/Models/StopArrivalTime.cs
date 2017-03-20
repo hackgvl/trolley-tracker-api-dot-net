@@ -172,7 +172,14 @@ namespace TrolleyTracker.Models
                     {
                         stopSummary.LastTrolleyArrivalTime.Add(trolley.Number, UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow));
                     }
-                    lastStopIDByTrolley.Add(trolley.Number, stopSummary.ID);
+                    if (lastStopIDByTrolley.ContainsKey(trolley.Number))
+                    {
+                        lastStopIDByTrolley[trolley.Number] = stopSummary.ID;
+                    }
+                    else
+                    {
+                        lastStopIDByTrolley.Add(trolley.Number, stopSummary.ID);
+                    }
                     return;
                 }
 

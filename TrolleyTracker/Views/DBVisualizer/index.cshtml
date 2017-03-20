@@ -250,10 +250,13 @@
                 stop.Name = stopList[i].Name;
                 stop.Lat = stopList[i].Lat;
                 stop.Lon = stopList[i].Lon;
+                stop.PredictedArrivalDate = {};
+
+                stop.LastTrolleyArrivalTime = stopList[i].LastTrolleyArrivalTime;
 
                 var latLng = new L.LatLng(stop.Lat, stop.Lon);
                 var title = stop.Name;
-                var marker = L.marker(latLng, { title: title, icon: GetStopIcon(Gray) });
+                var marker = L.marker(latLng, { title: title,  icon: GetStopIcon(Gray) });
                 marker.bindPopup(title).openPopup();
                 if (activeFilter) {
                     marker.setOpacity(0.0);  // All are invisible to start
@@ -317,6 +320,7 @@
             var routeID = routeData.ID;
             // Mark active stops in a different color
             var stopArray = routeData.Stops;
+            routes[routeID].Stops = stopArray;
             for (i = 0; i < stopArray.length; i++) {
                 var ID = stopArray[i].ID;
                 var stop = stops[ID];
@@ -363,10 +367,194 @@
             if (updateCount >= 12) {
                 updateCount = 0;
                 ajax.get(apiURL + "Routes/Active", {}, RecheckActiveRoutesData, true);
+                ajax.get(apiURL + "Stops", {}, RefreshStopArrivalTimes, true);
             } else {
                 ajax.get(apiURL + "Trolleys/Running?debug=true", {}, HandleRunningTrolleysData, true);
             }
         }
+
+
+        // handler for GET /api/v1/Stops
+        function RefreshStopArrivalTimes(stopData) {
+            var stopList = JSON.parse(stopData);
+            for (i = 0; i < stopList.length; i++) {
+                var ID = stopList[i].ID;
+                if (ID in stops) {
+                    var stop = stops[ID];
+
+                    stop.LastTrolleyArrivalTime = stopList[i].LastTrolleyArrivalTime;
+                }
+            }
+
+
+            CalculateStopArrivalTimes();
+
+
+        }
+
+        function CalculateStopArrivalTimes() {
+            // Clear any previous stop arrival time info
+            var stopIDs = GetKeys(stops);
+            for (i = 0; i < stopIDs.length; i++) {
+                var ID = stopIDs[i];
+                var stop = stops[ID];
+
+                stop.Marker.setPopupContent(stop.Name); // Reset to bare title
+            }
+
+
+            var trolleyIDs = GetKeys(trolleys);
+            for (var i = 0; i < trolleyIDs.length; i++) {
+                var trolleyID = trolleyIDs[i];
+                if (trolleys[trolleyID].Running) {
+                    CalculateArrivalTime(trolleys[trolleyID].Number);
+                }
+            }
+        }
+
+
+        // Stop arrival times are keyed by trolleyNumber, not trolleyID from database
+        function CalculateArrivalTime(trolleyNumber) {
+
+            // Iterate all active routes and calculate travel times for this trolley
+            // Multiple routes can pass by the same stop
+            var routeIDs = GetKeys(routes);
+            for (r = 0; r < routeIDs.length; r++) {
+                var routeID = routeIDs[r];
+                if (routes[routeID].Active) {
+                    CalculateArrivalTimeForRoute(trolleyNumber, routeID);
+                }
+            }
+
+            SelectAndShowArrivalTime();
+
+        }
+
+        // Pick next trolley best arrival time
+        function SelectAndShowArrivalTime() {
+
+            var currentMilliseconds = new Date().getTime();
+            var stopIDs = GetKeys(stops);
+            for (i = 0; i < stopIDs.length; i++) {
+                var ID = stopIDs[i];
+                var stop = stops[ID];
+
+                if (stop.PredictedArrivalDate.length == 0) {
+                    stop.Marker.setPopupContent(stop.Name); // Reset to bare title
+                }
+                else {
+                    var trolleyNumbers = GetKeys(stop.PredictedArrivalDate);
+                    var earliestArrivalDate = new Date(2099,1,1);
+                    for (t = 0; t < trolleyNumbers.length; t++) {
+                        var trolleyNumber = trolleyNumbers[t];
+                        var arrivalDate = stop.PredictedArrivalDate[trolleyNumber];
+                        if (arrivalDate < earliestArrivalDate) {
+                            var minutesToArrival = Math.floor((arrivalDate.getTime() - currentMilliseconds) / 60 / 1000);
+                            if (minutesToArrival >= 0) {
+                                var newTitle = stop.Name + "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + arrivalDate.toLocaleTimeString();
+                                stop.Marker.setPopupContent(newTitle);
+                                earliestArrivalDate = arrivalDate;
+                            } else {
+                                // Stale / non-updated arrivalDate in stop
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+
+        function CalculateArrivalTimeForRoute(trolleyNumber, routeID) {
+
+            // Arrays paired by matching index - circular list of 
+            // arrival times in stop order for this route
+            var arrivalTimes = [];
+            var stopsWithTimes = [];
+
+            var nowMilliseconds = new Date().getTime();   // ASSUMPTION! Local device time reasonably correct
+            var MaxValidSeconds = 90 * 60;  // Times older than this are considered stale
+
+            var route = routes[routeID];
+            var lastSeconds = null;
+            for (i = 0; i < route.Stops.length; i++) {
+                var ID = route.Stops[i].ID;
+                var stop = stops[ID];
+                if (trolleyNumber in stop.LastTrolleyArrivalTime) {
+                    // A time is present for this trolley at this stop
+
+                    var refDate = stop.LastTrolleyArrivalTime[trolleyNumber];
+                    var jsDate = new Date(refDate);
+                    var thisStopMilliseconds = jsDate.getTime();
+                    var elapsedSeconds = (nowMilliseconds - thisStopMilliseconds) / 1000;
+                    if ((elapsedSeconds) < MaxValidSeconds) {
+                        arrivalTimes.push(thisStopMilliseconds);
+                        stopsWithTimes.push(stop);
+                    }
+                }
+
+            }
+
+            CalculateArrivalTimesForStops(trolleyNumber, arrivalTimes, stopsWithTimes);
+
+        }
+
+
+        function CalculateArrivalTimesForStops(trolleyNumber, arrivalTimes, stopsWithTimes) {
+
+            if (arrivalTimes.length <= 1) return;
+
+            // Find trolley position by working backward until there is a time warp (Previous timestamp newer than current)
+            var moduloPrevious = arrivalTimes.length - 1;  // Amount to add to address previous element with wrap
+
+            var trolleyPositionIndex = 0;
+            do {
+                var curTime = arrivalTimes[trolleyPositionIndex];
+                var previousIndex = (trolleyPositionIndex + moduloPrevious) % arrivalTimes.length;
+                var previousTime = arrivalTimes[previousIndex];
+                if (previousTime > curTime) {
+                    trolleyPositionIndex = previousIndex;
+                    break;
+                }
+                trolleyPositionIndex = (trolleyPositionIndex + 1) % arrivalTimes.length;
+            } while (trolleyPositionIndex != 0);
+
+            // Probable trolley position (newest timestamp) at trolleyPositionIndex
+            var totalTraveMilliseconds = 0;   // Estimated travel time from current trolley position to stop
+            var currentMilliseconds = new Date().getTime();  // ASSUMPTION! Local device time reasonably correct
+
+            // Can't calculate for current stop because it's just passed that stop
+            // Can't calculate for next stop because of the time warp
+            // Start calculations at stop #3 (being wrong by one stop)
+            for (i = 2; i < arrivalTimes.length; i++) {
+                // if (i == 1) continue;  // Can't calculate next stop because there is no previous travel segment, could use historical data
+
+
+                var stopIndex = (trolleyPositionIndex + i) % arrivalTimes.length;
+                var lastStopIndex = (trolleyPositionIndex + i + arrivalTimes.length-1) % arrivalTimes.length;
+                var stop = stopsWithTimes[stopIndex];
+
+                totalTraveMilliseconds += (arrivalTimes[stopIndex] - arrivalTimes[lastStopIndex]);
+
+                if (totalTraveMilliseconds < 0) {
+                    // Perhaps caused by one stop being skipped on route change
+                    var debugTest = 0;
+                } else {
+                    var travelMinutes = Math.floor(totalTraveMilliseconds / 60 / 1000);
+                    var arrivalTime = currentMilliseconds + totalTraveMilliseconds;
+                    var arrivalDate = new Date(arrivalTime);
+                    stop.PredictedArrivalDate[trolleyNumber] = arrivalDate;
+                }
+
+
+                
+            }
+
+
+
+
+        }
+
 
         // handler for GET /api/v1/Routes/Active
         function RecheckActiveRoutesData(runningData) {
@@ -512,7 +700,7 @@
     </div>
     <div id="hyperlink">
         <div id="DataFilterLink"></div>
-        <a href="~/">Back to Home</a>
+        <a href="/">Back to Home</a>
     </div>
 
     <div>
