@@ -30,6 +30,10 @@ Echo Stops
 curl http://%Server%/api/v1/Stops
 pause
 Echo .
+Echo Regular Stops
+curl http://%Server%/api/v1/Stops/Regular
+pause
+Echo .
 Echo A specific stop
 curl http://%Server%/api/v1/Stops/24
 pause

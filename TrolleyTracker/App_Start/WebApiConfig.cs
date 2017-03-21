@@ -38,6 +38,11 @@ namespace TrolleyTracker
             );
 
             config.Routes.MapHttpRoute(
+                name: "RegularStops",
+                routeTemplate: "api/v1/Stops/{controller}"
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "TrolleyLocationDEPRECATED",
                 routeTemplate: "api/v1/trolly/{id}/{controller}",
                 defaults: new { },

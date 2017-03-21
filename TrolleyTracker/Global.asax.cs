@@ -13,6 +13,29 @@ namespace TrolleyTracker
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+
+        ///// <summary>
+        ///// To debug the WebApi routing
+        ///// </summary>
+        //public override void Init()
+        //{
+        //    base.Init();
+        //    this.AcquireRequestState += showRouteValues;
+        //}
+
+        ///// <summary>
+        ///// To help debug WebApi routing only
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //protected void showRouteValues(object sender, EventArgs e)
+        //{
+        //    var context = HttpContext.Current;
+        //    if (context == null)
+        //        return;
+        //    var routeData = RouteTable.Routes.GetRouteData(new HttpContextWrapper(context));
+        //}
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();

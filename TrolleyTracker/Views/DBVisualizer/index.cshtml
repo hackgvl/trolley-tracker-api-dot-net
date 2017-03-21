@@ -502,7 +502,7 @@
 
         function CalculateArrivalTimesForStops(trolleyNumber, arrivalTimes, stopsWithTimes) {
 
-            if (arrivalTimes.length <= 1) return;  // Should probably check for times with length > 75% of all stops on route, perhaps 90%?
+            if (arrivalTimes.length <= 1) return;  // Should probably check for times with length more than 75% of all stops on route, perhaps 90%?
 
             // Find trolley position by working backward until there is a time warp (Previous timestamp newer than current)
             var moduloPrevious = arrivalTimes.length - 1;  // Amount to add to address previous element with wrap

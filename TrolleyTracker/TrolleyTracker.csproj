@@ -225,6 +225,7 @@
     <Compile Include="Controllers\UTCToLocalTime.cs" />
     <Compile Include="Controllers\WebAPI\ActiveController.cs" />
     <Compile Include="Controllers\WebAPI\LocationController.cs" />
+    <Compile Include="Controllers\WebAPI\RegularController.cs" />
     <Compile Include="Controllers\WebAPI\RouteSchedulesController.cs" />
     <Compile Include="Controllers\WebAPI\RoutesController.cs" />
     <Compile Include="Controllers\WebAPI\RunningController.cs" />
@@ -287,12 +288,16 @@
   <ItemGroup>
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="Content\bootstrap-responsive.css" />
+    <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\FadedTrolley.jpg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\images\glyphicons-halflings-white.png" />
+    <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\json2.js" />
     <Content Include="Content\leaflet\images\layers-2x.png" />
     <Content Include="Content\leaflet\images\layers.png" />
@@ -449,6 +454,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-2.2.1.debug.js" />
+    <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\moment-with-locales.js" />
     <Content Include="Scripts\moment-with-locales.min.js" />
@@ -561,6 +568,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Picture\" />
+    <Folder Include="Views\RegularStops\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
