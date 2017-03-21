@@ -58,6 +58,9 @@ Route detail - including stops in order and route path
 ####GET /api/v1/Stops
 Get list of stops on all routes
 
+####GET /api/v1/Stops/Regular
+Get list of stops on all routes which have a regular, fixed schedule
+
 ####GET /api/v1/Stops/:ID
 Gets info about a single stop
 
