@@ -30,6 +30,7 @@ namespace TrolleyTracker
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/bootstrap-datetimepicker.js",
                       "~/Scripts/DatePickerReady.js",
+                      "~/Scripts/farbtastic.js",
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
@@ -37,6 +38,7 @@ namespace TrolleyTracker
                       "~/Content/bootstrap-theme.css",
                       "~/Content/themes/base/datepicker.css",
                       "~/Content/bootstrap-datetimepicker.css",
+                      "~/Content/farbtastic.css",
                       "~/Content/site.css"));
         }
     }

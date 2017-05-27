@@ -34,6 +34,15 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.IconColorRGB, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.IconColorRGB, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.IconColorRGB, "", new { @class = "text-danger" })
+                <div id="colorpicker"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
             @Html.LabelFor(model => model.CurrentLat, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.CurrentLat, new { htmlAttributes = new { @class = "form-control" } })
@@ -62,5 +71,10 @@
 </div>
 
 @section Scripts {
+<script>
+    $(document).ready(function () {
+        $('#colorpicker').farbtastic('#IconColorRGB');
+    });
+</script>
     @Scripts.Render("~/bundles/jqueryval")
 }

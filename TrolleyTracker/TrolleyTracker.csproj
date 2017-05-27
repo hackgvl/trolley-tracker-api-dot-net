@@ -258,6 +258,10 @@
     <Compile Include="Migrations\201701310211073_AddNLog.Designer.cs">
       <DependentUpon>201701310211073_AddNLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705262120510_TrolleyColor.cs" />
+    <Compile Include="Migrations\201705262120510_TrolleyColor.Designer.cs">
+      <DependentUpon>201705262120510_TrolleyColor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Log.cs" />
@@ -295,6 +299,10 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\FadedTrolley.jpg" />
+    <Content Include="Content\farbtastic.css" />
+    <Content Include="Content\images\marker.png" />
+    <Content Include="Content\images\mask.png" />
+    <Content Include="Content\images\wheel.png" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
@@ -442,6 +450,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\DatePickerReady.js" />
+    <Content Include="Scripts\farbtastic.js" />
     <Content Include="Scripts\jquery-2.2.1.js" />
     <Content Include="Scripts\jquery-2.2.1.min.js" />
     <Content Include="Scripts\jquery-2.2.1.min.map" />
@@ -597,6 +606,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701310211073_AddNLog.resx">
       <DependentUpon>201701310211073_AddNLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705262120510_TrolleyColor.resx">
+      <DependentUpon>201705262120510_TrolleyColor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

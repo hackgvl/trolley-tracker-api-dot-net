@@ -38,7 +38,7 @@
         var map; //complex object of type Leaflet Map
 
         // Database objects
-        var trolleys, routes, stops;
+        var trolleys, trolleysByNumber, routes, stops;
         var routeIDs;  // Array of all route IDs
         var originalRouteList, originalRoutePolyLines, trolleyIntervalTimer;
         var updateCount = 0;
@@ -191,6 +191,7 @@
             var trolleyList = JSON.parse(trolleyData);
             // Convert to list indexed by database ID
             trolleys = {};
+            trolleysByNumber = {};
             for (i = 0; i < trolleyList.length; i++) {
                 var ID = trolleyList[i].ID;
                 var trolley = new Object();
@@ -200,6 +201,7 @@
                 trolley.Lat = trolleyList[i].CurrentLat;
                 trolley.Lon = trolleyList[i].CurrentLon;
                 trolley.LastBeaconTime = trolleyList[i].LastBeaconTime;
+                trolley.IconColorRGB = trolleyList[i].IconColorRGB;
                 trolley.Running = false;  // Until set running later
 
                 var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
@@ -214,6 +216,7 @@
                 trolley.Marker = marker;
 
                 trolleys[ID] = trolley;
+                trolleysByNumber[trolley.Number] = trolley;
             }
 
             ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);
@@ -644,7 +647,7 @@
                 trolley.Running = true;
                 trolley.Lat = trolleyList[i].Lat;
                 trolley.Lon = trolleyList[i].Lon;
-                trolley.Marker.setIcon(GetBusIcon(Green));
+                trolley.Marker.setIcon(GetBusIcon(trolley.IconColorRGB));
                 trolley.Marker.setOpacity(1.0);
                 var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
                 trolley.Marker.setLatLng(latLng);

@@ -27,7 +27,7 @@ namespace TrolleyTracker.Controllers
         public ActionResult Index()
         {
             var trolleys = from t in db.Trolleys
-                           orderby t.TrolleyName, t.Number
+                           orderby t.Number, t.TrolleyName
                            select t;
             return View(trolleys.ToList());
         }
@@ -52,7 +52,9 @@ namespace TrolleyTracker.Controllers
         [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
-            return View();
+            var t = new Trolley();
+            t.IconColorRGB = "#008000";  // Must have starting value for Farbtastic
+            return View(t);
         }
 
         // POST: Trolleys/Create
@@ -61,7 +63,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,TrolleyName,Number,CurrentLat,CurrentLon")] Trolley trolley)
+        public ActionResult Create([Bind(Include = "TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon")] Trolley trolley)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +103,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,TrolleyName,Number,CurrentLat,CurrentLon")] Trolley trolley)
+        public ActionResult Edit([Bind(Include = "ID,TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon")] Trolley trolley)
         {
             if (ModelState.IsValid)
             {

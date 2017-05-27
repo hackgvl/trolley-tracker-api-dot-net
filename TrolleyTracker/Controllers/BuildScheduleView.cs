@@ -16,7 +16,7 @@ namespace TrolleyTracker.Controllers
         {
             var vm = new RouteScheduleViewModel();
             var routeSchedules = from rs in db.RouteSchedules.Include(rs => rs.Route)
-                                 orderby rs.DayOfWeek, rs.StartTime ascending
+                                 orderby rs.DayOfWeek, rs.StartTime ascending, rs.Route.ShortName ascending
                                  select rs;
             vm.RouteSchedules = (System.Data.Entity.Infrastructure.DbQuery<RouteSchedule>)routeSchedules;
 

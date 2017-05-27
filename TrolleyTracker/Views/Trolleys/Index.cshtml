@@ -18,6 +18,10 @@
             @Html.DisplayNameFor(model => model.Number)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.IconColorRGB)
+        </th>
+        <th>Color</th>
+        <th>
             @Html.DisplayNameFor(model => model.CurrentLat)
         </th>
         <th>
@@ -36,6 +40,11 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Number)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IconColorRGB)
+        </td>
+        <td width="10" style="background-color:  @Html.DisplayFor(modelItem => item.IconColorRGB)">
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.CurrentLat)

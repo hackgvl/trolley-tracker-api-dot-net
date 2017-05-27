@@ -23,7 +23,7 @@ namespace TrolleyTracker.Controllers.WebAPI
 
             var fixedRouteSchedules = (from route in db.Routes
                                              from routeSchedule in db.RouteSchedules
-                                             orderby routeSchedule.StartTime
+                                             orderby routeSchedule.StartTime, routeSchedule.Route.ShortName
                                              where (routeSchedule.RouteID == route.ID) 
                                              select routeSchedule).ToList<RouteSchedule>();
 
