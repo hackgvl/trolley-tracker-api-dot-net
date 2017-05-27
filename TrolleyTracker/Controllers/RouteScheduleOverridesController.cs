@@ -73,7 +73,7 @@ namespace TrolleyTracker.Controllers
             ViewBag.NewRouteID = new SelectList(RouteSelectList(""), "ID", "ShortName");
             ViewBag.OverriddenRouteID = new SelectList(RouteSelectList("** All **"), "ID", "ShortName");
             var routeScheduleOverride = new RouteScheduleOverride();
-            routeScheduleOverride.OverrideType = RouteScheduleOverride.OverrideRule.Added;
+            routeScheduleOverride.OverrideType = RouteScheduleOverride.OverrideRule.NoService;
             routeScheduleOverride.OverrideDate = DateTime.Now.AddDays(1);
             routeScheduleOverride.StartTime = new DateTime(1970, 1, 1, 18, 00, 00);
             routeScheduleOverride.EndTime = new DateTime(1970, 1, 1, 22, 00, 00);

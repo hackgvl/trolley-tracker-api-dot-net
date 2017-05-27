@@ -39,8 +39,8 @@ namespace TrolleyTracker.Controllers.WebAPI
                                              where rso.OverrideDate == today
                                              select rso).ToList<RouteScheduleOverride>();
 
-
-            var todaysRouteSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 1, todaysFixedRouteSchedules, routeScheduleOverrideList);
+            var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
+            var todaysRouteSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 1, todaysFixedRouteSchedules, scheduleToDate, routeScheduleOverrideList);
 
             // Get today's effective routes
             // Return active routes 5 minutes early so that progress from garage to starting point

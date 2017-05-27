@@ -32,7 +32,8 @@ namespace TrolleyTracker.Controllers.WebAPI
                                              orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
                                              select rso).ToList<RouteScheduleOverride>();
 
-            var routeSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 7, fixedRouteSchedules, routeScheduleOverrideList);
+            var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
+            var routeSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 7, fixedRouteSchedules, scheduleToDate, routeScheduleOverrideList);
 
             var schedules = new List<RouteScheduleSummary>();
             foreach(var routeSchedule in routeSchedules)

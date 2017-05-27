@@ -17,14 +17,6 @@
         @Html.HiddenFor(model => model.ID)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.NewRouteID, "NewRouteID", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("NewRouteID", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.NewRouteID, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
             @Html.LabelFor(model => model.OverrideDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.OverrideDate, new { htmlAttributes = new { @class = "form-control" } })
@@ -41,7 +33,15 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.OverriddenRouteID, "OverriddenRouteID", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NewRouteID, "NewRouteID", htmlAttributes: new { @class = "control-label col-md-2", @id = "LabelNewRouteID" })
+            <div class="col-md-10">
+                @Html.DropDownList("NewRouteID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.NewRouteID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.OverriddenRouteID, "OverriddenRouteID", htmlAttributes: new { @class = "control-label col-md-2", @id = "LabelOverriddenRouteID" })
             <div class="col-md-10">
                 @Html.DropDownList("OverriddenRouteID", null, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.OverriddenRouteID, "", new { @class = "text-danger" })
@@ -75,3 +75,35 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+@section Scripts {
+    <script>
+
+        function OnOverrideTypeChange() {
+            if ($("#OverrideType :selected").text() == 'NoService') {
+                $('#LabelNewRouteID').css('color', 'LightGray');
+                $('#NewRouteID').prop('disabled', true);
+            }
+            else {
+                $('#LabelNewRouteID').css('color', 'Black');
+                $('#NewRouteID').prop('disabled', false);
+            }
+            if ($("#OverrideType :selected").text() == 'Added') {
+                $('#LabelOverriddenRouteID').css('color', 'LightGray');
+                $('#OverriddenRouteID').prop('disabled', true);
+            }
+            else {
+                $('#LabelOverriddenRouteID').css('color', 'Black');
+                $('#OverriddenRouteID').prop('disabled', false);
+            }
+        }
+
+        $('#OverrideType').change(function () {
+            OnOverrideTypeChange();
+        });
+        $(document).ready(function () {
+            OnOverrideTypeChange();
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

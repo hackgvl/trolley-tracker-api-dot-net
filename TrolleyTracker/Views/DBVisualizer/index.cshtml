@@ -38,7 +38,7 @@
         var map; //complex object of type Leaflet Map
 
         // Database objects
-        var trolleys, trolleysByNumber, routes, stops;
+        var trolleys, routes, stops;
         var routeIDs;  // Array of all route IDs
         var originalRouteList, originalRoutePolyLines, trolleyIntervalTimer;
         var updateCount = 0;
@@ -191,7 +191,6 @@
             var trolleyList = JSON.parse(trolleyData);
             // Convert to list indexed by database ID
             trolleys = {};
-            trolleysByNumber = {};
             for (i = 0; i < trolleyList.length; i++) {
                 var ID = trolleyList[i].ID;
                 var trolley = new Object();
@@ -216,7 +215,6 @@
                 trolley.Marker = marker;
 
                 trolleys[ID] = trolley;
-                trolleysByNumber[trolley.Number] = trolley;
             }
 
             ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);

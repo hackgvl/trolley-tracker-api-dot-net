@@ -65,15 +65,16 @@ namespace TrolleyTracker.Controllers
             IEnumerable<RouteScheduleOverride> routeScheduleOverrides
             )
         {
-            var effectiveRouteSchedules = BuildEffectiveRouteSchedule(DateTime.Now, 14, routeSchedules, routeScheduleOverrides);
-
-            var sundayDate = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek);  // Date of start of week
+            var localNow = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+            var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
+            var effectiveRouteSchedules = BuildEffectiveRouteSchedule(localNow, 14, routeSchedules, scheduleToDate, routeScheduleOverrides);
+            
             var effectiveScheduleSummaries = new List<RouteScheduleSummary>();
 
             foreach(var routeSchedule in effectiveRouteSchedules)
             {
                 var scheduleSummary = new RouteScheduleSummary(routeSchedule);
-                var scheduleDate = sundayDate.AddDays(routeSchedule.DayOfWeek);
+                var scheduleDate = scheduleToDate[routeSchedule];
                 scheduleSummary.DayOfWeek = scheduleDate.ToShortDateString() + " " + scheduleSummary.DayOfWeek;
                 effectiveScheduleSummaries.Add(scheduleSummary);
             }
@@ -84,6 +85,7 @@ namespace TrolleyTracker.Controllers
 
         public static List<RouteSchedule> BuildEffectiveRouteSchedule(DateTime startDate, int numDays,
             IEnumerable<RouteSchedule> routeSchedules,
+            Dictionary<RouteSchedule, DateTime> scheduleToDate,
             IEnumerable<RouteScheduleOverride> routeScheduleOverrides
                                 )
         {
@@ -93,7 +95,15 @@ namespace TrolleyTracker.Controllers
             var labelDate = startDate;
             for (int day = 0; day < numDays; day++)
             {
-                ProcessEffectiveDay(labelDate, day, routeSchedules, routeScheduleOverrides, effectiveSchedules);
+                // Since schedules don't contain full date, the actual date is a separate associative array.  This is built
+                // After every day by adding the date for that day.
+                var newEffectiveSchedules = new List<RouteSchedule>();
+                ProcessEffectiveDay(labelDate, day, routeSchedules, routeScheduleOverrides, newEffectiveSchedules);
+                foreach(var routeSchedule in newEffectiveSchedules)
+                {
+                    scheduleToDate.Add(routeSchedule, labelDate);
+                }
+                effectiveSchedules.AddRange(newEffectiveSchedules);
                 labelDate = labelDate.AddDays(1);
 
             }
