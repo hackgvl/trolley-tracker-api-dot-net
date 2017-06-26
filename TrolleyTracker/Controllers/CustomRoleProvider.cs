@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Security;
 using TrolleyTracker.Models;
 
@@ -22,32 +22,40 @@ namespace TrolleyTracker.Controllers
         {
             using (var usersContext = new ApplicationDbContext())
             {
-                var user = usersContext.Users.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.CurrentCultureIgnoreCase) || u.Email.Equals(username, StringComparison.CurrentCultureIgnoreCase));
-
-
-                if (user == null) return new string[] { };
-
-                var roles = from ur in user.Roles
-                            from r in usersContext.Roles
-                            where ur.RoleId == r.Id
-                            select r.Name.Trim();
-                if (roles != null)
-                    return roles.ToArray();
-                else
-                    return new string[] { };
+                return GetRolesForUser(usersContext, username);
             }
+        }
 
+        public string[] GetRolesForUser(ApplicationDbContext usersContext, string username)
+        {
+            var user = usersContext.Users
+                        .Include(u => u.Roles)
+                        .FirstOrDefault(u => u.UserName.Equals(username, StringComparison.CurrentCultureIgnoreCase)
+                                             || u.Email.Equals(username, StringComparison.CurrentCultureIgnoreCase));
+
+            if (user == null) return new string[] { };
+
+            var roleIds = user.Roles.Select(r => r.RoleId);
+
+            var roles = from r in usersContext.Roles
+                        where roleIds.Contains(r.Id)
+                        select r.Name.Trim();
+
+            if (roles != null)
+                return roles.ToArray();
+            else
+                return new string[] { };
         }
 
 
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)
         {
-            foreach(var userName in usernames)
+            foreach (var userName in usernames)
             {
                 var roles = GetRolesForUser(userName);
-                foreach(var roleName in roleNames)
+                foreach (var roleName in roleNames)
                 {
-                    if (!roles.Contains<string>(roleName))
+                    if (!roles.Contains(roleName))
                     {
                         using (var usersContext = new ApplicationDbContext())
                         {
@@ -146,7 +154,7 @@ namespace TrolleyTracker.Controllers
                 var roles = GetRolesForUser(userName);
                 foreach (var roleName in roleNames)
                 {
-                    if (!roles.Contains<string>(roleName))
+                    if (!roles.Contains(roleName))
                     {
                         using (var usersContext = new ApplicationDbContext())
                         {
@@ -173,12 +181,18 @@ namespace TrolleyTracker.Controllers
         {
             using (var usersContext = new ApplicationDbContext())
             {
-                var role = usersContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+                var role = usersContext.Roles
+                                  .Include(r => r.Users)
+                                  .FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
 
-                var users = from ur in role.Users
-                            from u in usersContext.Users
-                            where ur.RoleId == u.Id
+                if (role == null) return new string[] { };
+
+                string[] userIds = role.Users.Select(u => u.UserId).ToArray();
+
+                var users = from u in usersContext.Users
+                            where userIds.Contains(u.Id)
                             select u.UserName.Trim();
+
                 if (users != null)
                     return users.ToArray();
                 else
@@ -189,23 +203,33 @@ namespace TrolleyTracker.Controllers
 
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
         {
-            var regEx = new System.Text.RegularExpressions.Regex(usernameToMatch);
-
             using (var usersContext = new ApplicationDbContext())
             {
-                var role = usersContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
-
-                var users = from ur in role.Users
-                            from u in usersContext.Users
-                            where ur.RoleId == u.Id
-                            && regEx.IsMatch(u.UserName)
-                            select u.UserName.Trim();
-                if (users != null)
-                    return users.ToArray();
-                else
-                    return new string[] { };
+                return FindUsersInRole(usersContext, roleName, usernameToMatch);
             }
+        }
 
+        public string[] FindUsersInRole(ApplicationDbContext usersContext, string roleName, string usernameToMatch)
+        {
+            var regEx = new System.Text.RegularExpressions.Regex(usernameToMatch);
+
+            var role = usersContext.Roles
+                                   .Include(r => r.Users)
+                                   .FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+
+            if (role == null) return new string[] { };
+
+            // First get the possible users from the database
+            string[] userIds = role.Users.Select(u => u.UserId).ToArray();
+            IEnumerable<string> usernames = usersContext.Users.Where(u => userIds.Contains(u.Id)).Select(u => u.UserName).ToArray();
+
+            // Then filter the usernames with the name to match
+            usernames = usernames.Where(u => regEx.IsMatch(u)).Select(u => u.Trim());
+
+            if (usernames != null)
+                return usernames.ToArray();
+            else
+                return new string[] { };
         }
     }
 
