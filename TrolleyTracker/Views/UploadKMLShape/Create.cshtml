@@ -1,0 +1,78 @@
+﻿@model TrolleyTracker.ViewModels.BulkShapesViewModel
+
+@{
+    ViewBag.Title = "Create Shapes";
+}
+
+@using (Html.BeginForm("Create", "UploadKMLShape", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        <h2>
+        @ViewBag.Message
+        </h2>
+    </div>
+
+    <div style="background-color:red; color:white">
+        @ViewBag.ErrorMessage
+    </div>
+
+    <br />
+    <div class="form-group">
+        @Html.LabelFor(model => model.RouteID, "Route:", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("RouteID", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.RouteID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        KML route shape file:
+        <input type="file" name="file" id="idFile" size="140" />
+        <input type="submit" value="Upload" class="save" id="btnid" onclick="return uploadFile();"/>
+        
+    </div>
+
+    <div>
+        * KML file should contain a single circular route path with optional stop positions.  
+        <ul>
+            <li>Stops should be on the right side of trolley path.</li>
+            <li>New stops will be created</li>
+            <li>No stops will be automatically removed.</li>
+            <li>A name is required if stops are included</li>
+        </ul>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function uploadFile() {
+
+            var routeID = $("#RouteID").val();
+            if (routeID == '') {
+                alert('Please select the route to modify');
+                $("#RouteID").focus();
+                return false;
+            }
+
+            var filename = $('#idFile').val();
+
+            if (filename == '') {
+                alert('Please choose a KML route shape file');
+                return false;
+            }
+
+            var Re = /^(([a-zA-Z]:)|(\\{2}\w+)\$?)(\\(\w[\w].*))+(.kml|.KML)$/;
+            if (Re.test(filename) == false) {
+                alert('Please select only .KML type of file');
+                return false;
+            }
+
+            return true;
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -72,6 +72,7 @@
     <Compile Include="EntityFramework\EntityFrameworkActivityLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EntityFramework\WithInterception.cs" />
+    <Compile Include="RouteKMLTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrolleyTracker\TrolleyTracker.csproj">

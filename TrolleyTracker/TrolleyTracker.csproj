@@ -209,7 +209,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AssignStopsToRoutes.cs" />
     <Compile Include="Controllers\BuildScheduleView.cs" />
-    <Compile Include="Controllers\BulkUpoadShapesController.cs" />
+    <Compile Include="Controllers\ParseKML.cs" />
+    <Compile Include="Controllers\UploadKMLShape.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
     <Compile Include="Controllers\CustomAuthorize.cs" />
     <Compile Include="Controllers\CustomRoleProvider.cs" />
@@ -321,6 +322,7 @@
     <Content Include="Content\leaflet\leaflet.css" />
     <Content Include="Content\leaflet\leaflet.js" />
     <Content Include="Content\leaflet\Leaflet.MakiMarkers.js" />
+    <Content Include="Content\leaflet\leaflet.polylineDecorator.js" />
     <Content Include="Content\RouteScheduleSummary.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -534,8 +536,8 @@
     <Content Include="Views\RouteStops\Details.cshtml" />
     <Content Include="Views\RouteStops\Edit.cshtml" />
     <Content Include="Views\RouteStops\Index.cshtml" />
-    <Content Include="Views\BulkUploadShapes\Create.cshtml" />
-    <Content Include="Views\BulkUploadShapes\Index.cshtml" />
+    <Content Include="Views\UploadKMLShape\Create.cshtml" />
+    <Content Include="Views\UploadKMLShape\Index.cshtml" />
     <Content Include="Views\RouteSchedules\Create.cshtml" />
     <Content Include="Views\RouteSchedules\Delete.cshtml" />
     <Content Include="Views\RouteSchedules\Details.cshtml" />
@@ -563,8 +565,6 @@
     <Content Include="Views\Stops\List.cshtml" />
     <Content Include="Views\Stops\CreateAtPosition.cshtml" />
     <Content Include="Views\Stops\Picture.cshtml" />
-    <Content Include="StreetData\AllStreetPaths.osm" />
-    <Content Include="Views\Routes\RouteShape.cshtml" />
     <Content Include="Views\RouteScheduleOverrides\Create.cshtml" />
     <Content Include="Views\RouteScheduleOverrides\Delete.cshtml" />
     <Content Include="Views\RouteScheduleOverrides\Details.cshtml" />
@@ -578,6 +578,7 @@
     <Content Include="Views\Logs\Edit.cshtml" />
     <Content Include="Views\Logs\Index.cshtml" />
     <Content Include="Views\Error\index.cshtml" />
+    <Content Include="Views\UploadKMLShape\RouteShapeConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

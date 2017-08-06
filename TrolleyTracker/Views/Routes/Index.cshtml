@@ -41,9 +41,21 @@
             @Html.DisplayFor(modelItem => item.FlagStopsOnly)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+@if (User.IsInRole("RouteManagers")) {
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
+}
+    |
+
             @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+@if (User.IsInRole("RouteManagers"))
+{
+            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+}
+    |
+@if (User.IsInRole("RouteManagers"))
+{
+            @Html.ActionLink("KML_Upload", "Create", "UploadKMLShape", new { id = item.ID }, null)
+}
         </td>
     </tr>
 }

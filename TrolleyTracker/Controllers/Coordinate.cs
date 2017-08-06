@@ -9,17 +9,14 @@ namespace TrolleyTracker.Controllers
     {
         public double Lat { get; set; }
         public double Lon { get; set; }
-        public int StopID { get; set; }
 
         public Coordinate(double lat, double lon)
         {
-            StopID = -1; // Unassigned
             Lat = lat;
             Lon = lon;
         }
         public Coordinate(string lat, string lon)
         {
-            StopID = -1; // Unassigned
             Lat = Convert.ToDouble(lat);
             Lon = Convert.ToDouble(lon);
         }

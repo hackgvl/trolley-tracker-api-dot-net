@@ -5,7 +5,7 @@
 General layout - 
 
  * Visual Studio 2017 (Release), Visual Studio 2015 might still work
- * SQL Server 2014
+ * SQL Server 2014 / SQL Server Express
  * Code-First development
  * .NET 4.6.2
  * ASP.NET version 4.x

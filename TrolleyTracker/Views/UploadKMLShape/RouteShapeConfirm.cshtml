@@ -1,0 +1,367 @@
+﻿<html>
+
+<head>
+    <title>Trolley Tracker Route Shape</title>
+    <meta charset="utf-8" />
+    <META NAME="Keywords" CONTENT="Trolley,Trolley Tracker,Greenville SC">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/Content/leaflet/leaflet.css" />
+
+    <script src="~/Content/leaflet/leaflet-src.js"></script>
+    <script src="~/Content/leaflet/Leaflet.MakiMarkers.js"></script>
+    <script src="~/Content/leaflet/leaflet.polylineDecorator.js"></script>
+    <script src="~/Content/json2.js"></script>
+
+    @Scripts.Render("~/bundles/jquery")
+
+    @Html.AntiForgeryToken()
+
+    <style>
+        #map {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1;
+        }
+
+        #hyperlink {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            z-index: 2;
+        }
+
+        .leaflet-div-icon2
+        {
+          background:red;
+          border:5px solid rgba(255,255,255,0.5);
+          color:blue;
+          font-weight:bold;
+          text-align:center;
+          border-radius:50%;
+          line-height:30px;
+        }
+    </style>
+
+
+    <script>
+
+        /*if (this.name == "StopChild") {
+            if (document.referrer.indexOf("CreateAtPosition") > -1 ) {
+                this.window.opener.location.reload(); // Redraw, showing new stop -- Could just add marker
+            }
+            this.close();  // Redirect refresh from editor - close child window and return to parent stop map
+        } */
+
+        var lat = 34.85066;
+        var lon = -82.39901;
+        var currentZoom = 14;
+        var apiURL = location.protocol + '//' + window.location.host + "/api/v1/";
+
+        var map; //complex object of type Leaflet Map
+        var dragStartPosition;
+        var popup;  // Currently open popup
+        var newStopPosition;
+
+        var draggableMarkers = 'false';
+        @if (User.IsInRole("RouteManagers")) {
+            <text>
+        draggableMarkers = 'true';
+        </text>
+        }
+
+        // Street data objects
+        var nodes;  // A point describing part of a street shape
+        var ways; // A street path defined by a series of nodes
+        var intersections; // A node which connects 2 or more streets
+
+        // Database objects
+        var stops;
+
+
+        // Constants
+        var Gray = "#888888";
+        var Red = "#880000";
+        var Green = "#00cc00";
+        var DarkGreen = "#006600";
+
+
+        function GetBusIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "bus", color: markerColor, size: "m" });
+            return markerIcon;
+        }
+
+        function GetStopIcon(markerColor) {
+            var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+            return markerIcon;
+        }
+
+
+        // Return array of keys for an associative array
+        function GetKeys(associativeArray) {
+            var keys = [];
+            for (var key in associativeArray) {
+                if (associativeArray.hasOwnProperty(key)) {
+                    keys.push(key);
+                }
+            }
+            return keys;
+        }
+
+
+
+        var ajax = {};
+        ajax.x = function () {
+            if (typeof XMLHttpRequest !== 'undefined') {
+                return new XMLHttpRequest();
+            }
+            var versions = [
+                "MSXML2.XmlHttp.6.0",
+                "MSXML2.XmlHttp.5.0",
+                "MSXML2.XmlHttp.4.0",
+                "MSXML2.XmlHttp.3.0",
+                "MSXML2.XmlHttp.2.0",
+                "Microsoft.XmlHttp"
+            ];
+
+            var xhr;
+            for (var i = 0; i < versions.length; i++) {
+                try {
+                    xhr = new ActiveXObject(versions[i]);
+                    break;
+                } catch (e) {
+                }
+            }
+            return xhr;
+        };
+
+
+
+        ajax.send = function (url, callback, method, data, sync) {
+            var x = ajax.x();
+            x.open(method, url, sync);
+            x.setRequestHeader("Accept", "application/json");
+            x.onreadystatechange = function () {
+                if (x.readyState == 4) {
+                    callback(x.responseText)
+                }
+            };
+            if (method == 'POST') {
+                x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            }
+            x.send(data)
+        };
+
+        ajax.get = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url + (query.length ? '?' + query.join('&') : ''), callback, 'GET', null, sync)
+        };
+
+        ajax.post = function (url, data, callback, sync) {
+            var query = [];
+            for (var key in data) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            }
+            ajax.send(url, callback, 'POST', query.join('&'), sync)
+        };
+
+        //Initialise the 'map' object
+        function init() {
+
+            params = getQueryParams(document.location.search);
+
+            if (params['mlat'] && params['mlon'] && params['zoom']) {
+                currentZoom = params['zoom'];
+                lat = params['mlat'];
+                lon = parms['mlon'];
+            }
+
+
+            //map = L.map('map', {
+            //	center: [lat, lon],
+            //		zoom: currentZoom
+            //});
+
+            map = L.map('map').setView([lat, lon], currentZoom);
+
+
+            var southWest = new L.LatLng(36.48396, -84.76368),
+            northEast = new L.LatLng(33.21611, -80.1432),
+            bounds = new L.LatLngBounds(southWest, northEast);
+
+            map.setMaxBounds(bounds);
+
+            //First, specify your Mapbox API access token
+            L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg";
+
+            // Tile access key below is limited - for similar applications, apply for a developer key at http://www.mapbox.com
+            L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets'
+            }).addTo(map);
+
+
+            DrawRoutePath();
+
+            ShowNewStops();
+
+            return;
+
+        }
+
+
+        function ShowNewStops() {
+            var newStopsText = '';
+
+            var newStopsJSON = '@Html.Raw(ViewData["NewRouteStops"]) ';
+            var stopsList = JSON.parse(newStopsJSON);
+            var separator = stopsList.length + ' new stops to add:';
+            for (i = 0; i < stopsList.length; i++) {
+                var stop = stopsList[i];
+                var latLng = new L.LatLng(stop.Lat, stop.Lon);
+                var title = stop.Name;
+                var marker = L.marker(latLng, { title: title, icon: GetStopIcon(DarkGreen) });
+                marker.bindPopup(title).openPopup();
+                marker.addTo(map);
+
+                newStopsText += separator + stop.Name;
+                separator = ', ';
+            }
+
+            document.getElementById("idNewStops").innerHTML = newStopsText;
+        }
+
+        function DrawRoutePath() {
+            var routeShapeJSON = '@Html.Raw(ViewData["RouteShapeJSON"]) ';
+
+            var shapeList = JSON.parse(routeShapeJSON);
+            var latlngs = [];
+            for (i = 0; i < shapeList.length; i++) {
+                var latLon = new L.LatLng(shapeList[i].Lat, shapeList[i].Lon);
+                latlngs[i] = latLon;
+            }
+
+            var routePolyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+
+            var arrowHead = L.polylineDecorator(routePolyline, {
+                patterns: [
+                    { offset: '1%', repeat: 40, symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: false, pathOptions: { stroke: true } }) }
+                ]
+            }).addTo(map);
+        }
+
+
+
+
+
+
+            function CloseLeafletPopup() {
+                $(".leaflet-popup-close-button")[0].click();
+            }
+
+
+            function DebugLog(message) {
+                if (window.console) console.log(message);
+            }
+
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+
+                for (var key in params) {
+                    if (params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+
+                        form.appendChild(hiddenField);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+
+            function getQueryParams(qs) {
+                qs = qs.split("+").join(" ");
+
+                var params = {}, tokens,
+                    re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(qs)) {
+                    params[decodeURIComponent(tokens[1])]
+                        = decodeURIComponent(tokens[2]);
+                }
+
+                return params;
+            }
+
+
+
+            function ScrollMapTo(lon, lat, zoom) {
+
+                var mapCenter = new L.LatLng(lat, lon);
+                map.setView(mapCenter, zoom);
+
+            }
+
+            function BtnDisable() {
+                document.getElementById("idUpdate").disabled = true;
+                return true;
+            }
+
+    </script>
+
+</head>
+<body>
+
+    <div style="width:100%; height:80%" id="map">
+    </div>
+    <div style="width:90%; height:20%; position:absolute; bottom:0px"  id="idFormConfirm">
+@using (Html.BeginForm("CreateConfirm", "UploadKMLShape", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group" style="font-size:larger; font-weight:bold">
+
+            Confirm: Modify route path for @Html.Raw(ViewData["RouteName"]) :
+            <input type="hidden" name="RouteShapeJSON" id="RouteShapeJSON" value='@Html.Raw(ViewData["RouteShapeJSON"])' />
+            <input type="hidden" name="NewRouteStops" id="NewRouteStops" value='@Html.Raw(ViewData["NewRouteStops"])' />
+            <input type="hidden" name="RouteID" id="RouteID" value='@Html.Raw(ViewData["RouteID"])' />
+            <input type="submit" value="Update" id="idUpdate" class="btn btn-default" onclick="BtnDisable();" />
+            <input type="submit" value="Cancel" id="idCancel" class="btn btn-default" onclick="window.location = '/UploadKMLShape/Create'; return false" />
+    </div>
+    <div id="idNewStops">
+
+    </div>
+
+
+}
+
+    </div>
+
+    <div id="hyperlink">
+<a href="~/">Back to Home</a>
+    </div>
+
+    <div>
+        <script>
+	init();
+
+        </script>
+    </div>
+
+</body>
+</html>
+
