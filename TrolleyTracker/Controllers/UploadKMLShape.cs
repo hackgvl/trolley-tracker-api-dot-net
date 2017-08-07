@@ -84,10 +84,15 @@ namespace TrolleyTracker.Controllers
 
                     ViewData["RouteShapeJSON"] = shapeJSON;
 
-                    var newStops = FindNewStops(routeData.RouteStops);
+                    List<Stop> newStops = null;
+                    List<Stop> oldStops = null;
+                    FindNewStops(routeData.RouteStops, ref newStops, ref oldStops);
 
                     string stopsJSON = new JavaScriptSerializer().Serialize(newStops);
                     ViewData["NewRouteStops"] = stopsJSON;
+
+                    stopsJSON = new JavaScriptSerializer().Serialize(oldStops);
+                    ViewData["OldRouteStops"] = stopsJSON;
 
                     ViewData["RouteName"] = route.ShortName;
                     ViewData["RouteID"] = routeID;
@@ -119,11 +124,12 @@ namespace TrolleyTracker.Controllers
 
         }
 
-        private List<Stop> FindNewStops(List<Stop> routeStops)
+        private void FindNewStops(List<Stop> routeStops, ref List<Stop> newStops, ref List<Stop> oldStops)
         {
             double Epsilon = 20.0; // Max distance in meters for matching stop
 
-            var newStops = new List<Stop>();
+            newStops = new List<Stop>();
+            oldStops = new List<Stop>();
 
             var dbStopsList = (from s in db.Stops
                             select s).ToList();
@@ -142,10 +148,12 @@ namespace TrolleyTracker.Controllers
                         break;
                     }
                 }
-                if (!match) newStops.Add(testStop);
+                if (match)
+                    oldStops.Add(testStop);
+                else
+                    newStops.Add(testStop);
             }
 
-            return newStops;
         }
 
 

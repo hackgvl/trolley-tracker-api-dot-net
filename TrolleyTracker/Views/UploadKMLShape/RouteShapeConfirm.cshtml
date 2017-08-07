@@ -207,24 +207,35 @@
 
             DrawRoutePath();
 
-            ShowNewStops();
+            ShowStops();
 
             return;
 
         }
 
 
-        function ShowNewStops() {
-            var newStopsText = '';
+        function ShowStops() {
 
             var newStopsJSON = '@Html.Raw(ViewData["NewRouteStops"]) ';
-            var stopsList = JSON.parse(newStopsJSON);
-            var separator = stopsList.length + ' new stops to add:';
+            var newStopsText = DrawStopMarkers(newStopsJSON, DarkGreen);
+            var div = document.getElementById('idNewStops');
+            div.innerHTML = div.innerHTML + newStopsText;
+
+            var oldStopsJSON = '@Html.Raw(ViewData["OldRouteStops"]) ';
+            DrawStopMarkers(oldStopsJSON, Gray);
+
+        }
+
+
+        function DrawStopMarkers(stopsJSON, stopColor) {
+            var newStopsText = '';  // List of stop names ignored for existing stops
+            var stopsList = JSON.parse(stopsJSON);
+            var separator = '<b>' + stopsList.length + ' new stops to add:</b> ';
             for (i = 0; i < stopsList.length; i++) {
                 var stop = stopsList[i];
                 var latLng = new L.LatLng(stop.Lat, stop.Lon);
                 var title = stop.Name;
-                var marker = L.marker(latLng, { title: title, icon: GetStopIcon(DarkGreen) });
+                var marker = L.marker(latLng, { title: title, icon: GetStopIcon(stopColor) });
                 marker.bindPopup(title).openPopup();
                 marker.addTo(map);
 
@@ -232,7 +243,7 @@
                 separator = ', ';
             }
 
-            document.getElementById("idNewStops").innerHTML = newStopsText;
+            return newStopsText;
         }
 
         function DrawRoutePath() {
@@ -343,6 +354,7 @@
             <input type="submit" value="Cancel" id="idCancel" class="btn btn-default" onclick="window.location = '/UploadKMLShape/Create'; return false" />
     </div>
     <div id="idNewStops">
+        (New stops to add are shown in Green, existing stops shown in Gray.)
 
     </div>
 
