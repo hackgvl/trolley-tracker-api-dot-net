@@ -17,6 +17,11 @@
         <th>
             @Html.DisplayNameFor(model => model.LongName)
         </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.RouteColorRGB)
+        </th>
+        <th>Color</th>
         <th>
             @Html.DisplayNameFor(model => model.Description)
         </th>
@@ -34,6 +39,11 @@
         <td>
             @Html.DisplayFor(modelItem => item.LongName)
         </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.RouteColorRGB)
+        </td>
+        <td width="10" style="background-color:  @Html.DisplayFor(modelItem => item.RouteColorRGB)"></td>
         <td>
             @Html.DisplayFor(modelItem => item.Description)
         </td>

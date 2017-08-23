@@ -9,6 +9,7 @@
 
     <script src="~/Content/leaflet/leaflet.js"></script>
     <script src="~/Content/leaflet/Leaflet.MakiMarkers.js"></script>
+    <script src="~/Content/leaflet/leaflet.polylineDecorator.js"></script>
     <script src="~/Content/json2.js"></script>
 
     <style>
@@ -45,6 +46,7 @@
 
         // Constants
         var Gray = "#888888";
+        var Black = "#000000";
         var Green = "#00cc00";
         var DarkGreen = "#006600";
 
@@ -232,6 +234,7 @@
                 var route = new Object();
                 route.ID = ID;
                 route.ShortName = routeList[i].ShortName;
+                route.RouteColorRGB = routeList[i].RouteColorRGB;
                 route.Active = false;
 
                 routes[ID] = route;
@@ -326,7 +329,7 @@
                 var ID = stopArray[i].ID;
                 var stop = stops[ID];
                 if (routes[routeID].Active) {
-                    stop.Marker.setIcon(GetStopIcon(DarkGreen));
+                    stop.Marker.setIcon(GetStopIcon(Black));
                     stop.Marker.setOpacity(1.0);  // Ensure that stop is shown
                 }
             }
@@ -343,12 +346,12 @@
 
                 var routeColor = 'blue';
                 if (routes[routeID].Active) {
-                    routeColor = 'green';
+                    routeColor = routes[routeID].RouteColorRGB;
                 }
                 var routeLine = new L.Polyline(vertices, {
                     color: routeColor,
                     weight: 3,
-                    opacity: 0.5,
+                    opacity: 0.7,
                     smoothFactor: 1
                 });
 

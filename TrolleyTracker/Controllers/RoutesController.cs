@@ -47,7 +47,10 @@ namespace TrolleyTracker.Controllers
         [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
-            return View();
+
+            var r = new Route();
+            r.RouteColorRGB = "#008000";  // Must have starting value for Farbtastic
+            return View(r);
         }
 
         // POST: Routes/Create
@@ -56,7 +59,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly")] Route route)
+        public ActionResult Create([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly,RouteColorRGB")] Route route)
         {
             if (ModelState.IsValid)
             {
@@ -135,7 +138,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly")] Route route)
+        public ActionResult Edit([Bind(Include = "ID,ShortName,LongName,Description,FlagStopsOnly,RouteColorRGB")] Route route)
         {
             if (ModelState.IsValid)
             {

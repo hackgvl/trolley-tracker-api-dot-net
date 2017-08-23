@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -266,6 +267,10 @@
     <Compile Include="Migrations\201705262120510_TrolleyColor.cs" />
     <Compile Include="Migrations\201705262120510_TrolleyColor.Designer.cs">
       <DependentUpon>201705262120510_TrolleyColor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708230113547_AddRouteColor.cs" />
+    <Compile Include="Migrations\201708230113547_AddRouteColor.Designer.cs">
+      <DependentUpon>201708230113547_AddRouteColor.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -617,6 +622,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705262120510_TrolleyColor.resx">
       <DependentUpon>201705262120510_TrolleyColor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708230113547_AddRouteColor.resx">
+      <DependentUpon>201708230113547_AddRouteColor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
