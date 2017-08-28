@@ -327,9 +327,10 @@
 
             }
 
-            function BtnDisable() {
+            function btnUpdate() {
                 document.getElementById("idUpdate").disabled = true;
-                return true;
+                document.getElementById("frmKML").submit();
+                document.getElementById("idUploadMessage").innerHTML = "Uploading...";
             }
 
     </script>
@@ -340,7 +341,9 @@
     <div style="width:100%; height:80%" id="map">
     </div>
     <div style="width:90%; height:20%; position:absolute; bottom:0px"  id="idFormConfirm">
-@using (Html.BeginForm("CreateConfirm", "UploadKMLShape", FormMethod.Post))
+
+
+@using (Html.BeginForm("CreateConfirm", "UploadKMLShape", FormMethod.Post, new { id = "frmKML" }))
 {
     @Html.AntiForgeryToken()
 
@@ -350,7 +353,7 @@
             <input type="hidden" name="RouteShapeJSON" id="RouteShapeJSON" value='@Html.Raw(ViewData["RouteShapeJSON"])' />
             <input type="hidden" name="NewRouteStops" id="NewRouteStops" value='@Html.Raw(ViewData["NewRouteStops"])' />
             <input type="hidden" name="RouteID" id="RouteID" value='@Html.Raw(ViewData["RouteID"])' />
-            <input type="submit" value="Update" id="idUpdate" class="btn btn-default" onclick="BtnDisable();" />
+            <input type="button" id="idUpdate" value="Update" class="btn btn-default" onclick="btnUpdate();"><span id="idUploadMessage"></span>
             <input type="submit" value="Cancel" id="idCancel" class="btn btn-default" onclick="window.location = '/UploadKMLShape/Create'; return false" />
     </div>
     <div id="idNewStops">
