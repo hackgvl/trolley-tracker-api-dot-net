@@ -29,7 +29,10 @@ Current server time is: @ViewBag.ServerTime
 
 </p>
 <p>
+@if (User.IsInRole("RouteManagers"))
+{
     @Html.ActionLink("Create New", "Create")
+}
 </p>
 <table class="table">
     <tr>
@@ -69,9 +72,14 @@ Current server time is: @ViewBag.ServerTime
             @Html.DisplayFor(modelItem => item.Route.ShortName)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+@if (User.IsInRole("RouteManagers"))
+{
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
+@Html.Raw(" | ")
+            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+}
+            |
+            @Html.ActionLink("Details", "Details", new { id = item.ID })
         </td>
     </tr>
 }
