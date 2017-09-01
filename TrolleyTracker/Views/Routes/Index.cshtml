@@ -65,6 +65,8 @@
             @Html.ActionLink("Delete", "Delete", new { id = item.ID })
 @Html.Raw(" | ")
         @Html.ActionLink("KML_Upload", "Create", "UploadKMLShape", new { id = item.ID }, null)
+@Html.Raw(" | ")
+    @Html.ActionLink("New_Variation", "CreateVariationFrom", new { id = item.ID }, null)
 }
         </td>
     </tr>

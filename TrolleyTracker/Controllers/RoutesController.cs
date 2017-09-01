@@ -53,6 +53,25 @@ namespace TrolleyTracker.Controllers
             return View(r);
         }
 
+        // GET: Routes/CreateVariationFrom/5
+        [CustomAuthorize(Roles = "RouteManagers")]
+        public ActionResult CreateVariationFrom(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var r = new Route();
+            r.RouteColorRGB = "#008000";  // Must have starting value for Farbtastic
+            Route referenceRoute = db.Routes.Find(id);
+            if (referenceRoute != null)
+            {
+                r.RouteColorRGB = referenceRoute.RouteColorRGB;
+            }
+            return View("Create", r);
+        }
+
         // POST: Routes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -63,12 +82,37 @@ namespace TrolleyTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var testRoute = from r in db.Routes
+                                where r.ShortName == route.ShortName
+                                select r;
+                if (testRoute.Count<Route>() > 0)
+                {
+                    ViewBag.ErrorMessage = $"Unable to create - Route name {route.ShortName} already exists";
+                    return View("Create", route);
+                }
+                               
+
+
                 db.Routes.Add(route);
                 db.SaveChanges();
 
                 logger.Info($"Created route '{route.ShortName}' ({route.Description})");
 
-                return RedirectToAction("Index");
+                var uploadAlsoFlag = Request.Form["UploadAlso"];
+                if (uploadAlsoFlag != null)
+                {
+                    if (uploadAlsoFlag == "yes")
+                    {
+                        return RedirectToAction("Create", "UploadKMLShape", new { Id = route.ID });
+                    }
+                    else
+                    {
+                        // List all routes
+                        return RedirectToAction("Index");
+                    }
+                }
+
             }
 
             return View(route);

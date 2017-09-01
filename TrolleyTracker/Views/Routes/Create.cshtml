@@ -6,10 +6,14 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm()) 
+<div style="background-color:red; color:white">
+    @ViewBag.ErrorMessage
+</div>
+
+@using (Html.BeginForm("Create", "Routes", FormMethod.Post, new { id = "frmCreate" }))
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Route</h4>
         <hr />
@@ -56,8 +60,12 @@
         </div>
 
         <div class="form-group">
+            <input type="hidden" name="UploadAlso" id="UploadAlso" value="" />
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="button" value="Create" id ="btnCreate" onclick="SaveFormData('');" class="btn btn-default" />
+            </div>
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Create and Upload KML Route Path" id="btnCreateUpload" onclick="SaveFormData('yes');" class="btn btn-default" />
             </div>
         </div>
     </div>
@@ -69,6 +77,36 @@
 
 @section Scripts {
     <script>
+
+        function SaveFormData(uploadAlso) {
+
+            var routeID = $("#ShortName").val();
+            if (routeID == '') {
+                alert('Please enter a short name');
+                $("#ShortName").focus();
+                return;
+            }
+
+            var routeID = $("#LongName").val();
+            if (routeID == '') {
+                alert('Please enter a long name');
+                $("#LongName").focus();
+                return;
+            }
+
+            var routeID = $("#Description").val();
+            if (routeID == '') {
+                alert('Please enter a description');
+                $("#Description").focus();
+                return;
+            }
+
+            $("#UploadAlso").val(uploadAlso);
+
+            $("#frmCreate").submit();
+        }
+
+
     $(document).ready(function () {
         $('#colorpicker').farbtastic('#RouteColorRGB');
     });
