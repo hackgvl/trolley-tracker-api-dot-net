@@ -14,7 +14,7 @@ Toolset -
 
 ## General Layout
 
-![System Block Diagram](doc/SystemBlockDiagram.jpg?raw=true "System Block Diagram")
+![System Block Diagram](https://raw.githubusercontent.com/codeforgreenville/trolley-tracker-api-dot-net/master/Doc/SystemBlockDiagram.jpg)
 
 Parameters may be viewed from a web browser.  For changes, Login to the web app with a user with a route management role - ManageTrolley@yeahthattrolley.com for example.  
 
