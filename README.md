@@ -14,7 +14,7 @@ Toolset -
 
 ## General Layout
 
-![System Block Diagram](doc/SystemBlockDiagram.jpg)
+![System Block Diagram](doc/SystemBlockDiagram.jpg?raw=true "System Block Diagram")
 
 Parameters may be viewed from a web browser.  For changes, Login to the web app with a user with a route management role - ManageTrolley@yeahthattrolley.com for example.  
 
