@@ -1,8 +1,8 @@
 # trolley-tracker
 
-###Trolley Tracker route data management and API interface
+### Trolley Tracker route data management and API interface
 
-General layout - 
+Toolset -
 
  * Visual Studio 2017 (Release), Visual Studio 2015 might still work
  * SQL Server 2014 / SQL Server Express
@@ -12,27 +12,30 @@ General layout -
  * MVC version 5
  * Entity Framework 6.3
 
+## General Layout
+
+![System Block Diagram](doc/SystemBlockDiagram.jpg)
 
 Parameters may be viewed from a web browser.  For changes, Login to the web app with a user with a route management role - ManageTrolley@yeahthattrolley.com for example.  
 
-##Server location
+## Server location
 
  The API and web Server is located at http://api.yeahthattrolley.com
 
  There is a Dev server located at http://yeahthattrolley.azurewebsites.net/ .  The purpose of the dev server is for testing client apps when there is no current trolley running.  The schedule may be changed as needed to activate route(s).
 
 
-##API
+## API
 
  NOTE: Refer to the Javascript located in source folder DBVisualizer / index.html for example parse sequences.   Most applications will only need a subset of those calls.
 
 API views may be entered into a browser and the results will be in XML.  API views called from CURL and specified with text/xml return as XML.   Applications wishing for JSON should specify in their request “Content-type: application/json; charset=utf-8”
 
-####GET /api/v1/Trolleys/Running
+#### GET /api/v1/Trolleys/Running
 Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.  
 No trolleys will be returned if no route is currently scheduled.   To see any active trolley beacon, regardless of schedule, append a debug parameter formatted as GET /api/v1/Trolleys/Running?debug=true
 
-####POST /api/v1/Trolleys/:Number/Location
+#### POST /api/v1/Trolleys/:Number/Location
 
 Updates specified trolley location with the posted Lat and Lon parameters.  This API may use BASIC authentication - for example - 
 
@@ -43,38 +46,38 @@ Note: The URL and authorization parameters will change when the application is m
 The :Number is an arbitrary number assigned to the vehicle beacon in the settings as "Trolley ID" when installed.  This is different from the database ID.   All other API settings below use the database ID and not the trolley number.   If Greenlink has any identification for each trolley, be sure to add that to the description when installing.
 
 
-####GET  /api/v1/Trolleys
+#### GET  /api/v1/Trolleys
 Gets list of Trolleys.   ID is the database handle, while the 'Number' field is the number assigned to that trolley by Greenlink or the instance of our Vehicle app.
 
-####GET /api/v1/Trolleys/:ID/Location
+#### GET /api/v1/Trolleys/:ID/Location
 Details about a specific trolley
 
-####GET /api/v1/Routes
+#### GET /api/v1/Routes
 Returns a summary of all routes.   A route that is Flag-Stop only will have no identified stops.   (Trolley stops anywhere that is safe upon being hailed).
 
-####GET /api/v1/Routes/:ID
+#### GET /api/v1/Routes/:ID
 Route detail - including stops in order and route path
 
-####GET /api/v1/Stops
+#### GET /api/v1/Stops
 Get list of stops on all routes
 
-####GET /api/v1/Stops/Regular
+#### GET /api/v1/Stops/Regular
 Get list of stops on all routes which have a regular, fixed schedule
 
-####GET /api/v1/Stops/:ID
+#### GET /api/v1/Stops/:ID
 Gets info about a single stop
 
-####GET /api/v1/Routes/Active
+#### GET /api/v1/Routes/Active
 Returns list of routes active according to the current schedule.
 
-####GET /api/v1/RouteSchedules
+#### GET /api/v1/RouteSchedules
 Returns a list of route schedules.   Mostly for information, but probably no direct usage.
 
-####GET /api/v1/RouteSchedules/:ID
+#### GET /api/v1/RouteSchedules/:ID
 Return a specific route schedule.
 
 
-##Stop editor
+## Stop editor
 
 Stops have been moved out onto a map display.    If the user has edit privileges:
 
@@ -88,12 +91,12 @@ Stops have been moved out onto a map display.    If the user has edit privileges
 Stops List (text) is the old summary screen, placed there for reference, but may be removed if not needed in the future.
 
 
-##User Credentials
+## User Credentials
 
 Anyone may view public data from the web app without a login.    Public procedures are those controller endpoints that have no 'CustomAuthorization' parameters, such as **[CustomAuthorize(Roles = "Vehicles")**.   In order for a user to interact with that endpoint, they must be a member of that named role.
 
 
-###Setting up a new development environment or on a new server where the old user database was lost.   
+### Setting up a new development environment or on a new server where the old user database was lost.   
 
 **Note:** It may be possible to run from a local DB on a development system by changing the connection string in Web.Config
 
