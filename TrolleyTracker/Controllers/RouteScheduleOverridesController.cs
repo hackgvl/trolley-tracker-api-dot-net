@@ -136,7 +136,7 @@ namespace TrolleyTracker.Controllers
                 db.SaveChanges();
                 PurgeOldOverrides();
 
-                logger.Info($"Created special schedule ID #{routeScheduleOverride.ID} type '{routeScheduleOverride.OverrideType.ToString()}' at '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
+                logger.Info($"Created special schedule ID #{routeScheduleOverride.ID} type '{routeScheduleOverride.OverrideType.ToString()}' at {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
 
                 return RedirectToAction("Index");
             }
@@ -224,7 +224,7 @@ namespace TrolleyTracker.Controllers
                 db.Entry(routeScheduleOverride).State = EntityState.Modified;
                 db.SaveChanges();
 
-                logger.Info($"Edited special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
+                logger.Info($"Edited special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at  {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
 
                 return RedirectToAction("Index");
             }
@@ -256,6 +256,7 @@ namespace TrolleyTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+            logger.Info($"Deleted special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at  {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
             db.RouteScheduleOverrides.Remove(routeScheduleOverride);
             db.SaveChanges();
             return RedirectToAction("Index");
