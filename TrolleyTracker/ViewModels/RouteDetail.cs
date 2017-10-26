@@ -17,6 +17,7 @@ namespace TrolleyTracker.ViewModels
             this.LongName = route.LongName;
             this.Description = route.Description;
             this.FlagStopsOnly = route.FlagStopsOnly;
+            this.RouteColorRGB = route.RouteColorRGB;
 
             this.RoutePath = new List<Location>();
             this.Stops = new List<StopSummary>();    
@@ -40,6 +41,8 @@ namespace TrolleyTracker.ViewModels
 
         [DataMember(Name = "RouteShape")]
         public List<Location> RoutePath { get; set; }
+        [DataMember(Name = "RouteColorRGB")]
+        public string RouteColorRGB { get; set; }
     }
 }
 
