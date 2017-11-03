@@ -456,6 +456,9 @@
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\DEV yeahthattrolley - Publish to Azure.pubxml" />
+    <None Include="Properties\PublishProfiles\GreenvilleTrolleyTracker - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\PRODUCTION GreenvilleTrolleyTracker - Azure Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
@@ -467,7 +470,6 @@
     <Content Include="Scripts\jquery-2.2.1.min.js" />
     <Content Include="Scripts\jquery-2.2.1.min.map" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\yeahthattrolley - Publish to Azure.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
@@ -584,6 +586,7 @@
     <Content Include="Views\Logs\Index.cshtml" />
     <Content Include="Views\Error\index.cshtml" />
     <Content Include="Views\UploadKMLShape\RouteShapeConfirm.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

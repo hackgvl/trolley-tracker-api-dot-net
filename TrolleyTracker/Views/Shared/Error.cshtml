@@ -1,17 +1,33 @@
-{
-    Layout = null;
+﻿@{ 
+    var logger = NLog.LogManager.GetCurrentClassLogger();
+    var exception = Server.GetLastError();
+
+    var errorPage = Request.Params["aspxerrorpath"];
+    if (exception == null)
+    {
+        var message = "Unknown exception occurred - global error page on " + errorPage;
+        logger.Info(message);
+    }
+    else
+    {
+        var message = String.Format("Unhandled Exception happened on {0}: {1}; with message: {2}", errorPage, exception.GetType(), exception.Message);
+        logger.Error(exception, message);
+    }
+
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
+    <meta charset="utf-8" />
+    <title>Error occurred! Sorry about that</title>
 </head>
 <body>
-    <hgroup>
-        <h1>Error.</h1>
-        <h2>An error occurred while processing your request.</h2>
-    </hgroup>
+<h2>OOPS! An Error Occurred</h2>
+
+Sorry about this.
+
+<p> We have recorded this error.   If it continues, please notify us at <a href="mailto:yeahthattrolley@gmail.com">yeahthattrolley@gmail.com</a> </p>
+    <p>Return to <a href="/">Home page</a></p>
 </body>
 </html>

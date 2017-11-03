@@ -5,6 +5,7 @@ using System.Data.Entity;
 using TrolleyTracker.Models;
 using TrolleyTracker.ViewModels;
 using MvcSchedule.Objects;
+using NLog;
 
 namespace TrolleyTracker.Controllers
 {
@@ -12,21 +13,42 @@ namespace TrolleyTracker.Controllers
     {
         public static List<string> daysOfWeek = new List<string> { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public static RouteScheduleViewModel ConfigureScheduleView(TrolleyTrackerContext db, bool calculateEffectiveSchedule)
         {
             var vm = new RouteScheduleViewModel();
-            var routeSchedules = from rs in db.RouteSchedules.Include(rs => rs.Route)
-                                 orderby rs.DayOfWeek, rs.StartTime ascending, rs.Route.ShortName ascending
-                                 select rs;
-            vm.RouteSchedules = (System.Data.Entity.Infrastructure.DbQuery<RouteSchedule>)routeSchedules;
+            //var routeScheduleList = (from rs in db.RouteSchedules.Include(rs => rs.Route)
+            //                         orderby rs.DayOfWeek, rs.StartTime ascending, rs.Route.ShortName ascending
+            //                         select rs).ToList();
+            //var routeScheduleList = (from rs in db.RouteSchedules
+            //                         from route in db.Routes
+            //                         where rs.Route == route
+            //                         orderby rs.DayOfWeek, rs.StartTime ascending, route.ShortName ascending
+            //                         select rs).ToList();
+
+            var routeScheduleList = db.RouteSchedules
+                .Include(rs => rs.Route)
+                .OrderBy(rs => rs.DayOfWeek)
+                .ThenBy(rs => rs.StartTime)
+                .ThenBy(rs => rs.Route.ShortName)
+                .ToList();
+
+            vm.RouteSchedules = routeScheduleList;
 
             if (calculateEffectiveSchedule)
             {
-                var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute)
-                                                 orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
-                                                 select rso).ToList<RouteScheduleOverride>();
+                //var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute)
+                //                                 orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
+                //                                 select rso).ToList<RouteScheduleOverride>();
+                var routeScheduleOverrideList = db.RouteScheduleOverrides
+                    .Include(rso => rso.OverriddenRoute)
+                    .Include(rso => rso.NewRoute)
+                    .OrderBy(rso => rso.OverrideDate)
+                    .ThenBy(rso => rso.StartTime)
+                    .ThenBy(rso => rso.NewRoute.ShortName)
+                    .ToList();
 
-                var routeScheduleList = routeSchedules.ToList<RouteSchedule>();
                 vm.EffectiveRouteSchedules = BuildEffectiveRouteSchedule(routeScheduleList, routeScheduleOverrideList);
             }
 
@@ -65,22 +87,47 @@ namespace TrolleyTracker.Controllers
             IEnumerable<RouteScheduleOverride> routeScheduleOverrides
             )
         {
-            var localNow = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
-            var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
-            var effectiveRouteSchedules = BuildEffectiveRouteSchedule(localNow, 14, routeSchedules, scheduleToDate, routeScheduleOverrides);
-            
             var effectiveScheduleSummaries = new List<RouteScheduleSummary>();
 
-            foreach(var routeSchedule in effectiveRouteSchedules)
+            try
             {
-                var scheduleSummary = new RouteScheduleSummary(routeSchedule);
-                var scheduleDate = scheduleToDate[routeSchedule];
-                scheduleSummary.DayOfWeek = scheduleDate.ToShortDateString() + " " + scheduleSummary.DayOfWeek;
-                effectiveScheduleSummaries.Add(scheduleSummary);
+
+                var localNow = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+                var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
+                var effectiveRouteSchedules = BuildEffectiveRouteSchedule(localNow, 14, routeSchedules, scheduleToDate, routeScheduleOverrides);
+
+                foreach (var routeSchedule in effectiveRouteSchedules)
+                {
+                    var scheduleSummary = new RouteScheduleSummary(routeSchedule);
+                    var scheduleDate = scheduleToDate[routeSchedule];
+                    scheduleSummary.DayOfWeek = scheduleDate.ToShortDateString() + " " + scheduleSummary.DayOfWeek;
+                    effectiveScheduleSummaries.Add(scheduleSummary);
+                }
+
+                // Sorting is needed to avoid some unusual MVCSchedule bugs - order may have been changed
+                // after some route start times were delayed.
+                effectiveScheduleSummaries.Sort(CompareRouteStartTimes);
+            }
+            catch (Exception ex)
+            {
+                var message = String.Format($"Exception building schedule: {ex.GetType()}; with message: {ex.Message}");
+                logger.Error(ex, message);
+
             }
 
             return effectiveScheduleSummaries;
 
+        }
+
+        private static int CompareRouteStartTimes(RouteScheduleSummary routeSchedule1, RouteScheduleSummary routeSchedule2)
+        {
+            DateTime startDate1 = DateTime.Parse(routeSchedule1.DayOfWeek);
+            DateTime startDate2 = DateTime.Parse(routeSchedule2.DayOfWeek);
+            int dateCompare = startDate1.CompareTo(startDate2);
+            if (dateCompare != 0) return dateCompare;
+            DateTime startTime1 = DateTime.Parse(routeSchedule1.StartTime);
+            DateTime startTime2 = DateTime.Parse(routeSchedule2.StartTime);
+            return startTime1.CompareTo(startTime2);
         }
 
         public static List<RouteSchedule> BuildEffectiveRouteSchedule(DateTime startDate, int numDays,

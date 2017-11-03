@@ -18,7 +18,7 @@ namespace TrolleyTracker.ViewModels
             Options = new MvcScheduleGeneralOptions();
         }
 
-        public System.Data.Entity.Infrastructure.DbQuery<RouteSchedule> RouteSchedules { get; set; }
+        public IEnumerable<RouteSchedule> RouteSchedules { get; set; }
         public List<RouteScheduleSummary> EffectiveRouteSchedules { get; set; }
         public System.Data.Entity.Infrastructure.DbQuery<RouteScheduleOverride> RouteScheduleOverrides { get; set; }
         public MvcScheduleGeneralOptions Options { get; set; }

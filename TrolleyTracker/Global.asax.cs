@@ -8,6 +8,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
+using NLog;
 
 namespace TrolleyTracker
 {
@@ -62,6 +63,33 @@ namespace TrolleyTracker
             {
                 Context.Response.Cookies.Clear();
             }
+        }
+
+
+        void Application_Error(object sender, EventArgs e)
+        {
+            // Code that runs when an unhandled error occurs
+            Exception lastException = Server.GetLastError();
+            NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+            var message = String.Format($"Unhandled Exception happened: {lastException.GetType()}; with message: {lastException.Message}");
+            logger.Error(lastException, message);
+
+            Server.ClearError(); //clear the error so we can continue onwards
+            Response.Redirect("~/Error"); //direct user to error page
+
+        }
+
+        void Page_Error(object sender, EventArgs e)
+        {
+            // Code that runs when an unhandled error occurs
+            Exception lastException = Server.GetLastError();
+            NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+            var message = String.Format($"Unhandled Exception happened: {lastException.GetType()}; with message: {lastException.Message}");
+            logger.Error(lastException, message);
+
+            Server.ClearError(); //clear the error so we can continue onwards
+            Response.Redirect("~/Error"); //direct user to error page
+
         }
     }
 }
