@@ -269,7 +269,9 @@
                 stop.Marker = marker;
 
                 stops[ID] = stop;
+
             }
+            SelectAndShowArrivalTime();  // Show times on stops
 
             ajax.get(apiURL + "Routes/Active", {}, HandleActiveRoutesData, true);
         }
