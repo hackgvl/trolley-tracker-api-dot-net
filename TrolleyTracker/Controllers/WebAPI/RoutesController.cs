@@ -51,24 +51,24 @@ namespace TrolleyTracker.Controllers.WebAPI
         private void AddRouteDetail(RouteDetail routeDetail, Route route)
         {
 
-            var stops = from stop in db.Stops
+            var stops = (from stop in db.Stops
                         from routeStop in db.RouteStops
                         orderby routeStop.StopSequence
                         where (routeStop.StopID == stop.ID) && (routeStop.RouteID == route.ID)
-                        select stop;
+                        select stop).ToList();
 
             foreach (var stop in stops)
             {
+                // Construct with route info so route shape segment index is included
+                var stopSummary = new StopSummary(stop, route);
+
                 // Use arrival times if available
                 var stopWithArrivalTime = StopArrivalTime.GetStopSummaryWithArrivalTimes(stop.ID);
                 if (stopWithArrivalTime != null)
                 {
-                    routeDetail.Stops.Add(stopWithArrivalTime);
+                    stopSummary.NextTrolleyArrivalTime = stopWithArrivalTime.NextTrolleyArrivalTime;
                 }
-                else
-                {
-                    routeDetail.Stops.Add(new StopSummary(stop));
-                }
+                routeDetail.Stops.Add(stopSummary);
             }
 
             var shapes = from shape in db.Shapes

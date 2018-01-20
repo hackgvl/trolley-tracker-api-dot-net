@@ -36,6 +36,9 @@ namespace TrolleyTracker.Controllers
                 return; 
             }
 
+
+            var indexOfStop = new Dictionary<Stop, int>();
+
             for (int i=1; i< shapePoints.Count; i++)
             {
                 for (int s=0; s< stops.Count; s++)
@@ -62,6 +65,7 @@ namespace TrolleyTracker.Controllers
                                 if (!routeStopList.Contains(stop))
                                 {
                                     routeStopList.Add(stop);
+                                    indexOfStop.Add(stop, i);  // For routeSegmentIndex later
                                 }
                             }
                         }
@@ -81,6 +85,7 @@ namespace TrolleyTracker.Controllers
                 newRouteStop.RouteID = routeID;
                 newRouteStop.StopID = routeStopList[i].ID;
                 newRouteStop.StopSequence = i;
+                newRouteStop.RouteSegmentIndex = indexOfStop[routeStopList[i]];
                 db.RouteStops.Add(newRouteStop);
             }
             db.SaveChanges();
@@ -153,6 +158,13 @@ namespace TrolleyTracker.Controllers
         /// <returns></returns>
         double AngleBetween3Points(Coordinate A, Coordinate B, Coordinate C)
         {
+            var Epsilon = 1.0e-8;
+            if (Math.Abs(A.Lat - B.Lat) < Epsilon &&
+                Math.Abs(A.Lon - B.Lon) < Epsilon)
+            {
+                return 0.0; // Angle of zero for 2 of same coordinate; OK for this application
+            }
+
             double atanAB = Math.Atan2(B.Lon - A.Lon, B.Lat - A.Lat);
             double atanBC = Math.Atan2(B.Lon - C.Lon, B.Lat - C.Lat);
             double diff = atanBC - atanAB;

@@ -12,16 +12,34 @@ namespace TrolleyTracker.ViewModels
     {
         public StopSummary(Stop stop)
         {
+            Construct(stop, null);
+        }
+
+        private void Construct(Stop stop, Route route)
+        {
             this.ID = stop.ID;
             this.Name = stop.Name;
             this.Description = stop.Description;
             this.Lat = stop.Lat;
             this.Lon = stop.Lon;
+            if (route != null)
+            {
+                var routeStop = stop.RouteStops.FirstOrDefault(rs => (rs.StopID == stop.ID) && (rs.RouteID == route.ID));
+                if (routeStop != null)
+                {
+                    this.ShapeSegmentIndex = routeStop.RouteSegmentIndex;
+                }
+            }
             if (stop.Picture != null)
             {
                 StopImageURL = System.Web.VirtualPathUtility.ToAbsolute("~/") + String.Format("Stops/Picture/{0}", stop.ID);
             }
-            LastTrolleyArrivalTime = new Dictionary<int, DateTime>();
+            NextTrolleyArrivalTime = new Dictionary<int, DateTime>();
+        }
+
+        public StopSummary(Stop stop, Route route)
+        {
+            Construct(stop, route);
         }
 
 
@@ -36,8 +54,10 @@ namespace TrolleyTracker.ViewModels
         [DataMember]
         public double Lon { get; set; }
         [DataMember]
+        public int? ShapeSegmentIndex { get; set; }
+        [DataMember]
         public string StopImageURL { get; set; }
         [DataMember]
-        public Dictionary<int, DateTime> LastTrolleyArrivalTime { get; set; }
+        public Dictionary<int, DateTime> NextTrolleyArrivalTime { get; set; }
     }
 }

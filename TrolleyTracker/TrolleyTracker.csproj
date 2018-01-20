@@ -208,6 +208,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccessDeniedController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ActiveRoutes.cs" />
     <Compile Include="Controllers\AssignStopsToRoutes.cs" />
     <Compile Include="Controllers\BuildScheduleView.cs" />
     <Compile Include="Controllers\ParseKML.cs" />
@@ -271,6 +272,10 @@
     <Compile Include="Migrations\201708230113547_AddRouteColor.cs" />
     <Compile Include="Migrations\201708230113547_AddRouteColor.Designer.cs">
       <DependentUpon>201708230113547_AddRouteColor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801181559580_ArrivalTimePrediction.cs" />
+    <Compile Include="Migrations\201801181559580_ArrivalTimePrediction.Designer.cs">
+      <DependentUpon>201801181559580_ArrivalTimePrediction.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -590,6 +595,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\ActiveRoute\" />
     <Folder Include="Views\Picture\" />
     <Folder Include="Views\RegularStops\" />
   </ItemGroup>
@@ -628,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708230113547_AddRouteColor.resx">
       <DependentUpon>201708230113547_AddRouteColor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801181559580_ArrivalTimePrediction.resx">
+      <DependentUpon>201801181559580_ArrivalTimePrediction.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -34,6 +34,22 @@ namespace TrolleyTracker.Controllers
 
 
         /// <summary>
+        /// Calculate angle in degrees from this coordinate to the other coordinate.
+        /// No data valildity pre-check included
+        /// </summary>
+        /// <param name="otherCoordinate"></param>
+        /// <returns>Angle (0..360.0), 0 = North</returns>
+        public double DirectionToward(Coordinate otherCoordinate)
+        {
+            // atan2(y2−y1,x2−x1)
+            var radDirection = Math.Atan2(otherCoordinate.Lon - Lon, otherCoordinate.Lat - Lat);
+            var angle=RadianToDegree(radDirection);
+            if (angle < 0) angle = 360.0 + angle;
+            if (angle >= 360.0) angle -= 360.0;
+            return angle;
+        }
+
+        /// <summary>
         /// Computes the distance between this coordinate and another point on the earth.
         /// Uses spherical law of cosines formula, not Haversine.
         /// </summary>
@@ -50,6 +66,21 @@ namespace TrolleyTracker.Controllers
                     Math.Cos(DegreeToRadians(other.Lon - Lon))) * 6378135);
 
             return (meters);
+        }
+
+        /// <summary>
+        /// Compute distance between this coordinate and another point on the earth when
+        /// the two points are close to each other (within a Km) making the error
+        /// from omitting the earth radius normally less than any land slope.
+        /// </summary>
+        /// <param name="other">The other point</param>
+        /// <returns>Distance in meters</returns>
+        public double Distance(Coordinate other)
+        {
+            var lengthOfDegree = 110250.0;  // Average, in Meters
+            var x = Lat - other.Lat;
+            var y = (Lon - other.Lon) * Math.Cos(other.Lat);
+            return lengthOfDegree * Math.Sqrt(x * x + y * y);
         }
 
     }

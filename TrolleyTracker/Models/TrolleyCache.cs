@@ -75,8 +75,7 @@ namespace TrolleyTracker.Models
 
         private static void SetRoutesActive()
         {
-            var activeController = new TrolleyTracker.Controllers.WebAPI.ActiveController();
-            var runningList = activeController.Get();
+            var runningList = Controllers.ActiveRoutes.GetActiveRoutes();
             routeIsActive = runningList.Count > 0;
         }
 

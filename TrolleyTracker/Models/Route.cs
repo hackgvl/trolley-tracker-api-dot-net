@@ -9,8 +9,8 @@ namespace TrolleyTracker.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Route()
         {
-            this.RouteStops = new HashSet<RouteStop>();
-            this.Shapes = new HashSet<Shape>();
+            this.RouteStops = new List<RouteStop>();
+            this.Shapes = new List<Shape>();
             this.RouteSchedules = new HashSet<RouteSchedule>();
         }
     
@@ -25,9 +25,9 @@ namespace TrolleyTracker.Models
         public string RouteColorRGB { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RouteStop> RouteStops { get; set; }
+        public virtual List<RouteStop> RouteStops { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shape> Shapes { get; set; }
+        public virtual List<Shape> Shapes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RouteSchedule> RouteSchedules { get; set; }
     }

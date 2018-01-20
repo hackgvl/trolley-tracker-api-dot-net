@@ -283,14 +283,18 @@ namespace TrolleyTracker.Controllers
                 lastCoordinate = thisCoordinate;
                 totalDistance += distance;
 
-                var dbShape = new TrolleyTracker.Models.Shape();
-                dbShape.Lat = lat;
-                dbShape.Lon = lon;
-                dbShape.RouteID = route.ID;
-                dbShape.Sequence = sequence;
-                dbShape.DistanceTraveled = totalDistance;
-                sequence++;
-                db.Shapes.Add(dbShape);
+                // Add new point if not duplicated (some shape editors create duplicate nodes)
+                if (distance > 0.0)
+                {
+                    var dbShape = new TrolleyTracker.Models.Shape();
+                    dbShape.Lat = lat;
+                    dbShape.Lon = lon;
+                    dbShape.RouteID = route.ID;
+                    dbShape.Sequence = sequence;
+                    dbShape.DistanceTraveled = totalDistance;
+                    sequence++;
+                    db.Shapes.Add(dbShape);
+                }
             }
 
             db.SaveChanges();
