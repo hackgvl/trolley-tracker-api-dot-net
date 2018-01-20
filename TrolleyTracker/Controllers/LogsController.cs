@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -14,6 +15,7 @@ namespace TrolleyTracker.Controllers
     public class LogsController : Controller
     {
         private TrolleyTrackerContext db = new TrolleyTrackerContext();
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: Logs
         /// <summary>
@@ -23,6 +25,11 @@ namespace TrolleyTracker.Controllers
         /// <returns></returns>
         public ActionResult Index(int pageIndex=0)
         {
+            if (pageIndex == 0)
+            {
+                // On first page view
+                PurgeOldLogs();
+            }
 
             if (pageIndex < 0)
             {
@@ -43,6 +50,22 @@ namespace TrolleyTracker.Controllers
             return View(query);
 
             //return View(db.Logs.ToList());
+        }
+
+
+        
+        private void PurgeOldLogs()
+        {
+            var MaxLogAge = 60; // Days
+
+            var now = DateTime.Now;  // In UTC, like the logs
+            var removeDate = now.AddDays(-MaxLogAge);
+
+            var nRowsDeleted = db.Database.ExecuteSqlCommand($"DELETE FROM Logs WHERE Logged < @p0", removeDate);
+            if (nRowsDeleted > 0)
+            {
+                logger.Info($"Auto purged {nRowsDeleted} rows from logs older than {MaxLogAge} days");
+            }
         }
 
         // Separate long run-on strings by adding a space between separators to 
