@@ -16,6 +16,7 @@ namespace TrolleyTracker.Models
         private const double MinMoveDistance = 4.0; // Meters
         private const double StopRadiusCheck = 25.0; // Meters
         private const int MaxTimeBetweenStops = 15 * 60; // Seconds
+        private const int MinTimeBetweenStops = 15;  // Seconds
 
         private static Dictionary<int, StopSummary> stopSummaries;  // Key is Stop.ID
         private const double TimeBetweenStopUpdates = 3600.0; // Seconds
@@ -425,12 +426,16 @@ namespace TrolleyTracker.Models
             if (routeStop.AverageTravelTimeToNextStop != 0)
             {
                 // Average is approximted by a weighted moving average instead of true moving average
-                var adjustment = (newTravelTime - routeStop.AverageTravelTimeToNextStop) / 50;
+                int percentWeight = 50;
+                var adjustment = (newTravelTime - routeStop.AverageTravelTimeToNextStop) * percentWeight / 100;
 
                 // Avoid having a single anomaly create a large swing
-                if (adjustment > (routeStop.AverageTravelTimeToNextStop / 2)) adjustment = (routeStop.AverageTravelTimeToNextStop / 2);
+                if (Math.Abs(adjustment) > (routeStop.AverageTravelTimeToNextStop / 2))
+                    adjustment = (routeStop.AverageTravelTimeToNextStop / 2) * Math.Sign(adjustment);
 
-                newTravelTime += adjustment;
+                newTravelTime = routeStop.AverageTravelTimeToNextStop + adjustment;
+
+                if (newTravelTime < MinTimeBetweenStops) newTravelTime = MinTimeBetweenStops;
             }
             routeStop.AverageTravelTimeToNextStop = newTravelTime;
 
