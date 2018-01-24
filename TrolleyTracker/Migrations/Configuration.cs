@@ -98,16 +98,34 @@ namespace TrolleyTracker.Migrations
             var filePath = baseDir + "\\InitialTableSeedInserts.sql";
             using (var scriptFile = new StreamReader(filePath))
             {
+                // Repeat identity_insert commands in the case of multiple GO commands
+                //  Example:   SET IDENTITY_INSERT [dbo].[RouteStops] ON 
+                var lastIdentityInsertCmd = "";
+                bool haveIdentityInsertCommand = false;
+
                 var sqlCommand = new StringBuilder();
                 while (!scriptFile.EndOfStream)
                 {
                     // Series of commands separated by GO
                     var line = scriptFile.ReadLine().Trim();
+
+                    if (line.StartsWith("SET IDENTITY_INSERT"))
+                    {
+                        lastIdentityInsertCmd = line;
+                        haveIdentityInsertCommand = true;
+                    }
+
                     if (line == "GO")
                     {
+                        if (!haveIdentityInsertCommand)
+                        {
+                            sqlCommand.Insert(0, lastIdentityInsertCmd + "\r\n");
+                        }
                         context.Database.ExecuteSqlCommand(sqlCommand.ToString());
                         sqlCommand.Clear();
-                    } else
+                        haveIdentityInsertCommand = false;
+                    }
+                    else
                     {
                         sqlCommand.AppendLine(line);
                     }
