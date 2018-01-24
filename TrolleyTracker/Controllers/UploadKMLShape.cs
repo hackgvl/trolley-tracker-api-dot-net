@@ -13,8 +13,6 @@ namespace TrolleyTracker.Controllers
 {
     public class UploadKMLShapeController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: UploadKMLShape
@@ -31,23 +29,26 @@ namespace TrolleyTracker.Controllers
 
         private List<SelectListItem> GetRouteSelectList(int? selectedID)
         {
-            var routes = from r in db.Routes
-                         orderby r.ShortName
-                         select r;
-            var items = new SelectList(routes, "ID", "ShortName").ToList();
-
-            // Set selected item if specified
-            if (selectedID.HasValue)
+            using (var db = new TrolleyTrackerContext())
             {
-                var strSelValue = selectedID.ToString();
-                foreach(var item in items)
-                {
-                    if (item.Value == strSelValue) item.Selected = true;
-                }
-            }
+                var routes = from r in db.Routes
+                             orderby r.ShortName
+                             select r;
+                var items = new SelectList(routes, "ID", "ShortName").ToList();
 
-            items.Insert(0, (new SelectListItem { Text = "-- Select Route  --", Value = "" }));
-            return items;
+                // Set selected item if specified
+                if (selectedID.HasValue)
+                {
+                    var strSelValue = selectedID.ToString();
+                    foreach (var item in items)
+                    {
+                        if (item.Value == strSelValue) item.Selected = true;
+                    }
+                }
+
+                items.Insert(0, (new SelectListItem { Text = "-- Select Route  --", Value = "" }));
+                return items;
+            }
         }
 
 
@@ -70,7 +71,12 @@ namespace TrolleyTracker.Controllers
             {
                 var strRouteID = collection.Get("RouteID");
                 int routeID = Convert.ToInt32(strRouteID);
-                var route = db.Routes.Find(routeID);
+                Route route = null;
+
+                using (var db = new TrolleyTrackerContext())
+                {
+                    route = db.Routes.Find(routeID);
+                }
 
                 resultText = "";
 
@@ -131,8 +137,12 @@ namespace TrolleyTracker.Controllers
             newStops = new List<Stop>();
             oldStops = new List<Stop>();
 
-            var dbStopsList = (from s in db.Stops
-                            select s).ToList();
+            List<Stop> dbStopsList = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                dbStopsList = (from s in db.Stops
+                               select s).ToList();
+            }
 
             foreach (var testStop in routeStops)
             {
@@ -166,18 +176,18 @@ namespace TrolleyTracker.Controllers
             var errorText = "";
             try
             {
-                var strRouteID = collection.Get("RouteID");
-                int routeID = Convert.ToInt32(strRouteID);
-                var route = db.Routes.Find(routeID);
-
-                resultText = "";
-
-                var jsonShapes = collection.Get("RouteShapeJSON");
-                if (jsonShapes != null && strRouteID != null)
+                using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
                 {
+                    var strRouteID = collection.Get("RouteID");
+                    int routeID = Convert.ToInt32(strRouteID);
+                    var route = db.Routes.Find(routeID);
 
-                    using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
+                    resultText = "";
+
+                    var jsonShapes = collection.Get("RouteShapeJSON");
+                    if (jsonShapes != null && strRouteID != null)
                     {
+
                         RemoveOldShape(routeID, db);
 
                         SaveNewRouteShape(db, route, jsonShapes);
@@ -192,7 +202,6 @@ namespace TrolleyTracker.Controllers
                         resultText = $"Route path for {route.ShortName} Saved, added {newStopCount} stops.";
                     }
                 }
-
             }
             catch (DbEntityValidationException dbEx)
             {
@@ -231,6 +240,7 @@ namespace TrolleyTracker.Controllers
             jss.RegisterConverters(new JavaScriptConverter[] { new DynamicJsonConverter() });
 
             dynamic stopData = jss.Deserialize(jsonStops, typeof(object)) as dynamic;
+
 
             int stopCount = stopData.Length;
             for (int i = 0; i < stopCount; i++)

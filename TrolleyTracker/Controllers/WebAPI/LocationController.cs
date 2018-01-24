@@ -15,7 +15,6 @@ namespace TrolleyTracker.Controllers.WebAPI
 
     public class LocationController : ApiController
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         private static Dictionary<int, DateTime> lastTrolleyWriteTime = new Dictionary<int, DateTime>();
 
@@ -28,11 +27,14 @@ namespace TrolleyTracker.Controllers.WebAPI
                 return null;
             }
 
-            var trolley = (from Trolley t in db.Trolleys
-                           where t.Number == id
-                           select t).FirstOrDefault<Trolley>();
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
+            {
+                var trolley = (from Trolley t in db.Trolleys
+                               where t.Number == id
+                               select t).FirstOrDefault<Trolley>();
 
-            return trolley;
+                return trolley;
+            }
         }
 
 
@@ -51,35 +53,40 @@ namespace TrolleyTracker.Controllers.WebAPI
                 return BadRequest(ModelState);
             }
 
-            var trolley = (from Trolley t in db.Trolleys
-                           where t.Number == id
-                           select t).FirstOrDefault<Trolley>();
-            if (trolley == null)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                return NotFound();
-            }
 
-            if ((locationUpdate.Lat < -90.0) || (locationUpdate.Lat > 90)) return BadRequest("Invalid latitude");
-            if ((locationUpdate.Lon < -180.0) || (locationUpdate.Lon > 180)) return BadRequest("Invalid longitude");
-
-            trolley.CurrentLat = locationUpdate.Lat;
-            trolley.CurrentLon = locationUpdate.Lon;
-            trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
-            if (lastTrolleyWriteTime.ContainsKey(trolley.Number))
-            {
-                if ((DateTime.Now - lastTrolleyWriteTime[trolley.Number]).TotalSeconds > 30.0)
+                var trolley = (from Trolley t in db.Trolleys
+                               where t.Number == id
+                               select t).FirstOrDefault<Trolley>();
+                if (trolley == null)
                 {
-                    db.SaveChanges();
-                    lastTrolleyWriteTime[trolley.Number] = DateTime.Now;
+                    return NotFound();
                 }
-            } else
-            {
-                lastTrolleyWriteTime.Add(trolley.Number, DateTime.Now);
-            }
-            TrolleyCache.UpdateTrolley(trolley);
-            StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
 
-            return Ok(); // CreatedAtRoute("DefaultApi", new { id = trolley.ID }, trolley);
+                if ((locationUpdate.Lat < -90.0) || (locationUpdate.Lat > 90)) return BadRequest("Invalid latitude");
+                if ((locationUpdate.Lon < -180.0) || (locationUpdate.Lon > 180)) return BadRequest("Invalid longitude");
+
+                trolley.CurrentLat = locationUpdate.Lat;
+                trolley.CurrentLon = locationUpdate.Lon;
+                trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+                if (lastTrolleyWriteTime.ContainsKey(trolley.Number))
+                {
+                    if ((DateTime.Now - lastTrolleyWriteTime[trolley.Number]).TotalSeconds > 30.0)
+                    {
+                        db.SaveChanges();
+                        lastTrolleyWriteTime[trolley.Number] = DateTime.Now;
+                    }
+                }
+                else
+                {
+                    lastTrolleyWriteTime.Add(trolley.Number, DateTime.Now);
+                }
+                TrolleyCache.UpdateTrolley(trolley);
+                StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
+
+                return Ok(); 
+            }
 
         }
 

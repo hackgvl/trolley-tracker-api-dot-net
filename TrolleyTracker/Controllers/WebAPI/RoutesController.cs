@@ -15,40 +15,44 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class RoutesController : ApiController
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         // GET: api/Routes
         public List<RouteSummary> GetRoutes()
         {
-            var routes = db.Routes;
-            var summaryRoutes = new List<RouteSummary>();
-            foreach (var route in routes)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                var summaryRoute = new RouteSummary(route);
-                summaryRoutes.Add(summaryRoute);
+                var routes = db.Routes;
+                var summaryRoutes = new List<RouteSummary>();
+                foreach (var route in routes)
+                {
+                    var summaryRoute = new RouteSummary(route);
+                    summaryRoutes.Add(summaryRoute);
+                }
+                return summaryRoutes;
             }
-            return summaryRoutes;
         }
 
         // GET: api/Routes/5
         [ResponseType(typeof(RouteDetail))]
         public IHttpActionResult GetRoute(int id)
         {
-            Route route = db.Routes.Find(id);
-            if (route == null)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                return NotFound();
+                Route route = db.Routes.Find(id);
+                if (route == null)
+                {
+                    return NotFound();
+                }
+
+                // Assemble route + Stops + Shape
+                var routeDetail = new RouteDetail(route);
+
+                AddRouteDetail(db, routeDetail, route);
+
+                return Ok(routeDetail);
             }
-
-            // Assemble route + Stops + Shape
-            var routeDetail = new RouteDetail(route);
-
-            AddRouteDetail(routeDetail, route);
-
-            return Ok(routeDetail);
         }
 
-        private void AddRouteDetail(RouteDetail routeDetail, Route route)
+        private void AddRouteDetail(TrolleyTrackerContext db, RouteDetail routeDetail, Route route)
         {
 
             var stops = (from stop in db.Stops
@@ -88,16 +92,16 @@ namespace TrolleyTracker.Controllers.WebAPI
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
 
-        private bool RouteExists(int id)
-        {
-            return db.Routes.Count(e => e.ID == id) > 0;
-        }
+        //private bool RouteExists(int id)
+        //{
+        //    return db.Routes.Count(e => e.ID == id) > 0;
+        //}
     }
 }

@@ -12,13 +12,15 @@ namespace TrolleyTracker.Controllers
 {
     public class RouteStopsController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         // GET: RouteStops
         public ActionResult Index()
         {
-            var routeStops = db.RouteStops.Include(r => r.Route).Include(r => r.Stop);
-            return View(routeStops.ToList());
+            using (var db = new TrolleyTrackerContext())
+            {
+                var routeStops = db.RouteStops.Include(r => r.Route).Include(r => r.Stop);
+                return View(routeStops.ToList());
+            }
         }
 
         // GET: RouteStops/Details/5
@@ -28,20 +30,26 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteStop routeStop = db.RouteStops.Find(id);
-            if (routeStop == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                RouteStop routeStop = db.RouteStops.Find(id);
+                if (routeStop == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(routeStop);
             }
-            return View(routeStop);
         }
 
         // GET: RouteStops/Create
         public ActionResult Create()
         {
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName");
-            ViewBag.StopID = new SelectList(db.Stops, "ID", "Name");
-            return View();
+            using (var db = new TrolleyTrackerContext())
+            {
+                ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName");
+                ViewBag.StopID = new SelectList(db.Stops, "ID", "Name");
+                return View();
+            }
         }
 
         // POST: RouteStops/Create
@@ -52,17 +60,21 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,RouteID,StopID,StopSequence")] RouteStop routeStop)
         {
-            if (ModelState.IsValid)
+            using (var db = new TrolleyTrackerContext())
             {
-                db.RouteStops.Add(routeStop);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                if (ModelState.IsValid)
+                {
+                    db.RouteStops.Add(routeStop);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
 
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
-            ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
-            return View(routeStop);
+                ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
+                ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
+                return View(routeStop);
+            }
         }
+
 
         // GET: RouteStops/Edit/5
         public ActionResult Edit(int? id)
@@ -71,14 +83,17 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteStop routeStop = db.RouteStops.Find(id);
-            if (routeStop == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                RouteStop routeStop = db.RouteStops.Find(id);
+                if (routeStop == null)
+                {
+                    return HttpNotFound();
+                }
+                ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
+                ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
+                return View(routeStop);
             }
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
-            ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
-            return View(routeStop);
         }
 
         // POST: RouteStops/Edit/5
@@ -89,15 +104,18 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,RouteID,StopID,StopSequence")] RouteStop routeStop)
         {
-            if (ModelState.IsValid)
+            using (var db = new TrolleyTrackerContext())
             {
-                db.Entry(routeStop).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(routeStop).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
+                ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
+                return View(routeStop);
             }
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeStop.RouteID);
-            ViewBag.StopID = new SelectList(db.Stops, "ID", "Name", routeStop.StopID);
-            return View(routeStop);
         }
 
         // GET: RouteStops/Delete/5
@@ -107,12 +125,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteStop routeStop = db.RouteStops.Find(id);
-            if (routeStop == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                RouteStop routeStop = db.RouteStops.Find(id);
+                if (routeStop == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(routeStop);
             }
-            return View(routeStop);
         }
 
         // POST: RouteStops/Delete/5
@@ -121,18 +142,21 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            RouteStop routeStop = db.RouteStops.Find(id);
-            db.RouteStops.Remove(routeStop);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            using (var db = new TrolleyTrackerContext())
+            {
+                RouteStop routeStop = db.RouteStops.Find(id);
+                db.RouteStops.Remove(routeStop);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
     }

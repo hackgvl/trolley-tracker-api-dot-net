@@ -13,22 +13,22 @@ namespace TrolleyTracker.Controllers
 {
     public class RouteScheduleOverridesController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: RouteScheduleOverrides
         public ActionResult Index()
         {
-            //var routeScheduleOverrides = db.RouteScheduleOverrides.Include(r => r.Route);
-            var routeScheduleOverrides = from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute)
-                                         orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
-                                         select rso;
+            List<RouteScheduleOverride> routeScheduleOverrides = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeScheduleOverrides = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute).Include(rso => rso.OverriddenRoute)
+                                              orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
+                                              select rso).ToList();
+            }
 
             ViewBag.CssFile = Url.Content("~/Content/RouteScheduleSummary.css");
-            var routeScheduleView = BuildScheduleView.ConfigureScheduleView(db, true);
-            //routeScheduleView.EffectiveRouteSchedules = BuildScheduleView.ConfigureScheduleView(db); 
-            routeScheduleView.RouteScheduleOverrides = (System.Data.Entity.Infrastructure.DbQuery<RouteScheduleOverride>)routeScheduleOverrides;
+            var routeScheduleView = BuildScheduleView.ConfigureScheduleView(true);
+            routeScheduleView.RouteScheduleOverrides = routeScheduleOverrides;
 
             return View(routeScheduleView);
         }
@@ -40,7 +40,14 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+            RouteScheduleOverride routeScheduleOverride = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeScheduleOverride = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute).Include(rso => rso.OverriddenRoute)
+                                                               where rso.ID == id
+                                                               select rso).FirstOrDefault();
+            }
+
             if (routeScheduleOverride == null)
             {
                 return HttpNotFound();
@@ -55,20 +62,28 @@ namespace TrolleyTracker.Controllers
         /// <returns></returns>
         private List<Route> RouteSelectList(string nullLabel)
         {
-            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            using (var db = new TrolleyTrackerContext())
+            {
+                var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
 
-            var nullRoute = new Route();
-            nullRoute.ID = -1;
-            nullRoute.ShortName = nullLabel;
-            routeList.Insert(0, nullRoute);
-            return routeList;
+                var nullRoute = new Route();
+                nullRoute.ID = -1;
+                nullRoute.ShortName = nullLabel;
+                routeList.Insert(0, nullRoute);
+                return routeList;
+            }
+
         }
 
         // GET: RouteScheduleOverrides/Create
         [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
-            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            List<Route> routeList = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            }
 
             ViewBag.NewRouteID = new SelectList(RouteSelectList(""), "ID", "ShortName");
             ViewBag.OverriddenRouteID = new SelectList(RouteSelectList("** All **"), "ID", "ShortName");
@@ -132,9 +147,12 @@ namespace TrolleyTracker.Controllers
                     routeScheduleOverride.OverriddenRouteID = null;
                 }
 
-                db.RouteScheduleOverrides.Add(routeScheduleOverride);
-                db.SaveChanges();
-                PurgeOldOverrides();
+                using (var db = new TrolleyTrackerContext())
+                {
+                    db.RouteScheduleOverrides.Add(routeScheduleOverride);
+                    db.SaveChanges();
+                    PurgeOldOverrides(db);
+                }
 
                 logger.Info($"Created special schedule ID #{routeScheduleOverride.ID} type '{routeScheduleOverride.OverrideType.ToString()}' at {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
 
@@ -146,12 +164,12 @@ namespace TrolleyTracker.Controllers
             return View(routeScheduleOverride);
         }
 
-        private void PurgeOldOverrides()
+        private void PurgeOldOverrides(TrolleyTrackerContext db)
         {
             var purgeDate = DateTime.Now.AddDays(-7);
             var oldRouteScheduleOverrides = (from rso in db.RouteScheduleOverrides
                                             where rso.OverrideDate < purgeDate
-                                            select rso).ToList<RouteScheduleOverride>();
+                                            select rso).ToList();
 
             oldRouteScheduleOverrides.ForEach(rso => db.RouteScheduleOverrides.Remove(rso));
             db.SaveChanges();
@@ -172,7 +190,11 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+            RouteScheduleOverride routeScheduleOverride = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+            }
             if (routeScheduleOverride == null)
             {
                 return HttpNotFound();
@@ -221,8 +243,12 @@ namespace TrolleyTracker.Controllers
                 }
                 routeScheduleOverride.StartTime = ExtractTimeValue(routeScheduleOverride.StartTime);
                 routeScheduleOverride.EndTime = ExtractTimeValue(routeScheduleOverride.EndTime);
-                db.Entry(routeScheduleOverride).State = EntityState.Modified;
-                db.SaveChanges();
+
+                using (var db = new TrolleyTrackerContext())
+                {
+                    db.Entry(routeScheduleOverride).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
 
                 logger.Info($"Edited special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at  {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
 
@@ -241,7 +267,13 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+            RouteScheduleOverride routeScheduleOverride = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeScheduleOverride = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute).Include(rso => rso.OverriddenRoute)
+                                         where rso.ID == id
+                                         select rso).FirstOrDefault();
+            }
             if (routeScheduleOverride == null)
             {
                 return HttpNotFound();
@@ -255,19 +287,22 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
-            logger.Info($"Deleted special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at  {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
-            db.RouteScheduleOverrides.Remove(routeScheduleOverride);
-            db.SaveChanges();
+            using (var db = new TrolleyTrackerContext())
+            {
+                RouteScheduleOverride routeScheduleOverride = db.RouteScheduleOverrides.Find(id);
+                logger.Info($"Deleted special schedule type '{routeScheduleOverride.OverrideType.ToString()}' at  {routeScheduleOverride.OverrideDate} '{routeScheduleOverride.StartTime.TimeOfDay} - {routeScheduleOverride.EndTime.TimeOfDay}");
+                db.RouteScheduleOverrides.Remove(routeScheduleOverride);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
     }

@@ -37,7 +37,7 @@ namespace TrolleyTracker.Migrations
             //    );
             //
 
-            CheckStopArrivalTimeMigration(context);
+            //CheckStopArrivalTimeMigration(context);
         }
 
         /// <summary>
@@ -47,50 +47,13 @@ namespace TrolleyTracker.Migrations
         /// <param name="context"></param>
         private void CheckStopArrivalTimeMigration(TrolleyTrackerContext context)
         {
-
-
-
-
             var routeStop = context.RouteStops.FirstOrDefault();
             if (routeStop != null)
             {
                 if (routeStop.RouteSegmentIndex < 0)
                 {
 
-                    // -- Begin Temporary patch
-                    // Remove duplicate shape points
-                    var shapes = from _Shape in context.Shapes
-                                 orderby _Shape.RouteID, _Shape.Sequence
-                                 select _Shape;
-                    int lastRouteID = -1;
-                    double lastLat = 0.0;
-                    double lastLon = 0.0;
-                    double Epsilon = 1.0e-8;
-                    var removeList = new List<Shape>();
-                    foreach (var shape in shapes)
-                    {
-                        if (shape.RouteID == lastRouteID &&
-                            Math.Abs(shape.Lat - lastLat) < Epsilon &&
-                            Math.Abs(shape.Lon - lastLon) < Epsilon)
-                        {
-                            removeList.Add(shape);
-                        }
-                        lastLat = shape.Lat;
-                        lastLon = shape.Lon;
-                        lastRouteID = shape.RouteID;
-                    }
-
-                    foreach (var shape in removeList)
-                    {
-                        context.Shapes.Remove(shape);
-
-                    }
-                    context.SaveChanges();
-                    // ----- End temporary patch
-
-
-                    // Need recalculation for all RouteSegmentIndex
-
+                    // Need recalculation for all new RouteSegmentIndex fields
                     var routeIDs = (from Route in context.Routes
                                     select Route.ID).ToList();
                     var assignStops = new Controllers.AssignStopsToRoutes();

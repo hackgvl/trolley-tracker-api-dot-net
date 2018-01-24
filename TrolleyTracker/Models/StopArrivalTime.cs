@@ -97,6 +97,11 @@ namespace TrolleyTracker.Models
                     CreateTrackingInfo(trolley);
                     MatchTrolleyToRoute(trolley);
                 }
+                if (!trolleyTrackingInfo.ContainsKey(trolley.ID))
+                {
+                    // Unable to match trolley to any route
+                    return;
+                }
                 var trackingInfo = trolleyTrackingInfo[trolley.ID];
                 trackingInfo.CurrentTrolley = trolley;
 

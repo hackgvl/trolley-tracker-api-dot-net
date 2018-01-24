@@ -15,26 +15,17 @@ namespace TrolleyTracker.Controllers
 {
     public class RouteSchedulesController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: RouteSchedules
         public ActionResult Index()
         {
-            //var routeSchedules = db.RouteSchedules.Include(r => r.Route);
-
             ViewBag.DaysOfWeek = BuildScheduleView.daysOfWeek;
 
             ViewBag.ServerTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow).ToString("MM-dd-yyyy HH:mm:ss");
 
             ViewBag.CssFile = Url.Content("~/Content/RouteScheduleSummary.css");
-            return View(BuildScheduleView.ConfigureScheduleView(db, false));
-
-
-
-
-            //return View(routeSchedules.ToList());
+            return View(BuildScheduleView.ConfigureScheduleView(false));
         }
 
         // GET: RouteSchedules/Details/5
@@ -44,7 +35,13 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
+            RouteSchedule routeSchedule = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeSchedule = (from rs in db.RouteSchedules.Include(rso => rso.Route)
+                                 where rs.ID == id
+                                 select rs).FirstOrDefault();
+            }
 
             ViewBag.StrWeekday = BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek];
 
@@ -59,7 +56,11 @@ namespace TrolleyTracker.Controllers
         [CustomAuthorize(Roles = "RouteManagers")]
         public ActionResult Create()
         {
-            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            List<Route> routeList = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+            }
             ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName");
 
             ViewBag.DayOfWeek = GetWeekDaySelectorFor(4);
@@ -76,24 +77,26 @@ namespace TrolleyTracker.Controllers
         public ActionResult Create([Bind(Include = "ID,RouteID,DayOfWeek,StartTime,EndTime")] RouteSchedule routeSchedule)
         {
 
-            if (ModelState.IsValid)
+            using (var db = new TrolleyTrackerContext())
             {
-                routeSchedule.StartTime = ExtractTimeValue(routeSchedule.StartTime);
-                routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
-                db.RouteSchedules.Add(routeSchedule);
-                db.SaveChanges();
+                if (ModelState.IsValid)
+                {
+                    routeSchedule.StartTime = ExtractTimeValue(routeSchedule.StartTime);
+                    routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
+                    db.RouteSchedules.Add(routeSchedule);
+                    db.SaveChanges();
 
-                routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
-                logger.Info($"Created fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
+                    routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+                    logger.Info($"Created fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
+
+                }
+                var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+                ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName", routeSchedule.RouteID);
+
+                return View(routeSchedule);
             }
-
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeSchedule.RouteID);
-
-
-
-            return View(routeSchedule);
         }
 
         /// <summary>
@@ -114,15 +117,21 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
-            if (routeSchedule == null)
+            RouteSchedule routeSchedule = null;
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                routeSchedule = (from rs in db.RouteSchedules.Include(rso => rso.Route)
+                                 where rs.ID == id
+                                 select rs).FirstOrDefault();
+                if (routeSchedule == null)
+                {
+                    return HttpNotFound();
+                }
+                var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+                ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName", routeSchedule.RouteID);
+                ViewBag.DayOfWeek = GetWeekDaySelectorFor(routeSchedule.DayOfWeek);
+                return View(routeSchedule);
             }
-            var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
-            ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName", routeSchedule.RouteID);
-            ViewBag.DayOfWeek = GetWeekDaySelectorFor(routeSchedule.DayOfWeek);
-            return View(routeSchedule);
         }
 
         // POST: RouteSchedules/Edit/5
@@ -133,20 +142,24 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,RouteID,DayOfWeek,StartTime,EndTime")] RouteSchedule routeSchedule)
         {
-            if (ModelState.IsValid)
+            using (var db = new TrolleyTrackerContext())
             {
-                routeSchedule.StartTime = ExtractTimeValue(routeSchedule.StartTime);
-                routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
-                db.Entry(routeSchedule).State = EntityState.Modified;
-                db.SaveChanges();
+                if (ModelState.IsValid)
+                {
+                    routeSchedule.StartTime = ExtractTimeValue(routeSchedule.StartTime);
+                    routeSchedule.EndTime = ExtractTimeValue(routeSchedule.EndTime);
+                    db.Entry(routeSchedule).State = EntityState.Modified;
+                    db.SaveChanges();
 
-                routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
-                logger.Info($"Updated fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
+                    routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+                    logger.Info($"Updated fixed route schedule for '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
+                }
+                var routeList = db.Routes.OrderBy(r => r.ShortName).ToList();
+                ViewBag.RouteID = new SelectList(routeList, "ID", "ShortName", routeSchedule.RouteID);
+                return View(routeSchedule);
             }
-            ViewBag.RouteID = new SelectList(db.Routes, "ID", "ShortName", routeSchedule.RouteID);
-            return View(routeSchedule);
         }
 
         // GET: RouteSchedules/Delete/5
@@ -157,7 +170,14 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
+            RouteSchedule routeSchedule = null;
+            using (var db = new TrolleyTrackerContext())
+            {
+                routeSchedule = (from rs in db.RouteSchedules.Include(rso => rso.Route)
+                                 where rs.ID == id
+                                 select rs).FirstOrDefault();
+            }
+
             if (routeSchedule == null)
             {
                 return HttpNotFound();
@@ -173,20 +193,23 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
-            routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
-            logger.Info($"Deleted fixed route schedule '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
-            db.RouteSchedules.Remove(routeSchedule);
-            db.SaveChanges();
+            using (var db = new TrolleyTrackerContext())
+            {
+                RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
+                routeSchedule.Route = db.Routes.Find(routeSchedule.RouteID);
+                logger.Info($"Deleted fixed route schedule '{routeSchedule.Route.ShortName}' - '{BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek]}' {routeSchedule.StartTime.TimeOfDay}-{routeSchedule.EndTime.TimeOfDay} ");
+                db.RouteSchedules.Remove(routeSchedule);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
 

@@ -14,22 +14,19 @@ namespace TrolleyTracker.Controllers
 {
     public class TrolleysController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        //// GET: Trolleys
-        //public ActionResult Index()
-        //{
-        //    return View(db.Trolleys.ToList());
-        //}
-        // GET: TrolleyDBs
+        // GET: Trolleys
         public ActionResult Index()
         {
-            var trolleys = from t in db.Trolleys
-                           orderby t.Number, t.TrolleyName
-                           select t;
-            return View(trolleys.ToList());
+            using (var db = new TrolleyTrackerContext())
+            {
+                var trolleys = from t in db.Trolleys
+                               orderby t.Number, t.TrolleyName
+                               select t;
+                return View(trolleys.ToList());
+            }
         }
 
 
@@ -40,12 +37,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Trolley trolley = db.Trolleys.Find(id);
-            if (trolley == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Trolley trolley = db.Trolleys.Find(id);
+                if (trolley == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(trolley);
             }
-            return View(trolley);
         }
 
         // GET: Trolleys/Create
@@ -67,9 +67,11 @@ namespace TrolleyTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Trolleys.Add(trolley);
-                db.SaveChanges();
-
+                using (var db = new TrolleyTrackerContext())
+                {
+                    db.Trolleys.Add(trolley);
+                    db.SaveChanges();
+                }
                 logger.Info($"Created trolley # {trolley.Number} '{trolley.TrolleyName}'");
 
                 TrolleyCache.UpdateTrolley(trolley);
@@ -87,13 +89,16 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Trolley trolley = db.Trolleys.Find(id);
-            if (trolley == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Trolley trolley = db.Trolleys.Find(id);
+                if (trolley == null)
+                {
+                    return HttpNotFound();
+                }
+                TrolleyCache.UpdateTrolley(trolley);
+                return View(trolley);
             }
-            TrolleyCache.UpdateTrolley(trolley);
-            return View(trolley);
         }
 
 
@@ -107,8 +112,11 @@ namespace TrolleyTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(trolley).State = EntityState.Modified;
-                db.SaveChanges();
+                using (var db = new TrolleyTrackerContext())
+                {
+                    db.Entry(trolley).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 logger.Info($"Updated trolley # {trolley.Number} '{trolley.TrolleyName}'");
 
                 return RedirectToAction("Index");
@@ -124,12 +132,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Trolley trolley = db.Trolleys.Find(id);
-            if (trolley == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Trolley trolley = db.Trolleys.Find(id);
+                if (trolley == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(trolley);
             }
-            return View(trolley);
         }
 
         // POST: Trolleys/Delete/5
@@ -138,22 +149,25 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Trolley trolley = db.Trolleys.Find(id);
+            using (var db = new TrolleyTrackerContext())
+            {
+                Trolley trolley = db.Trolleys.Find(id);
 
-            logger.Info($"Deleted trolley # {trolley.Number} '{trolley.TrolleyName}'");
+                logger.Info($"Deleted trolley # {trolley.Number} '{trolley.TrolleyName}'");
 
 
-            db.Trolleys.Remove(trolley);
-            db.SaveChanges();
+                db.Trolleys.Remove(trolley);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
     }

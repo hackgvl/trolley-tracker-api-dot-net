@@ -18,30 +18,30 @@ namespace TrolleyTracker.Controllers.WebAPI
     public class RegularController : ApiController
     {
 
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         // GET: Stops/Regular
         // Mapped as - GET: api/v1/Stops/Regular
         public List<GeoJSONSummary> Get()
         {
 
-            var stops = (from stop in db.Stops
-                         from routeSchedule in db.RouteSchedules
-                         from routeStop in db.RouteStops
-                         where (routeSchedule.Route.ID == routeStop.RouteID &&
-                             routeStop.StopID == stop.ID)
-                         //select stop);
-                         select stop).Select(stop => stop).ToList().Distinct(new StopComparer()).OrderBy(stop => stop.Name);
-
-            var geoJSONStopsList = new List<GeoJSONSummary>();
-            foreach (var stop in stops)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                geoJSONStopsList.Add(new GeoJSONSummary(stop));
+
+                var stops = (from stop in db.Stops
+                             from routeSchedule in db.RouteSchedules
+                             from routeStop in db.RouteStops
+                             where (routeSchedule.Route.ID == routeStop.RouteID &&
+                                 routeStop.StopID == stop.ID)
+                             //select stop);
+                             select stop).Select(stop => stop).ToList().Distinct(new StopComparer()).OrderBy(stop => stop.Name);
+
+                var geoJSONStopsList = new List<GeoJSONSummary>();
+                foreach (var stop in stops)
+                {
+                    geoJSONStopsList.Add(new GeoJSONSummary(stop));
+                }
+
+                return geoJSONStopsList;
             }
-
-            //var serializedData = JsonConvert.SerializeObject(geoJSONStopsList, Formatting.Indented);  // Starting with GEOJSON objects yields same result
-
-            return geoJSONStopsList;
         }
     }
 

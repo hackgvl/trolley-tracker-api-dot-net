@@ -14,7 +14,6 @@ namespace TrolleyTracker.Controllers
     [CustomAuthorize(Roles = "Administrators")]
     public class LogsController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: Logs
@@ -25,40 +24,40 @@ namespace TrolleyTracker.Controllers
         /// <returns></returns>
         public ActionResult Index(int pageIndex=0)
         {
-            if (pageIndex == 0)
+            using (var db = new TrolleyTrackerContext())
             {
-                // On first page view
-                PurgeOldLogs();
+                if (pageIndex == 0)
+                {
+                    // On first page view
+                    PurgeOldLogs(db);
+                }
+
+                if (pageIndex < 0)
+                {
+                    pageIndex = 0;
+                }
+                int pageSize = 40;
+
+
+                int totalRecords = db.Logs.Count();
+                int totalPageCount = (totalRecords / pageSize) + ((totalRecords % pageSize) > 0 ? 1 : 0);
+                var query = db.Logs.OrderByDescending(l => l.Logged).Skip((pageIndex * pageSize)).Take(pageSize).ToList();
+                ReformatQueryItems(query);
+
+                ViewBag.dbCount = totalRecords;
+                ViewBag.pageSize = pageSize;
+                ViewBag.totalPageCount = totalPageCount;
+                return View(query);
             }
-
-            if (pageIndex < 0)
-            {
-                pageIndex = 0;
-            }
-            int pageSize = 40;
-
-
-            int totalRecords = db.Logs.Count();
-            int totalPageCount = (totalRecords / pageSize) + ((totalRecords % pageSize) > 0 ? 1 : 0);
-            var query = db.Logs.OrderByDescending(l => l.Logged).Skip((pageIndex * pageSize)).Take(pageSize).ToList();
-
-            ReformatQueryItems(query);
-
-            ViewBag.dbCount = totalRecords;
-            ViewBag.pageSize = pageSize;
-            ViewBag.totalPageCount = totalPageCount;
-            return View(query);
-
-            //return View(db.Logs.ToList());
         }
 
 
-        
-        private void PurgeOldLogs()
+
+        private void PurgeOldLogs(TrolleyTrackerContext db)
         {
             var MaxLogAge = 60; // Days
 
-            var now = DateTime.Now;  // In UTC, like the logs
+            var now = DateTime.UtcNow;  // In UTC, like the logs
             var removeDate = now.AddDays(-MaxLogAge);
 
             var nRowsDeleted = db.Database.ExecuteSqlCommand($"DELETE FROM Logs WHERE Logged < @p0", removeDate);
@@ -80,107 +79,107 @@ namespace TrolleyTracker.Controllers
         }
 
 
-        // GET: Logs/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Log log = db.Logs.Find(id);
-            if (log == null)
-            {
-                return HttpNotFound();
-            }
-            return View(log);
-        }
+        //// GET: Logs/Details/5
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Log log = db.Logs.Find(id);
+        //    if (log == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(log);
+        //}
 
-        // GET: Logs/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        //// GET: Logs/Create
+        //public ActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // POST: Logs/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Logged,Level,Message,Username,RemoteAddress,Callsite,Exception")] Log log)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Logs.Add(log);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+        //// POST: Logs/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create([Bind(Include = "ID,Logged,Level,Message,Username,RemoteAddress,Callsite,Exception")] Log log)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Logs.Add(log);
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
 
-            return View(log);
-        }
+        //    return View(log);
+        //}
 
-        // GET: Logs/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Log log = db.Logs.Find(id);
-            if (log == null)
-            {
-                return HttpNotFound();
-            }
-            return View(log);
-        }
+        //// GET: Logs/Edit/5
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Log log = db.Logs.Find(id);
+        //    if (log == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(log);
+        //}
 
-        // POST: Logs/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Logged,Level,Message,Username,RemoteAddress,Callsite,Exception")] Log log)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(log).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(log);
-        }
+        //// POST: Logs/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "ID,Logged,Level,Message,Username,RemoteAddress,Callsite,Exception")] Log log)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(log).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(log);
+        //}
 
-        // GET: Logs/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Log log = db.Logs.Find(id);
-            if (log == null)
-            {
-                return HttpNotFound();
-            }
-            return View(log);
-        }
+        //// GET: Logs/Delete/5
+        //public ActionResult Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Log log = db.Logs.Find(id);
+        //    if (log == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(log);
+        //}
 
-        // POST: Logs/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Log log = db.Logs.Find(id);
-            db.Logs.Remove(log);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        //// POST: Logs/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DeleteConfirmed(int id)
+        //{
+        //    Log log = db.Logs.Find(id);
+        //    db.Logs.Remove(log);
+        //    db.SaveChanges();
+        //    return RedirectToAction("Index");
+        //}
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
     }

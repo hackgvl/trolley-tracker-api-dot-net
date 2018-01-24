@@ -15,41 +15,33 @@ namespace TrolleyTracker.Controllers
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        public static RouteScheduleViewModel ConfigureScheduleView(TrolleyTrackerContext db, bool calculateEffectiveSchedule)
+        public static RouteScheduleViewModel ConfigureScheduleView(bool calculateEffectiveSchedule)
         {
             var vm = new RouteScheduleViewModel();
-            //var routeScheduleList = (from rs in db.RouteSchedules.Include(rs => rs.Route)
-            //                         orderby rs.DayOfWeek, rs.StartTime ascending, rs.Route.ShortName ascending
-            //                         select rs).ToList();
-            //var routeScheduleList = (from rs in db.RouteSchedules
-            //                         from route in db.Routes
-            //                         where rs.Route == route
-            //                         orderby rs.DayOfWeek, rs.StartTime ascending, route.ShortName ascending
-            //                         select rs).ToList();
 
-            var routeScheduleList = db.RouteSchedules
-                .Include(rs => rs.Route)
-                .OrderBy(rs => rs.DayOfWeek)
-                .ThenBy(rs => rs.StartTime)
-                .ThenBy(rs => rs.Route.ShortName)
-                .ToList();
-
-            vm.RouteSchedules = routeScheduleList;
-
-            if (calculateEffectiveSchedule)
+            using (var db = new TrolleyTrackerContext())
             {
-                //var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides.Include(rso => rso.NewRoute)
-                //                                 orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
-                //                                 select rso).ToList<RouteScheduleOverride>();
-                var routeScheduleOverrideList = db.RouteScheduleOverrides
-                    .Include(rso => rso.OverriddenRoute)
-                    .Include(rso => rso.NewRoute)
-                    .OrderBy(rso => rso.OverrideDate)
-                    .ThenBy(rso => rso.StartTime)
-                    .ThenBy(rso => rso.NewRoute.ShortName)
+                var routeScheduleList = db.RouteSchedules
+                    .Include(rs => rs.Route)
+                    .OrderBy(rs => rs.DayOfWeek)
+                    .ThenBy(rs => rs.StartTime)
+                    .ThenBy(rs => rs.Route.ShortName)
                     .ToList();
 
-                vm.EffectiveRouteSchedules = BuildEffectiveRouteSchedule(routeScheduleList, routeScheduleOverrideList);
+                vm.RouteSchedules = routeScheduleList;
+
+                if (calculateEffectiveSchedule)
+                {
+                    var routeScheduleOverrideList = db.RouteScheduleOverrides
+                        .Include(rso => rso.OverriddenRoute)
+                        .Include(rso => rso.NewRoute)
+                        .OrderBy(rso => rso.OverrideDate)
+                        .ThenBy(rso => rso.StartTime)
+                        .ThenBy(rso => rso.NewRoute.ShortName)
+                        .ToList();
+
+                    vm.EffectiveRouteSchedules = BuildEffectiveRouteSchedule(routeScheduleList, routeScheduleOverrideList);
+                }
             }
 
             vm.Options = new MvcScheduleGeneralOptions

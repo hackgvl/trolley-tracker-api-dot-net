@@ -21,6 +21,7 @@ namespace TrolleyTracker.Models
         private const int MaxCacheAge = 300;  // Seconds before removing from cache
 
         private const int MinRouteCheckInterval = 10; // Minimum minutes between check
+        private const int MaxRouteCheckInterval = 20; // Maximum minutes between check
         private static DateTime lastRouteCheck;
 
         private static DateTime lastCacheCheck;
@@ -30,8 +31,8 @@ namespace TrolleyTracker.Models
             trolleyCache = new Dictionary<int, RunningTrolley>();
             lastCacheCheck = DateTime.Now;
 
-            SetRoutesActive();
-            lastRouteCheck = DateTime.Now;
+            //SetRoutesActive();
+            lastRouteCheck = DateTime.Now.AddMinutes( - (MaxRouteCheckInterval * 2));  // Ensure route check happens first time through
         }
 
 
@@ -39,10 +40,10 @@ namespace TrolleyTracker.Models
         public static List<RunningTrolley> GetRunningTrolleys(bool isDebug)
         {
 
-            CheckActiveRoutes();
-
             lock (_lock)
             {
+                CheckActiveRoutes();
+
                 var runningTrolleys = new List<RunningTrolley>();
                 if (routeIsActive || isDebug)
                 {

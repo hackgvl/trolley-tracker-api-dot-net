@@ -12,8 +12,6 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class ActiveController : ApiController
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
 
         // Mapped as - GET: api/Routes/Active
         public List<RouteSummary> Get()

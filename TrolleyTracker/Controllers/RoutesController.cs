@@ -14,18 +14,19 @@ namespace TrolleyTracker.Controllers
 {
     public class RoutesController : Controller
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // GET: Routes
         public ActionResult Index()
         {
-            var routes = from r in db.Routes
-                        orderby r.ShortName
-                        select r;
-
-            return View(routes.ToList());
+            using (var db = new TrolleyTrackerContext())
+            {
+                var routeList = (from r in db.Routes
+                                 orderby r.ShortName
+                                 select r).ToList();
+                return View(routeList);
+            }
         }
 
         // GET: Routes/Details/5
@@ -35,12 +36,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Route route = db.Routes.Find(id);
-            if (route == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Route route = db.Routes.Find(id);
+                if (route == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(route);
             }
-            return View(route);
         }
 
         // GET: Routes/Create
@@ -64,10 +68,13 @@ namespace TrolleyTracker.Controllers
 
             var r = new Route();
             r.RouteColorRGB = "#008000";  // Must have starting value for Farbtastic
-            Route referenceRoute = db.Routes.Find(id);
-            if (referenceRoute != null)
+            using (var db = new TrolleyTrackerContext())
             {
-                r.RouteColorRGB = referenceRoute.RouteColorRGB;
+                Route referenceRoute = db.Routes.Find(id);
+                if (referenceRoute != null)
+                {
+                    r.RouteColorRGB = referenceRoute.RouteColorRGB;
+                }
             }
             return View("Create", r);
         }
@@ -83,19 +90,22 @@ namespace TrolleyTracker.Controllers
             if (ModelState.IsValid)
             {
 
-                var testRoute = from r in db.Routes
-                                where r.ShortName == route.ShortName
-                                select r;
-                if (testRoute.Count<Route>() > 0)
+                using (var db = new TrolleyTrackerContext())
                 {
-                    ViewBag.ErrorMessage = $"Unable to create - Route name {route.ShortName} already exists";
-                    return View("Create", route);
+                    var testRoute = from r in db.Routes
+                                    where r.ShortName == route.ShortName
+                                    select r;
+                    if (testRoute.Count<Route>() > 0)
+                    {
+                        ViewBag.ErrorMessage = $"Unable to create - Route name {route.ShortName} already exists";
+                        return View("Create", route);
+                    }
+
+
+
+                    db.Routes.Add(route);
+                    db.SaveChanges();
                 }
-                               
-
-
-                db.Routes.Add(route);
-                db.SaveChanges();
 
                 logger.Info($"Created route '{route.ShortName}' ({route.Description})");
 
@@ -142,20 +152,22 @@ namespace TrolleyTracker.Controllers
 
             ViewData["StreetDataXML"] = xml;
 
-            var routeShape = from shape in db.Shapes
-                          orderby shape.Sequence
-                          where (shape.RouteID == id)
-                          select shape;
-
-            var shapeList = new List<Coordinate>();
-            foreach(var point in routeShape)
+            using (var db = new TrolleyTrackerContext())
             {
-                var coord = new Coordinate(point.Lat, point.Lon);
-                shapeList.Add(coord);
-            }
-            string shapeJSON = new JavaScriptSerializer().Serialize(shapeList);
+                var routeShape = from shape in db.Shapes
+                                 orderby shape.Sequence
+                                 where (shape.RouteID == id)
+                                 select shape;
 
-            ViewData["RouteShapeJSON"] = shapeJSON;
+                var shapeList = new List<Coordinate>();
+                foreach (var point in routeShape)
+                {
+                    var coord = new Coordinate(point.Lat, point.Lon);
+                    shapeList.Add(coord);
+                }
+                string shapeJSON = new JavaScriptSerializer().Serialize(shapeList);
+                ViewData["RouteShapeJSON"] = shapeJSON;
+            }
 
             return PartialView();
         }
@@ -168,12 +180,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Route route = db.Routes.Find(id);
-            if (route == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Route route = db.Routes.Find(id);
+                if (route == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(route);
             }
-            return View(route);
         }
 
         // POST: Routes/Edit/5
@@ -186,8 +201,11 @@ namespace TrolleyTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(route).State = EntityState.Modified;
-                db.SaveChanges();
+                using (var db = new TrolleyTrackerContext())
+                {
+                    db.Entry(route).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 logger.Info($"Updated route '{route.ShortName}' ({route.Description})");
                 return RedirectToAction("Index");
             }
@@ -202,12 +220,15 @@ namespace TrolleyTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Route route = db.Routes.Find(id);
-            if (route == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return HttpNotFound();
+                Route route = db.Routes.Find(id);
+                if (route == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(route);
             }
-            return View(route);
         }
 
         // POST: Routes/Delete/5
@@ -216,19 +237,22 @@ namespace TrolleyTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Route route = db.Routes.Find(id);
-            logger.Info($"Deleted route '{route.ShortName}' ({route.Description})");
-            db.Routes.Remove(route);
-            db.SaveChanges();
+            using (var db = new TrolleyTrackerContext())
+            {
+                Route route = db.Routes.Find(id);
+                logger.Info($"Deleted route '{route.ShortName}' ({route.Description})");
+                db.Routes.Remove(route);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
     }

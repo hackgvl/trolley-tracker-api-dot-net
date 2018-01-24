@@ -14,25 +14,29 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class TrolleysController : ApiController
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
         // GET: api/Trolleys
-        public IQueryable<Trolley> GetTrolleys()
+        public List<Trolley> GetTrolleys()
         {
-            return db.Trolleys;
+            using (var db = new TrolleyTrackerContext())
+            {
+                return db.Trolleys.ToList();
+            }
         }
 
         // GET: api/Trolleys/5
         [ResponseType(typeof(Trolley))]
         public IHttpActionResult GetTrolley(int id)
         {
-            Trolley trolley = db.Trolleys.Find(id);
-            if (trolley == null)
+            using (var db = new TrolleyTrackerContext())
             {
-                return NotFound();
-            }
+                Trolley trolley = db.Trolleys.Find(id);
+                if (trolley == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(trolley);
+                return Ok(trolley);
+            }
         }
 
 
@@ -41,16 +45,12 @@ namespace TrolleyTracker.Controllers.WebAPI
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            //if (disposing)
+            //{
+            //    db.Dispose();
+            //}
             base.Dispose(disposing);
         }
 
-        private bool TrolleyExists(int id)
-        {
-            return db.Trolleys.Count(e => e.ID == id) > 0;
-        }
     }
 }

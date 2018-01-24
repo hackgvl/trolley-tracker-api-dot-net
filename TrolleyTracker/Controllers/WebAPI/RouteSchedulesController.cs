@@ -13,34 +13,35 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class RouteSchedulesController : ApiController
     {
-        private TrolleyTrackerContext db = new TrolleyTrackerContext();
-
 
         // GET: api/RouteSchedules
         public List<RouteScheduleSummary> Get()
         {
-            var currentDateTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
-
-            var fixedRouteSchedules = (from route in db.Routes
-                                             from routeSchedule in db.RouteSchedules
-                                             orderby routeSchedule.StartTime, routeSchedule.Route.ShortName
-                                             where (routeSchedule.RouteID == route.ID) 
-                                             select routeSchedule).ToList<RouteSchedule>();
-
-            var today = currentDateTime.Date;
-            var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides
-                                             orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
-                                             select rso).ToList<RouteScheduleOverride>();
-
-            var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
-            var routeSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 7, fixedRouteSchedules, scheduleToDate, routeScheduleOverrideList);
-
-            var schedules = new List<RouteScheduleSummary>();
-            foreach(var routeSchedule in routeSchedules)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                schedules.Add(new RouteScheduleSummary(routeSchedule));
+                var currentDateTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+
+                var fixedRouteSchedules = (from route in db.Routes
+                                           from routeSchedule in db.RouteSchedules
+                                           orderby routeSchedule.StartTime, routeSchedule.Route.ShortName
+                                           where (routeSchedule.RouteID == route.ID)
+                                           select routeSchedule).ToList<RouteSchedule>();
+
+                var today = currentDateTime.Date;
+                var routeScheduleOverrideList = (from rso in db.RouteScheduleOverrides
+                                                 orderby rso.OverrideDate, rso.StartTime, rso.NewRoute.ShortName
+                                                 select rso).ToList<RouteScheduleOverride>();
+
+                var scheduleToDate = new Dictionary<RouteSchedule, DateTime>();
+                var routeSchedules = BuildScheduleView.BuildEffectiveRouteSchedule(currentDateTime, 7, fixedRouteSchedules, scheduleToDate, routeScheduleOverrideList);
+
+                var schedules = new List<RouteScheduleSummary>();
+                foreach (var routeSchedule in routeSchedules)
+                {
+                    schedules.Add(new RouteScheduleSummary(routeSchedule));
+                }
+                return schedules;
             }
-            return schedules;
         }
 
 
@@ -48,15 +49,18 @@ namespace TrolleyTracker.Controllers.WebAPI
         [ResponseType(typeof(RouteScheduleSummary))]
         public IHttpActionResult GetRouteSchedule(int id)
         {
-            RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
-            if (routeSchedule == null)
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
-                return NotFound();
+                RouteSchedule routeSchedule = db.RouteSchedules.Find(id);
+                if (routeSchedule == null)
+                {
+                    return NotFound();
+                }
+
+                var routeScheduleSummary = new RouteScheduleSummary(routeSchedule);
+
+                return Ok(routeScheduleSummary);
             }
-
-            var routeScheduleSummary = new RouteScheduleSummary(routeSchedule);
-
-            return Ok(routeScheduleSummary);
         }
 
 
