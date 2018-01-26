@@ -9,7 +9,7 @@ namespace TrolleyTracker.Controllers
     public class AssignStopsToRoutes
     {
 
-        const double MinStopProximity = 20.0;  // Meters
+        const double MinStopProximity = 30.0;  // Meters
 
         /// <summary>
         /// Recalculate which routes the stops belong to, and the order.

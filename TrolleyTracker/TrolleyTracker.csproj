@@ -457,7 +457,8 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
-    <Content Include="Content\leaflet\leaflet-src.map" />
+    <Content Include="Content\leaflet\leaflet-src.js.map" />
+    <Content Include="Content\leaflet\leaflet.js.map" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
