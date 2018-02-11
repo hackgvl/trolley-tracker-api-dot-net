@@ -15,7 +15,7 @@ namespace TrolleyTracker.Controllers.WebAPI
     {
 
         // GET: api/RouteSchedules
-        public List<RouteScheduleSummary> Get()
+        public static List<RouteScheduleSummary> Get()
         {
             using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {

@@ -211,6 +211,7 @@
     <Compile Include="Controllers\ActiveRoutes.cs" />
     <Compile Include="Controllers\AssignStopsToRoutes.cs" />
     <Compile Include="Controllers\BuildScheduleView.cs" />
+    <Compile Include="Controllers\ClientWebController.cs" />
     <Compile Include="Controllers\ParseKML.cs" />
     <Compile Include="Controllers\UploadKMLShape.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
@@ -314,6 +315,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\ClientWeb\index.html" />
+    <Content Include="Content\ClientWeb\js\leaflet.textpath.js" />
+    <Content Include="Content\ClientWeb\js\main.js" />
+    <Content Include="Content\ClientWeb\js\schedule.js" />
+    <Content Include="Content\ClientWeb\schedule.html" />
     <Content Include="Content\FadedTrolley.jpg" />
     <Content Include="Content\farbtastic.css" />
     <Content Include="Content\images\marker.png" />
@@ -594,6 +600,8 @@
     <Content Include="Views\Error\index.cshtml" />
     <Content Include="Views\UploadKMLShape\RouteShapeConfirm.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\ClientWeb\index.cshtml" />
+    <Content Include="Views\ClientWeb\RouteView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

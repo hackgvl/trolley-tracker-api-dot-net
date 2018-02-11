@@ -46,49 +46,13 @@ namespace TrolleyTracker.Controllers.WebAPI
                 // Assemble route + Stops + Shape
                 var routeDetail = new RouteDetail(route);
 
-                AddRouteDetail(db, routeDetail, route);
+                routeDetail.AddRouteDetail(db, route);
 
                 return Ok(routeDetail);
             }
         }
 
-        private void AddRouteDetail(TrolleyTrackerContext db, RouteDetail routeDetail, Route route)
-        {
-
-            var stops = (from stop in db.Stops
-                        from routeStop in db.RouteStops
-                        orderby routeStop.StopSequence
-                        where (routeStop.StopID == stop.ID) && (routeStop.RouteID == route.ID)
-                        select stop).ToList();
-
-            foreach (var stop in stops)
-            {
-                // Construct with route info so route shape segment index is included
-                var stopSummary = new StopSummary(stop, route);
-
-                // Use arrival times if available
-                var stopWithArrivalTime = StopArrivalTime.GetStopSummaryWithArrivalTimes(stop.ID);
-                if (stopWithArrivalTime != null)
-                {
-                    stopSummary.NextTrolleyArrivalTime = stopWithArrivalTime.NextTrolleyArrivalTime;
-                }
-                routeDetail.Stops.Add(stopSummary);
-            }
-
-            var shapes = from shape in db.Shapes
-                        orderby shape.Sequence
-                        where (shape.RouteID == route.ID)
-                        select shape;
-
-            foreach (var shape in shapes)
-            {
-                var coordinate = new Location();
-                coordinate.Lat = shape.Lat;
-                coordinate.Lon = shape.Lon;
-                routeDetail.RoutePath.Add(coordinate);
-            }
-        }
-
+       
 
         protected override void Dispose(bool disposing)
         {

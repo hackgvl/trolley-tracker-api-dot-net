@@ -43,6 +43,45 @@ namespace TrolleyTracker.ViewModels
         public List<Location> RoutePath { get; set; }
         [DataMember(Name = "RouteColorRGB")]
         public string RouteColorRGB { get; set; }
+
+
+        public void AddRouteDetail(TrolleyTrackerContext db, Route route)
+        {
+
+            var stops = (from stop in db.Stops
+                         from routeStop in db.RouteStops
+                         orderby routeStop.StopSequence
+                         where (routeStop.StopID == stop.ID) && (routeStop.RouteID == route.ID)
+                         select stop).ToList();
+
+            foreach (var stop in stops)
+            {
+                // Construct with route info so route shape segment index is included
+                var stopSummary = new StopSummary(stop, route);
+
+                // Use arrival times if available
+                var stopWithArrivalTime = StopArrivalTime.GetStopSummaryWithArrivalTimes(stop.ID);
+                if (stopWithArrivalTime != null)
+                {
+                    stopSummary.NextTrolleyArrivalTime = stopWithArrivalTime.NextTrolleyArrivalTime;
+                }
+                this.Stops.Add(stopSummary);
+            }
+
+            var shapes = from shape in db.Shapes
+                         orderby shape.Sequence
+                         where (shape.RouteID == route.ID)
+                         select shape;
+
+            foreach (var shape in shapes)
+            {
+                var coordinate = new Location();
+                coordinate.Lat = shape.Lat;
+                coordinate.Lon = shape.Lon;
+                this.RoutePath.Add(coordinate);
+            }
+        }
+
     }
 }
 

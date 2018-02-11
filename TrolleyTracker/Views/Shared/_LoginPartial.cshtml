@@ -61,14 +61,15 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer", new { ActiveFilter = 1}, null)</li>
-                @if (User.IsInRole("Administrators")) 
-                {
-                    <li>
-                        @Html.ActionLink("Role Manager", "Index", "Roles")
-                        @Html.ActionLink("View Logs", "Index", "Logs")
-                    </li>
-                }
+                <li>@Html.ActionLink("DB Visualizer", "Index", "DBVisualizer", new { ActiveFilter = 1 }, null)</li>
+                <li>@Html.ActionLink("Client Web View", "Index", "ClientWeb")</li>
+                @if (User.IsInRole("Administrators"))
+    {
+            <li>
+                @Html.ActionLink("Role Manager", "Index", "Roles")
+                @Html.ActionLink("View Logs", "Index", "Logs")
+            </li>
+}
             </ul>
         </li>
 

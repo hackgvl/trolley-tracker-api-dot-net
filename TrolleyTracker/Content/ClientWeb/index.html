@@ -1,0 +1,113 @@
+			  <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trolley Tracker</title>
+    <style>
+      body {padding:0; margin:0;}
+      html, body, #map { width: 100%; height: 100%; }
+
+      .trolley-stop-icon {
+        border: 2px solid #fff;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+      }
+
+      .leaflet-control-attribution {
+        display: none;
+      }
+
+      .question-background {
+        border-radius: 4px;
+        width: 30px;
+        height: 30px;
+        font-size: 22px;
+        background-color: white;
+        text-align: center;
+        border: 1px solid gray;
+      }
+
+      .info-popup {
+        width: 80%;
+        margin: auto;
+        max-width: 300px;
+        position: absolute;
+        left: 10%;
+        right: 10%;
+        z-index: 9999;
+        top: 5%;
+        background: white;
+        border-style: solid;
+        border-color: #999;
+        border-radius: 10px;
+      }
+
+      p {
+        font-size: .85em;
+        margin: 5px;
+      }
+
+      .info-popup p {
+        text-align: center;
+        padding-right: 5px;
+        padding-left: 5px;
+      }
+
+      .info-popup-lower {
+        top:35%;
+      }
+
+      .button-close {
+        padding: 10px;
+      }
+
+    </style>
+    <link rel="stylesheet" href="/Content/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css">
+    <script src="http://cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js"></script>
+  </head>
+  <body>
+
+    <div id='info' class='info-popup' style='display:none;'>
+      <p>Map data is from <a href='http://openstreetmap.org'>OpenStreetMap&copy;</a> contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/'>CC-BY-SA</a>.</p>
+      <p>Imagery&copy; <a href='http://mapbox.com'>Mapbox</a></p>
+      <p>Powered by <a href='http://leafletjs.com'>Leaflet.js</a>
+      <p>API Powered by <a href="http://wallingis.com/">Walling Info Systems</a>
+      <p>Built by the Code For Greenville Brigade: <a href="https://github.com/codeforgreenville">Github</a></p>
+      <p><a href='mailto:yeahthattrolley@gmail.com'>Contact Us!</a></p>
+      <p><button name="modal-close" class="button-close" onclick="javascript:closeInfo();"><i class='fa fa-close'></i>Close</button></p>
+    </div>
+    <div id="schedules" class="info-popup" style="display:none">
+      <p id="scheduletitle"><b>Current Route Schedule:</b></p>
+      <p><button name="modal-close" class="button-close" onclick="javascript:closeSchedule();"><i class='fa fa-close'></i> Close</button></p>
+    </div>
+
+    <!-- main map div -->
+    <div id="map"></div>
+
+    <!-- hidden div for the control html - this is copied into the mapbox control with .clone().append() -->
+    <div id="controls_container" style="display: none;">
+      <div id="controls">
+        <div id='info-question' class='question-background' onclick="javascript:showInfo();"><i class='fa fa-question'></i></div>
+        <div id='info-schedule' class='question-background' onclick="javascript:showSchedule();"><i class='fa fa-calendar'></i></div>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+      var routedata = %routedata%;
+	  var scheduledata = %scheduledata%;
+	  var fulltrolleydata = %fulltrolleydata%;
+    </script>
+
+    <!-- script includes -->
+    <script src="/Content/leaflet/leaflet.js"></script>
+    <script src="/Content/leaflet/Leaflet.MakiMarkers.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
+    <script type="text/javascript" src="/content/ClientWeb/js/leaflet.textpath.js"></script>
+    <script type="text/javascript" src="/content/ClientWeb/js/main.js"></script>
+  </body>
+</html>
