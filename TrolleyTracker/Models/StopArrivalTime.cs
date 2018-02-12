@@ -95,9 +95,14 @@ namespace TrolleyTracker.Models
                 if (!trolleyTrackingInfo.ContainsKey(trolley.ID))
                 {
                     CreateTrackingInfo(trolley);
+                    
+                }
+                if (trolleyTrackingInfo[trolley.ID].CurrentRoute == null)
+                {
+                    // Match will be repeatedly tried until there is a match
                     MatchTrolleyToRoute(trolley);
                 }
-                if (!trolleyTrackingInfo.ContainsKey(trolley.ID))
+                if (trolleyTrackingInfo[trolley.ID].CurrentRoute == null)
                 {
                     // Unable to match trolley to any route
                     return;

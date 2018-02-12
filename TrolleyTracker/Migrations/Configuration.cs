@@ -37,7 +37,7 @@ namespace TrolleyTracker.Migrations
             //    );
             //
 
-            //CheckStopArrivalTimeMigration(context);
+            CheckStopArrivalTimeMigration(context);
         }
 
         /// <summary>
