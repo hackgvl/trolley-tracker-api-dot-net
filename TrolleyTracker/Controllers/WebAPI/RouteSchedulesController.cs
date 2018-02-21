@@ -13,9 +13,13 @@ namespace TrolleyTracker.Controllers.WebAPI
 {
     public class RouteSchedulesController : ApiController
     {
-
         // GET: api/RouteSchedules
-        public static List<RouteScheduleSummary> Get()
+        public List<RouteScheduleSummary> Get()
+        {
+            return GetSchedules();
+        }
+
+        public static List<RouteScheduleSummary> GetSchedules()
         {
             using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {

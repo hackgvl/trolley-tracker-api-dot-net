@@ -119,7 +119,7 @@ namespace TrolleyTracker.Controllers
         /// <returns></returns>
         private string EffectiveScheduleJSON(TrolleyTrackerContext db, List<String> runsOnSchedule, int routeID)
         {
-            var effectiveScheduleList = WebAPI.RouteSchedulesController.Get();
+            var effectiveScheduleList = WebAPI.RouteSchedulesController.GetSchedules();
 
             // Massage and convert for display on web page - web page uses in reverse order
             // "<b><a href=\"schedule/18/\">Heart Of Main:</a></b><br>Sunday 5:30 PM - 8:00 PM", 
