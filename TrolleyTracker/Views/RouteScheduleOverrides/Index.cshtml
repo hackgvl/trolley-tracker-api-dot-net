@@ -12,7 +12,7 @@
 
 <h2>@Html.ActionLink("Fixed Schedule", "Index", "RouteSchedules")</h2>
 
-<p>
+<br/>
     @Html.ScheduleGeneralFor(Model.RouteSchedules,
                              m => m.StartTime,
                              m => m.EndTime,
@@ -23,10 +23,10 @@
                             s => s.ToString(),
                             d => d.ToString("dd/MM"))
 
-</p>
+<br />
 <h2>Effective Schedule - Next 2 Weeks</h2>
 
-<p>
+<br />
     @Html.ScheduleGeneralFor(Model.EffectiveRouteSchedules,
                              m => DateTime.Parse(m.StartTime),
                              m => DateTime.Parse(m.EndTime),
@@ -37,14 +37,13 @@
                             s => s.ToString(),
                             d => d.ToString("dd/MM"))
 
-</p>
-<p>
+<br />
 @if (User.IsInRole("RouteManagers"))
 {
 
     @Html.ActionLink("Create New", "Create")
 }
-</p>
+<br />
 <table class="table">
     <tr>
         <th>

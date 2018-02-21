@@ -16,8 +16,8 @@
 Current server time is: @ViewBag.ServerTime
 
 
-<p>
-    @Html.ScheduleGeneralFor(Model.RouteSchedules,
+<br />
+@Html.ScheduleGeneralFor(Model.RouteSchedules,
                              m => m.StartTime,
                              m => m.EndTime,
                              m => Model.DaysOfWeek[m.DayOfWeek],
@@ -27,13 +27,12 @@ Current server time is: @ViewBag.ServerTime
                             s => s.ToString(),
                             d => d.ToString("dd/MM"))
 
-</p>
-<p>
+<br />
 @if (User.IsInRole("RouteManagers"))
 {
     @Html.ActionLink("Create New", "Create")
 }
-</p>
+<br />
 <table class="table">
     <tr>
         <th>
@@ -55,33 +54,34 @@ Current server time is: @ViewBag.ServerTime
         <th></th>
     </tr>
 
-@foreach (var item in Model.RouteSchedules) {
-    <tr>
-        <td>
-            @*@Html.DisplayFor(modelItem => item.DayOfWeek)*@
-            @ViewBag.DaysOfWeek[item.DayOfWeek]
-        </td>
-        <td>
-            <!-- Html.DisplayFor(modelItem => item.StartTime) -->
-            @Html.DisplayFor(modelItem => item.StartTime, "FormatDateTimeOnly")
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EndTime, "FormatDateTimeOnly")
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Route.ShortName)
-        </td>
-        <td>
-@if (User.IsInRole("RouteManagers"))
-{
-            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) 
-@Html.Raw(" | ")
-            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-}
-            |
-            @Html.ActionLink("Details", "Details", new { id = item.ID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model.RouteSchedules)
+    {
+        <tr>
+            <td>
+                @*@Html.DisplayFor(modelItem => item.DayOfWeek)*@
+                @ViewBag.DaysOfWeek[item.DayOfWeek]
+            </td>
+            <td>
+                <!-- Html.DisplayFor(modelItem => item.StartTime) -->
+                @Html.DisplayFor(modelItem => item.StartTime, "FormatDateTimeOnly")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime, "FormatDateTimeOnly")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Route.ShortName)
+            </td>
+            <td>
+                @if (User.IsInRole("RouteManagers"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                    @Html.Raw(" | ")
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                }
+                |
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+            </td>
+        </tr>
+    }
 
 </table>
