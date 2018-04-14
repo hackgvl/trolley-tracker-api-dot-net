@@ -213,6 +213,9 @@
     <Compile Include="Controllers\BuildScheduleView.cs" />
     <Compile Include="Controllers\ClientWebController.cs" />
     <Compile Include="Controllers\ParseKML.cs" />
+    <Compile Include="Controllers\PollTrolleysProcess.cs" />
+    <Compile Include="Controllers\PollTrolleysTask.cs" />
+    <Compile Include="Controllers\Syncromatics.cs" />
     <Compile Include="Controllers\UploadKMLShape.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
     <Compile Include="Controllers\CustomAuthorize.cs" />

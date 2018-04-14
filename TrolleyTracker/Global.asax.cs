@@ -44,6 +44,8 @@ namespace TrolleyTracker
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            var pollTrolleys = new Controllers.PollTrolleysTask();
         }
 
         protected void Application_EndRequest()

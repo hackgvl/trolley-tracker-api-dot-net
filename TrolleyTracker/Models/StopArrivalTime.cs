@@ -38,6 +38,21 @@ namespace TrolleyTracker.Models
             UpdateStopList();
         }
 
+        /// <summary>
+        /// Reset trolley tracking info if color changes (assigned to new route)
+        /// </summary>
+        /// <param name="trolley"></param>
+        public static void ResetTrolleyInfo(Trolley trolley)
+        {
+            lock(_lock)
+            {
+                if (trolleyTrackingInfo.ContainsKey(trolley.ID))
+                {
+                    trolleyTrackingInfo.Remove(trolley.ID);
+                }
+            }
+        }
+
         public static List<StopSummary> StopSummaryListWithArrivalTimes
         {
             get
@@ -52,6 +67,26 @@ namespace TrolleyTracker.Models
                     }
                     return stopSummaryList;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Return copy of cached active routes
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<int, Route> GetActiveRoutes()
+        {
+            lock (_lock)
+            {
+                RefreshStaticData();
+                var routes = new Dictionary<int, Route>();
+
+                foreach (var route in activeRoutes.Values)
+                {
+                    routes.Add(route.ID, route);
+                }
+
+                return routes;
             }
         }
 
@@ -136,15 +171,12 @@ namespace TrolleyTracker.Models
             {
                 var newRunningTrolleys = TrolleyCache.GetRunningTrolleys(false);
                 SetNewRunningTrolleys(newRunningTrolleys);   // Get full trolley records, keyed by Number
-                if (newRunningTrolleys.Count > 0)  // Check that schedule is active
-                {
-                    // Schedule is active; update remaining items
-                    lastDataUpdateTime = DateTime.Now;
+                // Schedule is active; update remaining items
+                lastDataUpdateTime = DateTime.Now;
 
-                    UpdateActiveRoutes();
-                    UpdateStopList();
+                UpdateActiveRoutes();
+                UpdateStopList();
 
-                }
             }
 
         }

@@ -1,0 +1,249 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
+using GreenlinkTracker;
+using NLog;
+using TrolleyTracker.Models;
+
+namespace TrolleyTracker.Controllers
+{
+    public class PollTrolleysProcess
+    {
+        private CancellationToken cancellationToken;
+        private Syncromatics syncromatics;
+
+        private Syncromatics.Service trolleyService;
+
+        private Dictionary<int, Route> activeRoutes;
+        private DateTime lastRouteUpdated = DateTime.Now.AddSeconds(-60);
+        private int RouteUpdateInterval = 60; // in Seconds
+
+        private Dictionary<int, Syncromatics.Route> localRouteIDToSyncromaticsRoute = new Dictionary<int, Syncromatics.Route>();
+
+        private Dictionary<string, int> syncroTrolleyNumberToLocalTrolleyNumber = new Dictionary<string, int> {
+            // Temporary until added to database
+                {"1701", 1701 }, {"1702", 1702 }, {"7100", 6 }, {"7101", 5 }
+            };
+        // vehicle.name contains the number Greenlink has assigned to the trolley
+        private Dictionary<string, Trolley> syncroTrolleyNumberToLocalTrolley = new Dictionary<string, Trolley>();
+
+        // Items to log single message type per application execution
+        private enum SingleLogType {TrolleyNotFound=0, UnmatchedSyncromaticsVehicle=1, UnmatchedRouteName=2 };
+        private BitArray logSent = new BitArray(3);
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+
+        public PollTrolleysProcess(CancellationToken cancellationToken)
+        {
+            this.cancellationToken = cancellationToken;
+            syncromatics = new Syncromatics(cancellationToken);
+            logSent = new BitArray(Enum.GetNames(typeof(SingleLogType)).Length);
+        }
+
+
+        /// <summary>
+        /// Call periodically to update trolley locations
+        /// </summary>
+        public async Task UpdateTrolleys()
+        {
+            CheckActiveRoutes();
+            if (activeRoutes.Count == 0) return;  // Nothing scheduled, nothing to poll from Syncromatics
+
+            if (trolleyService == null)
+            {
+                if (!await CheckSyncromaticsData()) return;
+            }
+
+            await QueryVehiclePositions();
+
+        }
+
+        private async Task QueryVehiclePositions()
+        {
+            foreach (var route in activeRoutes.Values)
+            {
+                await GetVehiclesOnRoute(route);
+            }
+        }
+
+
+        /// <summary>
+        /// Get all vehicles on this route - normally just a single trolley
+        /// </summary>
+        /// <param name="route"></param>
+        private async Task GetVehiclesOnRoute(Route route)
+        {
+            var syncromaticsRoute = FindMatchingRoute(route);
+            if (syncromaticsRoute == null ) return;
+            var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
+            foreach (var vehicle in vehicles)
+            {
+                var trolley = FindMatchingTrolley(vehicle);
+                if (trolley != null)
+                {
+                    trolley.CurrentLat = vehicle.lat;
+                    trolley.CurrentLon = vehicle.lon;
+                    trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+
+                    await CheckTrolleyColorMatch(trolley, route);
+
+                    TrolleyCache.UpdateTrolley(trolley);
+                    StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Confirm that trolley color matches route color.   If not, change it and
+        /// save to DB and reset arrival time logic for that trolley.
+        /// </summary>
+        /// <param name="trolley"></param>
+        /// <param name="route"></param>
+        private async Task CheckTrolleyColorMatch(Trolley trolley, Route route)
+        {
+            if (trolley.IconColorRGB.ToLower() == route.RouteColorRGB.ToLower()) return;
+            trolley.IconColorRGB = route.RouteColorRGB;
+
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
+            {
+                Trolley dbTrolley = (from Trolley t in db.Trolleys
+                                   where t.ID == trolley.ID
+                                   select t).FirstOrDefault<Trolley>();
+
+                dbTrolley.CurrentLat = trolley.CurrentLat;
+                dbTrolley.CurrentLon = trolley.CurrentLon;
+                dbTrolley.LastBeaconTime = trolley.LastBeaconTime;
+                dbTrolley.IconColorRGB = trolley.IconColorRGB;
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            StopArrivalTime.ResetTrolleyInfo(trolley);
+        }
+
+        private Trolley FindMatchingTrolley(Syncromatics.Vehicle vehicle)
+        {
+            if (syncroTrolleyNumberToLocalTrolley.ContainsKey(vehicle.name))
+            {
+                return syncroTrolleyNumberToLocalTrolley[vehicle.name];
+            }
+
+            if (!syncroTrolleyNumberToLocalTrolleyNumber.ContainsKey(vehicle.name))
+            {
+                SingleLog(SingleLogType.UnmatchedSyncromaticsVehicle, $"Unable to match Syncromatics vehicle '{vehicle.name}' to any trolley");
+                return null;
+            }
+            var trolley = GetTrolleyByNumber(syncroTrolleyNumberToLocalTrolleyNumber[vehicle.name]);
+            syncroTrolleyNumberToLocalTrolley[vehicle.name] = trolley;
+            return trolley;
+
+        }
+
+        private Trolley GetTrolleyByNumber(int trolleyNumber)
+        {
+            using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
+            {
+                Trolley trolley = (from Trolley t in db.Trolleys
+                               where t.Number == trolleyNumber
+                               select t).FirstOrDefault<Trolley>();
+
+                if (trolley == null)
+                {
+                    SingleLog(SingleLogType.UnmatchedSyncromaticsVehicle, $"Unable to find Trolley {trolleyNumber}");
+                }
+
+                return trolley;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Match local route to a Syncromatics route as already defined or by keyword
+        /// There may be many route variations.
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns>syncromatics route ID or null if not found</returns>
+        private Syncromatics.Route FindMatchingRoute(Route route)
+        {
+            if (localRouteIDToSyncromaticsRoute.ContainsKey(route.ID))
+            {
+                return localRouteIDToSyncromaticsRoute[route.ID];
+            }
+
+            var localKeyword = FindLocalKeyword(route.LongName);
+            if (localKeyword == "") return null;
+
+            foreach (var syncroRoute in trolleyService.routes)
+            {
+                var lcaseName = syncroRoute.name.ToLower();
+                if (lcaseName.Contains(localKeyword))
+                {
+                    localRouteIDToSyncromaticsRoute.Add(route.ID, syncroRoute);
+                    return syncroRoute;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Find defining keyword that will match routes by names on both systems
+        /// </summary>
+        /// <param name="longName"></param>
+        /// <returns>keyword or "" if not found</returns>
+        private string FindLocalKeyword(string longName)
+        {
+            var lcaseName = longName.ToLower();
+            if (lcaseName.Contains("heart")) return "heart";
+            if (lcaseName.Contains("arts")) return "arts";
+            if (lcaseName.Contains("augusta")) return "augusta";
+            if (lcaseName.Contains("lunch")) return "lunch";
+            if (lcaseName.Contains("top")) return "top";  // Last to avoid accidenatal match by substring of a longer name
+
+            SingleLog(SingleLogType.UnmatchedRouteName, $"Unable to find keywords of route '{longName}' to match");
+
+            return ""; // Not found
+        }
+
+        private async Task<bool> CheckSyncromaticsData()
+        {
+            var services = await syncromatics.GetServices();
+            foreach(var service in services)
+            {
+                string lcaseService = service.name.ToLower();
+                if (lcaseService.Contains("trolley"))
+                {
+                    trolleyService = service;
+                    break;
+                }
+            }
+
+            return (trolleyService != null);
+        }
+
+        private void CheckActiveRoutes()
+        {
+            if (activeRoutes == null ||
+                (lastRouteUpdated - DateTime.Now).TotalSeconds > RouteUpdateInterval)
+            {
+                activeRoutes = StopArrivalTime.GetActiveRoutes();
+                lastRouteUpdated = DateTime.Now;
+            }
+
+        }
+
+        private void SingleLog(SingleLogType logType, string message)
+        {
+            if (!logSent[(int)logType])
+            {
+                logger.Info(message);
+                logSent[(int)logType] = true;
+            }
+        }
+    }
+}
