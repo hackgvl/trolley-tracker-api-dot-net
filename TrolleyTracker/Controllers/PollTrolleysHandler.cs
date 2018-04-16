@@ -12,7 +12,7 @@ using TrolleyTracker.Models;
 
 namespace TrolleyTracker.Controllers
 {
-    public class PollTrolleysProcess
+    public class PollTrolleysHandler
     {
         private CancellationToken cancellationToken;
         private Syncromatics syncromatics;
@@ -32,13 +32,16 @@ namespace TrolleyTracker.Controllers
         // vehicle.name contains the number Greenlink has assigned to the trolley
         private Dictionary<string, Trolley> syncroTrolleyNumberToLocalTrolley = new Dictionary<string, Trolley>();
 
+        // Last update time seen from Syncromatics API for each vehicle / by vehicle.id
+        private Dictionary<int, DateTime> lastVehicleUpdateTime = new Dictionary<int, DateTime>();
+
         // Items to log single message type per application execution
         private enum SingleLogType {TrolleyNotFound=0, UnmatchedSyncromaticsVehicle=1, UnmatchedRouteName=2 };
         private BitArray logSent = new BitArray(3);
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
 
-        public PollTrolleysProcess(CancellationToken cancellationToken)
+        public PollTrolleysHandler(CancellationToken cancellationToken)
         {
             this.cancellationToken = cancellationToken;
             syncromatics = new Syncromatics(cancellationToken);
@@ -83,6 +86,17 @@ namespace TrolleyTracker.Controllers
             var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
             foreach (var vehicle in vehicles)
             {
+                if (lastVehicleUpdateTime.ContainsKey(vehicle.id))
+                {
+                    // Check for stall (no update from Syncromatics)
+                    if (lastVehicleUpdateTime[vehicle.id] == vehicle.lastUpdated) continue;
+                    lastVehicleUpdateTime[vehicle.id] = vehicle.lastUpdated;
+                }
+                else
+                {
+                    lastVehicleUpdateTime.Add(vehicle.id, vehicle.lastUpdated);
+                }
+
                 var trolley = FindMatchingTrolley(vehicle);
                 if (trolley != null)
                 {
@@ -203,6 +217,7 @@ namespace TrolleyTracker.Controllers
             if (lcaseName.Contains("arts")) return "arts";
             if (lcaseName.Contains("augusta")) return "augusta";
             if (lcaseName.Contains("lunch")) return "lunch";
+            if (lcaseName.Contains("drive")) return "drive";
             if (lcaseName.Contains("top")) return "top";  // Last to avoid accidenatal match by substring of a longer name
 
             SingleLog(SingleLogType.UnmatchedRouteName, $"Unable to find keywords of route '{longName}' to match");

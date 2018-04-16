@@ -22,7 +22,7 @@ namespace TrolleyTracker.Controllers
         private CancellationToken cancellationToken;
         private CancellationTokenSource cancellationTokenSource;
 
-        private PollTrolleysProcess pollTrolleyProcess;
+        private PollTrolleysHandler pollTrolleyProcess;
         private DateTime lastExceptionLogged = DateTime.Now.AddMinutes(-60);  // So first excception will be logged
         private const int MinExceptionInterval = 5; // In minutes
 
@@ -46,7 +46,7 @@ namespace TrolleyTracker.Controllers
         {
             try
             {
-                pollTrolleyProcess = new PollTrolleysProcess(cancellationToken);
+                pollTrolleyProcess = new PollTrolleysHandler(cancellationToken);
 
                 while (true)
                 {
@@ -63,6 +63,15 @@ namespace TrolleyTracker.Controllers
                     catch (TaskCanceledException)
                     {
                         throw;  // Normal IIS shutdown request
+                    }
+                    catch (GreenlinkTracker.Syncromatics.SyncromaticsException ex)
+                    {
+                        // Rate limit logging to avoid filling exception log
+                        if ((DateTime.Now - lastExceptionLogged).TotalMinutes > MinExceptionInterval)
+                        {
+                            logger.Info(ex.Message);
+                            lastExceptionLogged = DateTime.Now;
+                        }
                     }
                     catch (Exception ex)
                     {

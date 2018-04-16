@@ -84,6 +84,10 @@ namespace GreenlinkTracker
             using (var result = await httpClient.GetAsync($"{apiURL}/{request}", cancellationToken))
             {
                 string content = await result.Content.ReadAsStringAsync();
+                if (!result.IsSuccessStatusCode)
+                {
+                    throw new SyncromaticsException($"HTTP Error {result.StatusCode} querying Syncromatics API for '{request}' returned '{content}'");
+                }
                 return content;
             }
         }
@@ -126,6 +130,23 @@ namespace GreenlinkTracker
             public double passengerLoad { get; set; }
             // in UTC
             public DateTime lastUpdated { get; set; }
+        }
+
+        public class SyncromaticsException : Exception
+        {
+            public SyncromaticsException()
+            {
+            }
+
+            public SyncromaticsException(string message)
+                : base(message)
+            {
+            }
+
+            public SyncromaticsException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
         }
 
 
