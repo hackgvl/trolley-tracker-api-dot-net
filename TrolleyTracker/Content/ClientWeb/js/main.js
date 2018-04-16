@@ -14,6 +14,18 @@ var updateCount = 0;
 //Specify your Mapbox API access token
 L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLNIAIArqh6xGpOOg";
 
+var PushPinIcon = L.Icon.extend({
+    options: {
+        iconUrl: '../content/images/pin-black-tiny.png',
+        shadowUrl: '../content/images/pin-black-tiny-shadow.png',
+        iconSize: [8, 15],
+        shadowSize: [10, 13],
+        iconAnchor: [4, 14],
+        shadowAnchor: [1, 12],
+        popupAnchor: [-3, -12]
+    }
+});
+
 
 //custom control
 var oMapControl = L.Control.extend({
@@ -35,7 +47,8 @@ function GetBusIcon(markerColor) {
 }
 
 function GetStopIcon(markerColor) {
-	var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+    //var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+    var markerIcon = new PushPinIcon();
 	return markerIcon;
 }
 

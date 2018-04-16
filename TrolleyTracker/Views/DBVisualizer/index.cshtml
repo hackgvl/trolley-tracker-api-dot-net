@@ -52,13 +52,26 @@
 
         var activeFilter = false; // Restrict display to active items.
 
+      	var PushPinIcon = L.Icon.extend({
+      		options: {
+      			iconUrl: '../content/images/pin-black-tiny.png',
+      			shadowUrl: '../content/images/pin-black-tiny-shadow.png',
+      			iconSize:     [8, 15],
+      			shadowSize:   [10, 13],
+      			iconAnchor:   [4,  14],
+      			shadowAnchor: [1, 12],
+      			popupAnchor:  [-3, -12]
+      		}
+      	});
+
         function GetBusIcon(markerColor) {
             var markerIcon = L.MakiMarkers.icon({ icon: "bus", color: markerColor, size: "m" });
             return markerIcon;
         }
 
         function GetStopIcon(markerColor) {
-            var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+            //var markerIcon = L.MakiMarkers.icon({ icon: "embassy", color: markerColor, size: "s" });
+            var markerIcon = new PushPinIcon();
             return markerIcon;
         }
 
