@@ -40,6 +40,9 @@ namespace TrolleyTracker.Controllers
         private BitArray logSent = new BitArray(3);
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
+        private DateTime lastTrolleySaveTime = DateTime.Now;
+        private const int TrolleySaveInterval = 5; // Minutes
+
 
         public PollTrolleysHandler(CancellationToken cancellationToken)
         {
@@ -68,9 +71,17 @@ namespace TrolleyTracker.Controllers
 
         private async Task QueryVehiclePositions()
         {
+            // Determine if time to save trolley positions
+            var saveTrolleysToDB = false;
+            if ((DateTime.Now - lastTrolleySaveTime).TotalMinutes > TrolleySaveInterval)
+            {
+                saveTrolleysToDB = true;
+                lastTrolleySaveTime = DateTime.Now;
+            }
+
             foreach (var route in activeRoutes.Values)
             {
-                await GetVehiclesOnRoute(route);
+                await GetVehiclesOnRoute(route, saveTrolleysToDB);
             }
         }
 
@@ -79,7 +90,8 @@ namespace TrolleyTracker.Controllers
         /// Get all vehicles on this route - normally just a single trolley
         /// </summary>
         /// <param name="route"></param>
-        private async Task GetVehiclesOnRoute(Route route)
+        /// <param name="saveTrolleysToDB">True if time to save trolley positions</param>
+        private async Task GetVehiclesOnRoute(Route route, bool saveTrolleysToDB)
         {
             var syncromaticsRoute = FindMatchingRoute(route);
             if (syncromaticsRoute == null ) return;
@@ -104,6 +116,9 @@ namespace TrolleyTracker.Controllers
                     trolley.CurrentLon = vehicle.lon;
                     trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
 
+                    if (saveTrolleysToDB)
+                        await SaveTrolleyToDB(trolley);
+
                     await CheckTrolleyColorMatch(trolley, route);
 
                     TrolleyCache.UpdateTrolley(trolley);
@@ -123,12 +138,19 @@ namespace TrolleyTracker.Controllers
         {
             if (trolley.IconColorRGB.ToLower() == route.RouteColorRGB.ToLower()) return;
             trolley.IconColorRGB = route.RouteColorRGB;
+            await SaveTrolleyToDB(trolley);
+            
+            StopArrivalTime.ResetTrolleyInfo(trolley);
+        }
 
+
+        private async Task SaveTrolleyToDB(Trolley trolley)
+        {
             using (var db = new TrolleyTracker.Models.TrolleyTrackerContext())
             {
                 Trolley dbTrolley = (from Trolley t in db.Trolleys
-                                   where t.ID == trolley.ID
-                                   select t).FirstOrDefault<Trolley>();
+                                     where t.ID == trolley.ID
+                                     select t).FirstOrDefault<Trolley>();
 
                 dbTrolley.CurrentLat = trolley.CurrentLat;
                 dbTrolley.CurrentLon = trolley.CurrentLon;
@@ -136,7 +158,6 @@ namespace TrolleyTracker.Controllers
                 dbTrolley.IconColorRGB = trolley.IconColorRGB;
                 await db.SaveChangesAsync(cancellationToken);
             }
-            StopArrivalTime.ResetTrolleyInfo(trolley);
         }
 
         private Trolley FindMatchingTrolley(Syncromatics.Vehicle vehicle)
