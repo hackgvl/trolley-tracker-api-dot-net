@@ -48,6 +48,8 @@ namespace TrolleyTracker.Controllers.WebAPI
         public IHttpActionResult PostLocation(int id, LocationUpdate locationUpdate)
         {
 
+            if (AppSettingsInterface.UseSyncromatics) return Ok();  // Disregard beacon if using Syncromatics
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

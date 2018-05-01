@@ -26,5 +26,7 @@
 
         // NLog writes to this table with direct SQL
         public virtual DbSet<Log> Logs { get; set; }
+
+        public System.Data.Entity.DbSet<TrolleyTracker.Models.AppSettings> AppSettings { get; set; }
     }
 }

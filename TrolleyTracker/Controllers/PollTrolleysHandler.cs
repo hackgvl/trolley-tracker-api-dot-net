@@ -57,6 +57,7 @@ namespace TrolleyTracker.Controllers
         /// </summary>
         public async Task UpdateTrolleys()
         {
+            if (!AppSettingsInterface.UseSyncromatics) return;  // Not configured for Syncromatics
             CheckActiveRoutes();
             if (activeRoutes.Count == 0) return;  // Nothing scheduled, nothing to poll from Syncromatics
 

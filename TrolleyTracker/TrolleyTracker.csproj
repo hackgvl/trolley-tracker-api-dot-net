@@ -209,6 +209,8 @@
     <Compile Include="Controllers\AccessDeniedController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ActiveRoutes.cs" />
+    <Compile Include="Controllers\AppSettingsInterface.cs" />
+    <Compile Include="Controllers\AppSettingsController.cs" />
     <Compile Include="Controllers\AssignStopsToRoutes.cs" />
     <Compile Include="Controllers\BuildScheduleView.cs" />
     <Compile Include="Controllers\ClientWebController.cs" />
@@ -283,6 +285,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AppSettings.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\RouteSchedule.cs" />
@@ -607,6 +610,11 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\ClientWeb\index.cshtml" />
     <Content Include="Views\ClientWeb\RouteView.cshtml" />
+    <Content Include="Views\AppSettings\Create.cshtml" />
+    <Content Include="Views\AppSettings\Delete.cshtml" />
+    <Content Include="Views\AppSettings\Details.cshtml" />
+    <Content Include="Views\AppSettings\Edit.cshtml" />
+    <Content Include="Views\AppSettings\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -65,10 +65,11 @@
                 <li>@Html.ActionLink("Client Web View", "Index", "ClientWeb")</li>
                 @if (User.IsInRole("Administrators"))
     {
-            <li>
-                @Html.ActionLink("Role Manager", "Index", "Roles")
-                @Html.ActionLink("View Logs", "Index", "Logs")
-            </li>
+                <li>
+                    @Html.ActionLink("Role Manager", "Index", "Roles")
+                    @Html.ActionLink("Application Settings", "Index", "AppSettings")
+                    @Html.ActionLink("View Logs", "Index", "Logs")
+                </li>
 }
             </ul>
         </li>

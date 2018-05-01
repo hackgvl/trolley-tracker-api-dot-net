@@ -15,6 +15,7 @@ namespace TrolleyTracker
 
             TrolleyTracker.Models.TrolleyCache.Initialize();
             TrolleyTracker.Models.StopArrivalTime.Initialize();
+            Controllers.AppSettingsInterface.LoadAppSettings();
 
             // Web API routes
             config.MapHttpAttributeRoutes();
