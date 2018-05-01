@@ -63,7 +63,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon")] Trolley trolley)
+        public ActionResult Create([Bind(Include = "TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon,SyncromaticsNumber")] Trolley trolley)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +108,7 @@ namespace TrolleyTracker.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "RouteManagers")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon")] Trolley trolley)
+        public ActionResult Edit([Bind(Include = "ID,TrolleyName,Number,IconColorRGB,CurrentLat,CurrentLon,SyncromaticsNumber")] Trolley trolley)
         {
             if (ModelState.IsValid)
             {

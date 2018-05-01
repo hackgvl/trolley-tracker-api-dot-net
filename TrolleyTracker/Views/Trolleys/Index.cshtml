@@ -21,6 +21,9 @@
             @Html.DisplayNameFor(model => model.Number)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.SyncromaticsNumber)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.IconColorRGB)
         </th>
         <th>Color</th>
@@ -45,10 +48,12 @@
             @Html.DisplayFor(modelItem => item.Number)
         </td>
         <td>
+            @Html.DisplayFor(modelItem => item.SyncromaticsNumber)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.IconColorRGB)
         </td>
-        <td width="10" style="background-color:  @Html.DisplayFor(modelItem => item.IconColorRGB)">
-        </td>
+        <td width="10" style="background-color:  @Html.DisplayFor(modelItem => item.IconColorRGB)"></td>
         <td>
             @Html.DisplayFor(modelItem => item.CurrentLat)
         </td>
@@ -59,14 +64,14 @@
             @Html.DisplayFor(modelItem => item.LastBeaconTime)
         </td>
         <td>
-@if (User.IsInRole("RouteManagers"))
-{
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) 
- @Html.Raw(" | ")
-            @Html.ActionLink("Delete", "Delete", new { id = item.ID }) 
-}
+            @if (User.IsInRole("RouteManagers"))
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+            @Html.Raw(" | ")
+            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+    }
             |
-            @Html.ActionLink("Details", "Details", new { id=item.ID })
+            @Html.ActionLink("Details", "Details", new { id = item.ID })
         </td>
     </tr>
 }

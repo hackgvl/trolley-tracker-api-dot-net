@@ -36,6 +36,10 @@ namespace TrolleyTracker.ViewModels
         public double Lat { get; set; }
         [DataMember(Name = "Lon")]
         public double Lon { get; set; }
+        [DataMember(Name = "Capacity")]
+        public int Capacity { get; set; }
+        [DataMember(Name = "PassengerLoad")]
+        public double PassengerLoad { get; set; }
 
         [NonSerialized]
         public DateTime LastUpdated;

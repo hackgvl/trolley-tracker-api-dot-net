@@ -25,10 +25,7 @@ namespace TrolleyTracker.Controllers
 
         private Dictionary<int, Syncromatics.Route> localRouteIDToSyncromaticsRoute = new Dictionary<int, Syncromatics.Route>();
 
-        private Dictionary<string, int> syncroTrolleyNumberToLocalTrolleyNumber = new Dictionary<string, int> {
-            // Temporary until added to database
-                {"1701", 1701 }, {"1702", 1702 }, {"7100", 6 }, {"7101", 5 }
-            };
+        private Dictionary<string, int> syncroTrolleyNumberToLocalTrolleyNumber=null;
         // vehicle.name contains the number Greenlink has assigned to the trolley
         private Dictionary<string, Trolley> syncroTrolleyNumberToLocalTrolley = new Dictionary<string, Trolley>();
 
@@ -115,6 +112,8 @@ namespace TrolleyTracker.Controllers
                 {
                     trolley.CurrentLat = vehicle.lat;
                     trolley.CurrentLon = vehicle.lon;
+                    trolley.Capacity = vehicle.capacity;
+                    trolley.PassengerLoad = vehicle.passengerLoad;
                     trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
 
                     if (saveTrolleysToDB)
@@ -157,12 +156,19 @@ namespace TrolleyTracker.Controllers
                 dbTrolley.CurrentLon = trolley.CurrentLon;
                 dbTrolley.LastBeaconTime = trolley.LastBeaconTime;
                 dbTrolley.IconColorRGB = trolley.IconColorRGB;
+                dbTrolley.Capacity = trolley.Capacity;
+                dbTrolley.PassengerLoad = trolley.PassengerLoad;
                 await db.SaveChangesAsync(cancellationToken);
             }
         }
 
         private Trolley FindMatchingTrolley(Syncromatics.Vehicle vehicle)
         {
+            if (syncroTrolleyNumberToLocalTrolley == null)
+            {
+                LoadSyncroTrolleyNumberMap();
+            }
+
             if (syncroTrolleyNumberToLocalTrolley.ContainsKey(vehicle.name))
             {
                 return syncroTrolleyNumberToLocalTrolley[vehicle.name];
@@ -178,6 +184,34 @@ namespace TrolleyTracker.Controllers
             return trolley;
 
         }
+
+        private void LoadSyncroTrolleyNumberMap()
+        {
+            syncroTrolleyNumberToLocalTrolley = new Dictionary<string, Trolley>();
+            var trolleyList = GetAllTrolleys();
+            foreach (var trolley in trolleyList)
+            {
+                var strKey = trolley.SyncromaticsNumber.ToString();
+                // Check before add to allow all 0 to be used- mapping will be invalid
+                if (!syncroTrolleyNumberToLocalTrolley.ContainsKey(strKey))
+                {
+                    syncroTrolleyNumberToLocalTrolley.Add(strKey, trolley);
+                }
+            }
+        }
+
+        private List<Trolley> GetAllTrolleys()
+        {
+
+            using (var db = new TrolleyTrackerContext())
+            {
+                var trolleys = from t in db.Trolleys
+                               select t;
+                return trolleys.ToList();
+            }
+
+        }
+
 
         private Trolley GetTrolleyByNumber(int trolleyNumber)
         {
@@ -195,7 +229,6 @@ namespace TrolleyTracker.Controllers
                 return trolley;
             }
         }
-
 
 
         /// <summary>

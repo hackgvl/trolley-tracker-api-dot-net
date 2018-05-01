@@ -131,6 +131,8 @@ namespace TrolleyTracker.Models
                         runningTrolley.Lon = (double)trolley.CurrentLon;
                     }
                     runningTrolley.LastUpdated = DateTime.Now;
+                    runningTrolley.PassengerLoad = trolley.PassengerLoad;
+                    runningTrolley.Capacity = trolley.Capacity;
                 }
 
 

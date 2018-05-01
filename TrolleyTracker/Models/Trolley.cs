@@ -16,5 +16,11 @@ namespace TrolleyTracker.Models
         [RegularExpression(@"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")]
         [StringLength(9, ErrorMessage = "The Trolley Icon Color value cannot exceed 9 characters. ")]
         public string IconColorRGB { get; set; }
+        /// <summary>
+        /// Mapping from local trolley to Syncromatics number (stored in name field)
+        /// </summary>
+        public int SyncromaticsNumber { get; set; }
+        public int Capacity { get; set; }
+        public double PassengerLoad { get; set; }
     } 
 }

@@ -283,6 +283,10 @@
     <Compile Include="Migrations\201801181559580_ArrivalTimePrediction.Designer.cs">
       <DependentUpon>201801181559580_ArrivalTimePrediction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201805010054533_AddTrolleyCapacity.cs" />
+    <Compile Include="Migrations\201805010054533_AddTrolleyCapacity.Designer.cs">
+      <DependentUpon>201805010054533_AddTrolleyCapacity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppSettings.cs" />
@@ -660,6 +664,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801181559580_ArrivalTimePrediction.resx">
       <DependentUpon>201801181559580_ArrivalTimePrediction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805010054533_AddTrolleyCapacity.resx">
+      <DependentUpon>201805010054533_AddTrolleyCapacity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
