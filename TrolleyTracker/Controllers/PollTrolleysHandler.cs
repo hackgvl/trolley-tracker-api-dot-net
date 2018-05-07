@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -27,7 +28,7 @@ namespace TrolleyTracker.Controllers
 
         private Dictionary<string, int> syncroTrolleyNumberToLocalTrolleyNumber=null;
         // vehicle.name contains the number Greenlink has assigned to the trolley
-        private Dictionary<string, Trolley> syncroTrolleyNumberToLocalTrolley = new Dictionary<string, Trolley>();
+        private Dictionary<string, Trolley> syncroTrolleyNumberToLocalTrolley = null;
 
         // Last update time seen from Syncromatics API for each vehicle / by vehicle.id
         private Dictionary<int, DateTime> lastVehicleUpdateTime = new Dictionary<int, DateTime>();
@@ -92,14 +93,22 @@ namespace TrolleyTracker.Controllers
         private async Task GetVehiclesOnRoute(Route route, bool saveTrolleysToDB)
         {
             var syncromaticsRoute = FindMatchingRoute(route);
-            if (syncromaticsRoute == null ) return;
+            if (syncromaticsRoute == null)
+            {
+                //Trace.WriteLine("No route match found to " + syncromaticsRoute.name);
+                return;
+            }
             var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
             foreach (var vehicle in vehicles)
             {
                 if (lastVehicleUpdateTime.ContainsKey(vehicle.id))
                 {
                     // Check for stall (no update from Syncromatics)
-                    if (lastVehicleUpdateTime[vehicle.id] == vehicle.lastUpdated) continue;
+                    if (lastVehicleUpdateTime[vehicle.id] == vehicle.lastUpdated)
+                    {
+                        //Trace.WriteLine("Stalled vehicle, syncromatics # " + vehicle.name);
+                        continue;
+                    }
                     lastVehicleUpdateTime[vehicle.id] = vehicle.lastUpdated;
                 }
                 else
@@ -110,6 +119,8 @@ namespace TrolleyTracker.Controllers
                 var trolley = FindMatchingTrolley(vehicle);
                 if (trolley != null)
                 {
+                    //Trace.WriteLine("Tracking trolley " + trolley.Number);
+
                     trolley.CurrentLat = vehicle.lat;
                     trolley.CurrentLon = vehicle.lon;
                     trolley.Capacity = vehicle.capacity;

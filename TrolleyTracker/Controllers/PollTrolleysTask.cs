@@ -18,7 +18,7 @@ namespace TrolleyTracker.Controllers
     public class PollTrolleysTask : IRegisteredObject
     {
 
-        private volatile bool _shuttingDown;
+        private volatile bool _shuttingDown = false;
         private CancellationToken cancellationToken;
         private CancellationTokenSource cancellationTokenSource;
 
@@ -46,6 +46,8 @@ namespace TrolleyTracker.Controllers
         {
             try
             {
+                await Task.Delay(5000, cancellationToken);  // Delay for rest of application initialization
+                logger.Info("Syncromatics Trolley poll task started");
                 pollTrolleyProcess = new PollTrolleysHandler(cancellationToken);
 
                 while (true)
@@ -83,11 +85,17 @@ namespace TrolleyTracker.Controllers
                         }
                     }
 
+
                     if (_shuttingDown)
                         return;
                     cancellationToken.ThrowIfCancellationRequested();
                 }
-            } catch (Exception ex)
+            }
+            catch (TaskCanceledException)
+            {
+                // Normal exit action here
+            }
+            catch (Exception ex)
             {
                 // It is normal to come here with a TaskCanceledException when IIS shuts down
                 if (!_shuttingDown)
@@ -102,7 +110,8 @@ namespace TrolleyTracker.Controllers
                 // Always unregister the job when done.
                 HostingEnvironment.UnregisterObject(this);
             }
-            //Debug.WriteLine("PollTrolleys Task Exited");
+            //Trace.WriteLine("PollTrolleys Task Exited");
+            logger.Info("Syncromatics Trolley poll task shut down");
         }
 
 
