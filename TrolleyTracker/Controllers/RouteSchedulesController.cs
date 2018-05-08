@@ -43,12 +43,11 @@ namespace TrolleyTracker.Controllers
                                  select rs).FirstOrDefault();
             }
 
-            ViewBag.StrWeekday = BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek];
-
             if (routeSchedule == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.StrWeekday = BuildScheduleView.daysOfWeek[routeSchedule.DayOfWeek];
             return View(routeSchedule);
         }
 

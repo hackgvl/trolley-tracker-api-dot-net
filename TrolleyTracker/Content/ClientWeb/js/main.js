@@ -16,7 +16,7 @@ L.MakiMarkers.accessToken = "pk.eyJ1IjoiYmlrZW9pZCIsImEiOiJTSW9oVHA0In0.4xG7icLN
 
 var PushPinIcon = L.Icon.extend({
     options: {
-        iconUrl: '../content/images/pin-black-tiny.png',
+        iconUrl: '../content/images/pin-black-tiny-border.png',
         shadowUrl: '../content/images/pin-black-tiny-shadow.png',
         iconSize: [8, 15],
         shadowSize: [10, 13],
@@ -276,15 +276,19 @@ function buildStops(stoplocs, color) {
 }
 
 function StopTitleWithArrivalTime(stop) {
-	var newTitle = stop.Name;
-    var currentMilliseconds = new Date().getTime();
+    var newTitle = stop.Name;
+    var now = new Date();
+    var currentMilliseconds = now.getTime();
 	var arrivalTimes = stop.NextTrolleyArrivalTime;
 	for (var trolleyNumber in arrivalTimes) {
-		var arrivalTime = arrivalTimes[trolleyNumber];
-		var arrivalDate = new Date(arrivalTime);
-		var minutesToArrival = Math.floor((arrivalDate.getTime() - currentMilliseconds) / 60 / 1000);
+        var arrivalTime = arrivalTimes[trolleyNumber] + 'Z';
+        // Some browsers treat the string as local time without 'Z', Safari does not
+        // Fake conversion to UTC for consistency across browsers, then adjust for time zone
+        var arrivalMS = new Date(arrivalTime).getTime();
+        arrivalMS += now.getTimezoneOffset() * 60000;
+        var minutesToArrival = Math.floor((arrivalMS - currentMilliseconds) / 60 / 1000);
 		if (minutesToArrival >= 0) {
-			newTitle +=  "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + arrivalDate.toLocaleTimeString();
+            newTitle += "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + new Date(arrivalMS).toLocaleTimeString();
 		} else {
 			// Stale / non-updated arrivalDate in stop
 		}

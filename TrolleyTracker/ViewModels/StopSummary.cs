@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Runtime.Serialization;
 using TrolleyTracker.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace TrolleyTracker.ViewModels
 {

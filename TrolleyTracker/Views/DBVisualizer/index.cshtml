@@ -54,7 +54,7 @@
 
       	var PushPinIcon = L.Icon.extend({
       		options: {
-      			iconUrl: '../content/images/pin-black-tiny.png',
+      			iconUrl: '../content/images/pin-black-tiny-border.png',
       			shadowUrl: '../content/images/pin-black-tiny-shadow.png',
       			iconSize:     [8, 15],
       			shadowSize:   [10, 13],
@@ -426,16 +426,21 @@
                 else {
                     var trolleyNumbers = GetKeys(stop.NextTrolleyArrivalTime);
                     var newTitle = stop.Name;
+                    var now = new Date();
                     for (t = 0; t < trolleyNumbers.length; t++) {
                         var trolleyNumber = trolleyNumbers[t];
-                        var arrivalDate = new Date(stop.NextTrolleyArrivalTime[trolleyNumber]);
-                        var minutesToArrival = Math.floor((arrivalDate.getTime() - currentMilliseconds) / 60 / 1000);
+                        // Some browsers treat the string as local time without 'Z', Safari does not
+                        // Fake conversion to UTC for consistency across browsers, then adjust for time zone
+                        // Should be done with custom JSON serializer on server, except for backward compatibility
+                        var arrivalDate = new Date(stop.NextTrolleyArrivalTime[trolleyNumber]+'Z');
+                        var arrivalMS = new Date(arrivalDate).getTime();
+                        arrivalMS += now.getTimezoneOffset() * 60000;
+                        var minutesToArrival = Math.floor((arrivalMS - currentMilliseconds) / 60 / 1000);
                         if (minutesToArrival >= 0) {
-                            newTitle +=  "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + arrivalDate.toLocaleTimeString();
+                            newTitle += "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + new Date(arrivalMS).toLocaleTimeString();
                         } else {
                             // Stale / non-updated arrivalDate in stop
                         }
-
                     }
                     stop.Marker.setPopupContent(newTitle);
                 }

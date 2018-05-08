@@ -19,6 +19,7 @@ namespace TrolleyTracker.Controllers
     {
 
         private volatile bool _shuttingDown = false;
+        private static bool alreadyRunning = false;  // In some cases, Application_start is called multiple times to reload
         private CancellationToken cancellationToken;
         private CancellationTokenSource cancellationTokenSource;
 
@@ -30,13 +31,18 @@ namespace TrolleyTracker.Controllers
 
         public PollTrolleysTask()
         {
+            if (alreadyRunning)
+            {
+                return;
+            }
+            alreadyRunning = true;
+
             // Register this job with the hosting environment.
             // Allows for a more graceful stop of the job, in the case of IIS shutting down.
             HostingEnvironment.RegisterObject(this);
 
             cancellationTokenSource = new CancellationTokenSource();
             cancellationToken = cancellationTokenSource.Token;
-            
 
             // Start task running; discard task result
             var pollTask = Execute();

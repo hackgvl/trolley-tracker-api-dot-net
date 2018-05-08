@@ -334,8 +334,8 @@
     <Content Include="Content\farbtastic.css" />
     <Content Include="Content\images\marker.png" />
     <Content Include="Content\images\mask.png" />
+    <Content Include="Content\images\pin-black-tiny-border.png" />
     <Content Include="Content\images\pin-black-tiny-shadow.png" />
-    <Content Include="Content\images\pin-black-tiny.png" />
     <Content Include="Content\images\wheel.png" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
