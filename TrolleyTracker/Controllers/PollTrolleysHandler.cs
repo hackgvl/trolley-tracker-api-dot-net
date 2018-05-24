@@ -92,13 +92,21 @@ namespace TrolleyTracker.Controllers
         /// <param name="saveTrolleysToDB">True if time to save trolley positions</param>
         private async Task GetVehiclesOnRoute(Route route, bool saveTrolleysToDB)
         {
-            var syncromaticsRoute = FindMatchingRoute(route);
+            var syncromaticsRoute = await FindMatchingRoute(route);
             if (syncromaticsRoute == null)
             {
                 //Trace.WriteLine("No route match found to " + syncromaticsRoute.name);
                 return;
             }
             var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
+
+            if (vehicles.Count == 0)
+            {
+                // Drive logged out of this route
+                localRouteIDToSyncromaticsRoute.Remove(route.ID);
+                return;
+            }
+
             foreach (var vehicle in vehicles)
             {
                 if (lastVehicleUpdateTime.ContainsKey(vehicle.id))
@@ -248,7 +256,7 @@ namespace TrolleyTracker.Controllers
         /// </summary>
         /// <param name="route"></param>
         /// <returns>syncromatics route ID or null if not found</returns>
-        private Syncromatics.Route FindMatchingRoute(Route route)
+        private async Task<Syncromatics.Route> FindMatchingRoute(Route route)
         {
             if (localRouteIDToSyncromaticsRoute.ContainsKey(route.ID))
             {
@@ -263,8 +271,15 @@ namespace TrolleyTracker.Controllers
                 var lcaseName = syncroRoute.name.ToLower();
                 if (lcaseName.Contains(localKeyword))
                 {
-                    localRouteIDToSyncromaticsRoute.Add(route.ID, syncroRoute);
-                    return syncroRoute;
+                    // Hack: since we cannot directly query by vehicle, don't perform final
+                    // route selection until it can be confirmed to have a vehicle.
+                    var vehicles = await syncromatics.GetVehiclesOnRoute(syncroRoute.id);
+                    if (vehicles.Count > 0)
+                    {
+                        // At least one vehicle running - use this route match
+                        localRouteIDToSyncromaticsRoute.Add(route.ID, syncroRoute);
+                        return syncroRoute;
+                    }
                 }
             }
 
@@ -279,6 +294,7 @@ namespace TrolleyTracker.Controllers
         private string FindLocalKeyword(string longName)
         {
             var lcaseName = longName.ToLower();
+            if (lcaseName.Contains("comb")) return "comb";
             if (lcaseName.Contains("heart")) return "heart";
             if (lcaseName.Contains("arts")) return "arts";
             if (lcaseName.Contains("augusta")) return "augusta";
