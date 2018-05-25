@@ -392,6 +392,7 @@
         }
 
 
+
         // handler for GET /api/v1/Stops
         function RefreshStopArrivalTimes(stopData) {
             var stopList = JSON.parse(stopData);
@@ -542,6 +543,10 @@
                 trolley.Marker.setOpacity(1.0);
                 var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
                 trolley.Marker.setLatLng(latLng);
+
+                var newTitle = trolley.TrolleyName + " " + trolley.Number + "<br/>" +
+                    "Capacity: " + trolleyList[i].Capacity + ", " + (trolleyList[i].PassengerLoad * 100.0).toFixed(0) + "% loaded";
+                trolley.Marker.setPopupContent(newTitle);
             }
 
             // Mark all non-running trolleys as gray

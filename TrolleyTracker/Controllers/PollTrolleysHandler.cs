@@ -326,7 +326,7 @@ namespace TrolleyTracker.Controllers
         private void CheckActiveRoutes()
         {
             if (activeRoutes == null ||
-                (lastRouteUpdated - DateTime.Now).TotalSeconds > RouteUpdateInterval)
+                (DateTime.Now - lastRouteUpdated).TotalSeconds > RouteUpdateInterval)
             {
                 activeRoutes = StopArrivalTime.GetActiveRoutes();
                 lastRouteUpdated = DateTime.Now;

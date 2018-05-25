@@ -84,6 +84,32 @@ function setTrolleyInfo() {
     });
 }
 
+L.Map = L.Map.extend({
+    openPopup: function (popup, latlng, options) {
+        return;
+
+        if (!(popup instanceof Popup)) {
+            popup = new Popup(options).setContent(popup);
+        }
+
+        if (latlng) {
+            popup.setLatLng(latlng);
+        }
+
+        if (this.hasLayer(popup)) {
+            return this;
+        }
+
+        if (this._popup && this._popup.options.autoClose) {
+            // NOTE THIS LINE : COMMENTING OUT THE CLOSEPOPUP CALL
+            //this.closePopup(); 
+        }
+
+        this._popup = popup;
+        return this.addLayer(popup);
+    }
+});
+
 
 function getTrolleyLocations(map) {
     var $ = jQuery;
@@ -108,7 +134,7 @@ function getTrolleyLocations(map) {
 
                     var oMapMarker = L.marker([data.Lat, data.Lon], {
                         icon: trolleyIcon
-                    }).addTo(oMap).on('click', onClickTrolley); // ; bindPopup(popupText);
+                    }).addTo(oMap).bindPopup(popupText).on('click', onClickTrolley);
 
                     //add the data to the trolleys object
                     trolleys[data.ID] = {
@@ -119,8 +145,14 @@ function getTrolleyLocations(map) {
                     oMapMarker.trolley = fulltrolleydatabyid[data.ID];
                 } else {
                     // existing trolley: update location
-                    trolleys[data.ID].mapMarker
+                    var trolley = trolleys[data.ID];
+                    trolley.mapMarker
                         .setLatLng([data.Lat, data.Lon]);
+
+                    var newTitle = fulltrolleydatabyid[data.ID].TrolleyName + " " + fulltrolleydatabyid[data.ID].Number + "<br/>" +
+                        "Capacity: " + data.Capacity + ", " + (data.PassengerLoad * 100.0).toFixed(0) + "% loaded";
+                    trolley.mapMarker.setPopupContent(newTitle);
+
                     //.setPopupContent(popupText);
                 }
             });
@@ -174,11 +206,13 @@ function onClickTrolley(e) {
     for (var id in trolleys) {
         // There is a marker in running list
         var tr = fulltrolleydatabyid[id];
-        var opacity = 1.0;
-        if (trolley.ID !== id) {
-            opacity = 0.3;
-        }
         var m = trolleys[id].mapMarker;
+        var opacity = 1.0;
+        if (trolley.ID != id) {
+            opacity = 0.3;
+        } else {
+            m.openPopup();
+        }
         m.setOpacity(opacity);
     }
 
