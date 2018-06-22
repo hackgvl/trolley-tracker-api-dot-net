@@ -300,6 +300,7 @@ namespace TrolleyTracker.Controllers
             if (lcaseName.Contains("augusta")) return "augusta";
             if (lcaseName.Contains("lunch")) return "lunch";
             if (lcaseName.Contains("drive")) return "drive";
+            if (lcaseName.Contains("well")) return "well";
             if (lcaseName.Contains("top")) return "top";  // Last to avoid accidenatal match by substring of a longer name
 
             SingleLog(SingleLogType.UnmatchedRouteName, $"Unable to find keywords of route '{longName}' to match");
