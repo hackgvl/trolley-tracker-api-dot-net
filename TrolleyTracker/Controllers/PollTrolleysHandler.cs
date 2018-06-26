@@ -42,9 +42,14 @@ namespace TrolleyTracker.Controllers
         private const int TrolleySaveInterval = 5; // Minutes
 
 
+        // Kludge to find vehicles not on a route
+        private List<Syncromatics.Route> ghostRoutes;
+
+
         public PollTrolleysHandler(CancellationToken cancellationToken)
         {
             this.cancellationToken = cancellationToken;
+            ghostRoutes = new List<Syncromatics.Route>();
             syncromatics = new Syncromatics(cancellationToken);
             logSent = new BitArray(Enum.GetNames(typeof(SingleLogType)).Length);
         }
@@ -82,7 +87,116 @@ namespace TrolleyTracker.Controllers
             {
                 await GetVehiclesOnRoute(route, saveTrolleysToDB);
             }
+
+            await CheckForAdditionalVehicles(saveTrolleysToDB);
         }
+
+
+        /// <summary>
+        /// Check for the case of vehicle(s) running on a route other than the scedule.
+        /// This might be in the case of being schedule for top-of-main + heart-of-main,
+        /// however due to vehicle breakdown, those routes are combined as one of the
+        /// combination routes.
+        /// </summary>
+        /// <param name="saveTrolleysToDB"></param>
+        /// <returns></returns>
+        private async Task CheckForAdditionalVehicles(bool saveTrolleysToDB)
+        {
+            var runningTrolleys = TrolleyCache.GetRunningTrolleys(false);
+            if (runningTrolleys.Count >= activeRoutes.Count)
+            {
+                await TrackGhostVehicles(saveTrolleysToDB);
+                return;  // All expected trolleys found
+            }
+
+            // Poll all remaining routes for any possible vehicles
+            foreach (var syncroRoute in trolleyService.routes)
+            {
+                if (!localRouteIDToSyncromaticsRoute.Values.Contains(syncroRoute)) {
+                    await CheckForVehiclesOnRoute(syncroRoute, saveTrolleysToDB);
+                }
+            }
+
+        }
+
+
+        private async Task TrackGhostVehicles(bool saveTrolleysToDB)
+        {
+            foreach (var syncroRoute in ghostRoutes)
+            {
+                await CheckForVehiclesOnRoute(syncroRoute, saveTrolleysToDB);
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Copy of GetVehiclesOnRoute - kludge to handle 'ghost vehicles' not
+        /// on route.
+        /// </summary>
+        /// <param name="route"></param>
+        /// <param name="saveTrolleysToDB">True if time to save trolley positions</param>
+        private async Task CheckForVehiclesOnRoute(Syncromatics.Route syncromaticsRoute, bool saveTrolleysToDB)
+        {
+            var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
+
+            if (vehicles.Count == 0)
+            {
+                if (ghostRoutes.Contains(syncromaticsRoute))
+                {
+                    // Drive logged out of this route
+                    ghostRoutes.Remove(syncromaticsRoute);
+                }
+                return;
+            }
+
+            foreach (var vehicle in vehicles)
+            {
+                if (lastVehicleUpdateTime.ContainsKey(vehicle.id))
+                {
+                    // Check for stall (no update from Syncromatics)
+                    if (lastVehicleUpdateTime[vehicle.id] == vehicle.lastUpdated)
+                    {
+                        //Trace.WriteLine("Stalled vehicle, syncromatics # " + vehicle.name);
+                        continue;
+                    }
+                    lastVehicleUpdateTime[vehicle.id] = vehicle.lastUpdated;
+                }
+                else
+                {
+                    lastVehicleUpdateTime.Add(vehicle.id, vehicle.lastUpdated);
+                }
+
+                var trolley = FindMatchingTrolley(vehicle);
+                if (trolley != null)
+                {
+                    Trace.WriteLine("Tracking Ghost trolley " + trolley.Number);
+
+                    trolley.CurrentLat = vehicle.lat;
+                    trolley.CurrentLon = vehicle.lon;
+                    trolley.Capacity = vehicle.capacity;
+                    trolley.PassengerLoad = vehicle.passengerLoad;
+                    var colorBlack = "#000000";
+                    if (trolley.IconColorRGB != colorBlack) {
+                        trolley.IconColorRGB = colorBlack;
+                        saveTrolleysToDB = true;
+                    }
+                    trolley.LastBeaconTime = UTCToLocalTime.LocalTimeFromUTC(DateTime.UtcNow);
+
+                    if (saveTrolleysToDB)
+                        await SaveTrolleyToDB(trolley);
+
+                    TrolleyCache.UpdateTrolley(trolley);
+                    StopArrivalTime.UpdateTrolleyStopArrivalTime(trolley);
+                    if (!ghostRoutes.Contains(syncromaticsRoute))
+                    {
+                        ghostRoutes.Add(syncromaticsRoute);
+                    }
+
+                }
+            }
+        }
+
 
 
         /// <summary>
@@ -99,6 +213,11 @@ namespace TrolleyTracker.Controllers
                 return;
             }
             var vehicles = await syncromatics.GetVehiclesOnRoute(syncromaticsRoute.id);
+
+            if (ghostRoutes.Contains(syncromaticsRoute))
+            {
+                ghostRoutes.Remove(syncromaticsRoute);
+            }
 
             if (vehicles.Count == 0)
             {
