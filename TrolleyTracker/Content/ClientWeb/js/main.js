@@ -6,6 +6,7 @@ var stopMarkers = {}; // Active stop markers (for all routes)
 var trolleys = {}; //dictionary of trolleys and markers
 var fulltrolleydatabyid = {}; //dictionary of full trolley info by ID
 var routeDisplay = []; //All displayed routes
+var routeColorToRouteName = {}; // Dictionary of route names by route color
 var checkTimer; //Timer object to check for trolley location updates
 var DefaultRouteOpacity = 0.5;
 var DefaultArrowOpacity = 0.7;
@@ -148,9 +149,17 @@ function getTrolleyLocations(map) {
                     var trolley = trolleys[data.ID];
                     trolley.mapMarker
                         .setLatLng([data.Lat, data.Lon]);
+                    trolley.mapMarker
+                        .setIcon(GetBusIcon(data.IconColorRGB));  // Color is sent with each update
+
+                    var routeName = "Detour Route";
+                    if (typeof routeColorToRouteName[data.IconColorRGB] !== 'undefined') {
+                        routeName = routeColorToRouteName[data.IconColorRGB];
+                    }
 
                     var newTitle = fulltrolleydatabyid[data.ID].TrolleyName + " " + fulltrolleydatabyid[data.ID].Number + "<br/>" +
-                        "Capacity: " + data.Capacity + ", " + (data.PassengerLoad * 100.0).toFixed(0) + "% loaded";
+                        routeName;
+                        //"Capacity: " + data.Capacity + ", " + (data.PassengerLoad * 100.0).toFixed(0) + "% loaded";
                     trolley.mapMarker.setPopupContent(newTitle);
 
                     //.setPopupContent(popupText);
@@ -433,6 +442,7 @@ function showSchedule() {
         showSchedule();
     } else {
         routedata.forEach(function (route, routeIndex) {
+            routeColorToRouteName[route.RouteColorRGB] = route.LongName;
             buildRoute(route.RouteShape, "route_" + routeIndex, route.RouteColorRGB, route);
         });
     }

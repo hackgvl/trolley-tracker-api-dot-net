@@ -40,6 +40,7 @@
 
         // Database objects
         var trolleys, routes, stops;
+        var routeColorToRouteName;
         var routeIDs;  // Array of all route IDs
         var originalRouteList, originalRoutePolyLines, trolleyIntervalTimer;
         var updateCount = 0;
@@ -307,6 +308,7 @@
             }
 
             routeIndex = 0;
+            routeColorToRouteName = {};
             GetNextRoute();
 
         }
@@ -339,6 +341,7 @@
             // Mark active stops in a different color
             var stopArray = routeData.Stops;
             routes[routeID].Stops = stopArray;
+            routes[routeID].LongName = routeData.LongName;
             for (i = 0; i < stopArray.length; i++) {
                 var ID = stopArray[i].ID;
                 var stop = stops[ID];
@@ -361,6 +364,7 @@
                 var routeColor = 'blue';
                 if (routes[routeID].Active) {
                     routeColor = routes[routeID].RouteColorRGB;
+                    routeColorToRouteName[routeColor] = routes[routeID].LongName;
                 }
                 var routeLine = new L.Polyline(vertices, {
                     color: routeColor,
@@ -539,13 +543,20 @@
                 trolley.Running = true;
                 trolley.Lat = trolleyList[i].Lat;
                 trolley.Lon = trolleyList[i].Lon;
+                trolley.IconColorRGB = trolleyList[i].IconColorRGB;
                 trolley.Marker.setIcon(GetBusIcon(trolley.IconColorRGB));
                 trolley.Marker.setOpacity(1.0);
                 var latLng = new L.LatLng(trolley.Lat, trolley.Lon);
                 trolley.Marker.setLatLng(latLng);
 
+                var routeName = "Detour Route";
+                if (typeof routeColorToRouteName[trolley.IconColorRGB] !== 'undefined') {
+                    routeName = routeColorToRouteName[trolley.IconColorRGB];
+                }
+
                 var newTitle = trolley.TrolleyName + " " + trolley.Number + "<br/>" +
-                    "Capacity: " + trolleyList[i].Capacity + ", " + (trolleyList[i].PassengerLoad * 100.0).toFixed(0) + "% loaded";
+                    routeName;
+                    // "Capacity: " + trolleyList[i].Capacity + ", " + (trolleyList[i].PassengerLoad * 100.0).toFixed(0) + "% loaded";
                 trolley.Marker.setPopupContent(newTitle);
             }
 

@@ -132,6 +132,7 @@ namespace TrolleyTracker.Models
                     }
                     runningTrolley.LastUpdated = DateTime.Now;
                     runningTrolley.PassengerLoad = trolley.PassengerLoad;
+                    runningTrolley.IconColorRGB = trolley.IconColorRGB;
                     runningTrolley.Capacity = trolley.Capacity;
                 }
 

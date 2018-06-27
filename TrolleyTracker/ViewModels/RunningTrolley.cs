@@ -40,9 +40,11 @@ namespace TrolleyTracker.ViewModels
         public int Capacity { get; set; }
         [DataMember(Name = "PassengerLoad")]
         public double PassengerLoad { get; set; }
-
+        [DataMember(Name = "IconColorRGB")]
+        public string IconColorRGB { get; set; }
         [NonSerialized]
         public DateTime LastUpdated;
+
 
 
     }

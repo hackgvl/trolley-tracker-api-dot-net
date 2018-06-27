@@ -129,7 +129,7 @@ namespace TrolleyTracker.Controllers
             var webScheduleList = new List<String>();
             foreach (var schedule in effectiveScheduleList)
             {
-                var thisSchedule = $"<b><a href=\"/ClientWeb/RouteView/{schedule.RouteID}/\">{HttpUtility.HtmlEncode(schedule.RouteLongName)}:</a></b><br>{schedule.DayOfWeek} {schedule.StartTime} - {schedule.EndTime}";
+                var thisSchedule = $"<b> <span style=\"background-color: {schedule.RouteColorRGB}\">&nbsp;&nbsp;&nbsp;</span>  <a href=\"/ClientWeb/RouteView/{schedule.RouteID}/\">{HttpUtility.HtmlEncode(schedule.RouteLongName)}:</a></b><br>{schedule.DayOfWeek} {schedule.StartTime} - {schedule.EndTime}";
                 webScheduleList.Insert(0, thisSchedule);  // For reverse sorting
 
                 if (schedule.RouteID == routeID)
