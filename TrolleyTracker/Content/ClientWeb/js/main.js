@@ -233,6 +233,7 @@ function onClickTrolley(e) {
             routeOpacity = 0.2;
         }
         displayedRoute.Line.setStyle({ opacity: routeOpacity });
+        displayedRoute.TraceLine.setStyle({ opacity: routeOpacity });
 
         // Set arrows also, using undocumented hook into leaflet.textpath
         displayedRoute.Line._textOptions.attributes.opacity = routeOpacity;
@@ -254,6 +255,7 @@ function onClickMap(e) {
 
     routeDisplay.forEach(function (displayedRoute, routeIndex) {
         displayedRoute.Line.setStyle({ opacity: DefaultRouteOpacity });
+        displayedRoute.TraceLine.setStyle({ opacity: 1.0 });
 
         // Reset arrows also, using undocumented hook into leaflet.textpath
         displayedRoute.Line._textOptions.attributes.opacity = DefaultArrowOpacity;
@@ -279,13 +281,23 @@ function buildRoute(data, route_name, color, route) {
     });
 
     //use the settext plugin to add directional arrows to the route.
-    routePolyLine.setText('  ►  ', { repeat: true, attributes: { fill: color, opacity: DefaultArrowOpacity } });
+    routePolyLine.setText('  ►  ', { repeat: true, offset: 8, attributes: { fill: color, opacity: DefaultArrowOpacity, "font-size": "24px" } });
 
     //store the new polyline in the routes object
     routes.push(routePolyLine);
 
+    var routeTracePolyLine = new L.Polyline(pointList, {
+        color: '#000000',
+        weight: 1,
+        opacity: 1.0,
+        smoothFactor: 1
+    });
+    routes.push(routeTracePolyLine);
+
+
     var visibleRoute = {};
     visibleRoute.Line = routePolyLine;
+    visibleRoute.TraceLine = routeTracePolyLine;
     visibleRoute.Route = route;
     routeDisplay.push(visibleRoute);
 }

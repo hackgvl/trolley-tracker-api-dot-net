@@ -42,7 +42,7 @@
         var trolleys, routes, stops;
         var routeColorToRouteName;
         var routeIDs;  // Array of all route IDs
-        var originalRouteList, originalRoutePolyLines, trolleyIntervalTimer;
+        var originalRouteList, originalRoutePolyLines, originalRouteTraceLines, trolleyIntervalTimer;
         var updateCount = 0;
 
         // Constants
@@ -297,6 +297,7 @@
         function HandleActiveRoutesData(runningData) {
 
             originalRoutePolyLines = {};
+            originalRouteTraceLines = {};
             var routeList = JSON.parse(runningData);
             originalRouteList = routeList;
 
@@ -366,15 +367,24 @@
                     routeColor = routes[routeID].RouteColorRGB;
                     routeColorToRouteName[routeColor] = routes[routeID].LongName;
                 }
-                var routeLine = new L.Polyline(vertices, {
-                    color: routeColor,
-                    weight: 3,
-                    opacity: 0.7,
+
+                var traceLine = new L.Polyline(vertices, {
+                    color: '#000000',
+                    weight: 1,
+                    opacity: 1.0,
                     smoothFactor: 1
                 });
 
+                var routeLine = new L.Polyline(vertices, {
+                    color: routeColor,
+                    weight: 8,
+                    opacity: 0.7,
+                    smoothFactor: 1
+                });
                 map.addLayer(routeLine);
+                map.addLayer(traceLine);
 
+                originalRouteTraceLines[routeID] = traceLine;
                 originalRoutePolyLines[routeID] = routeLine;
             }
 
@@ -520,7 +530,9 @@
         function RemoveExistingRouteLines() {
             var visibleRouteIDs = GetKeys(originalRoutePolyLines);
             for (var i = 0; i < visibleRouteIDs.length; i++) {
+                map.removeLayer(originalRouteTraceLines[visibleRouteIDs[i]]);
                 map.removeLayer(originalRoutePolyLines[visibleRouteIDs[i]]);
+
             }
         }
         
