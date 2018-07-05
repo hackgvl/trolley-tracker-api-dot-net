@@ -41,6 +41,8 @@ namespace TrolleyTracker.Controllers
         private DateTime lastTrolleySaveTime = DateTime.Now;
         private const int TrolleySaveInterval = 5; // Minutes
 
+        private bool hadActiveRoutes = false; // Last poll had active routes
+
 
         // Kludge to find vehicles not on a route
         private List<Syncromatics.Route> ghostRoutes;
@@ -62,12 +64,18 @@ namespace TrolleyTracker.Controllers
         {
             if (!AppSettingsInterface.UseSyncromatics) return;  // Not configured for Syncromatics
             CheckActiveRoutes();
-            if (activeRoutes.Count == 0) return;  // Nothing scheduled, nothing to poll from Syncromatics
-
-            if (trolleyService == null)
+            if (activeRoutes.Count == 0)
             {
+                hadActiveRoutes = false;
+                return;  // Nothing scheduled, nothing to poll from Syncromatics
+            }
+
+            if (trolleyService == null || !hadActiveRoutes)
+            {
+                // Update data each time routes go active
                 if (!await CheckSyncromaticsData()) return;
             }
+            hadActiveRoutes = true;
 
             await QueryVehiclePositions();
 
