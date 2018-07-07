@@ -40,7 +40,8 @@
 
         // Database objects
         var trolleys, routes, stops;
-        var routeColorToRouteName;
+        var trolleysByTrolleyNumber;
+        var routeColorToRouteName = {};
         var routeIDs;  // Array of all route IDs
         var originalRouteList, originalRoutePolyLines, originalRouteTraceLines, trolleyIntervalTimer;
         var updateCount = 0;
@@ -207,6 +208,7 @@
             var trolleyList = JSON.parse(trolleyData);
             // Convert to list indexed by database ID
             trolleys = {};
+            trolleysByTrolleyNumber = {};
             for (i = 0; i < trolleyList.length; i++) {
                 var ID = trolleyList[i].ID;
                 var trolley = new Object();
@@ -231,6 +233,7 @@
                 trolley.Marker = marker;
 
                 trolleys[ID] = trolley;
+                trolleysByTrolleyNumber[trolley.Number] = trolley;
             }
 
             ajax.get(apiURL + "Routes", {}, HandleAllRoutesData, true);
@@ -444,6 +447,14 @@
                     var now = new Date();
                     for (t = 0; t < trolleyNumbers.length; t++) {
                         var trolleyNumber = trolleyNumbers[t];
+
+                        var trolley = trolleysByTrolleyNumber[trolleyNumber];
+                        var routeName = "Detour Route";
+                        if (typeof routeColorToRouteName[trolley.IconColorRGB] !== 'undefined') {
+                            routeName = routeColorToRouteName[trolley.IconColorRGB];
+                        }
+
+
                         // Some browsers treat the string as local time without 'Z', Safari does not
                         // Fake conversion to UTC for consistency across browsers, then adjust for time zone
                         // Should be done with custom JSON serializer on server, except for backward compatibility
@@ -452,7 +463,7 @@
                         arrivalMS += now.getTimezoneOffset() * 60000;
                         var minutesToArrival = Math.floor((arrivalMS - currentMilliseconds) / 60 / 1000);
                         if (minutesToArrival >= 0) {
-                            newTitle += "<br>Trolley " + trolleyNumber + "  arriving in " + minutesToArrival + " minutes <br> at " + new Date(arrivalMS).toLocaleTimeString();
+                            newTitle += "<br>Trolley " + trolleyNumber + "(" + routeName + ")  arriving in " + minutesToArrival + " minutes <br> at " + new Date(arrivalMS).toLocaleTimeString();
                         } else {
                             // Stale / non-updated arrivalDate in stop
                         }
