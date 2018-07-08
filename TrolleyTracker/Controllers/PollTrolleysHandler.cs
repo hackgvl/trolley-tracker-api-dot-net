@@ -130,7 +130,11 @@ namespace TrolleyTracker.Controllers
 
         private async Task TrackGhostVehicles(bool saveTrolleysToDB)
         {
-            foreach (var syncroRoute in ghostRoutes)
+            // Copy array to handle ghost route modification in loop
+            var workGhostRoutes = new Syncromatics.Route[ghostRoutes.Count];
+            ghostRoutes.CopyTo(workGhostRoutes);
+
+            foreach (var syncroRoute in workGhostRoutes)
             {
                 await CheckForVehiclesOnRoute(syncroRoute, saveTrolleysToDB);
             }
