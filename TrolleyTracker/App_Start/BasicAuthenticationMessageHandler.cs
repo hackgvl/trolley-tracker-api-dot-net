@@ -40,7 +40,7 @@ namespace TrolleyTracker.App_Start
             var password = parts[1];
 
 
-            var appManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var appManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()), new EmailService());
             using (var signInManager = new ApplicationSignInManager(appManager,
                     HttpContext.Current.GetOwinContext().Authentication))
             {

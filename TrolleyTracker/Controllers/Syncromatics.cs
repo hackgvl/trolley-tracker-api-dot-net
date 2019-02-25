@@ -19,7 +19,8 @@ namespace GreenlinkTracker
     public class Syncromatics
     {
         private const string DefaultProductionAPIUrl = "https://api.syncromatics.com/portal";
-        private const string APIKey = "8b6dfac1a48f44d680abf2d9706233cd34de2b47eae83945f6e80674699299ad";  // Assigned only to this application
+        private const string APIKey = "d33d775c3a1c16a35ddbb3763a4187257c56661b10f1b8a17143d614d301bc08";   // Assigned only to this application
+        //private const string APIKey = "8b6dfac1a48f44d680abf2d9706233cd34de2b47eae83945f6e80674699299ad";
         private string apiURL;
         private CancellationToken cancellationToken;
 
