@@ -41,18 +41,21 @@
         background: white;
         border-style: solid;
         border-color: #999;
-        border-radius: 10px;
+        border-radius: 20px;
+        box-sizing: content-box;
+        margin-top: 57px;
+
+        
       }
 
       p {
         font-size: .85em;
-        margin: 5px;
+        /*margin: 5px;*/
       }
 
       .info-popup p {
-        text-align: center;
-        padding-right: 5px;
-        padding-left: 5px;
+        width: 274px;
+        
       }
 
       .info-popup-lower {
@@ -60,8 +63,124 @@
       }
 
       .button-close {
-        padding: 10px;
+        padding: 5px;
+        border: none;
+        background-color: #515583;
+        border-radius: 10px;
+        margin-top: 2px;
+        color: white;
       }
+
+      #scheduletitle {
+        width: 100%;
+        background-color: #9AB87A;
+        overflow: auto;
+      
+      
+        background-size: cover;
+        color: white;
+       
+        justify-content: center;
+        align-items: center;
+        display: flex;
+      }
+
+      #schedules {
+        display: flex;
+        flex-direction: column;
+        padding: 0px 10px 10px 10px;
+        box-sizing: content-box;
+        background-color: #9AB87A;
+        
+      }
+
+      #schedules p {
+        margin: 0px;
+        width: 100%;
+        
+      }
+
+      #scheduletitle h4 {
+        margin: 0px;
+        padding: 0px;
+        color: white;
+      }
+
+     
+
+      #schedulesContentWrapper {
+        background-color: white;
+        font-weight: bold;
+        margin-top: 3px;
+        padding: 0px;
+        display: flex;
+        flex-direction: column;
+
+      }
+
+      #schedulesContentWrapper a {
+        color: #515583;
+        display: flex;
+        justify-content: center;
+      }
+
+      #schedulesContentWrapper a:hover {
+        color: #9AB87A;
+        
+      }
+
+      #schedulesContentWrapper span {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 10px;
+        
+      }
+
+      #endList {
+        background-color: #9AB87A;
+        display: flex;
+        justify-content: flex-end;
+        padding: 0px;
+      }
+
+      .scheduleRoutes {
+        border: 3px solid #9AB87A;
+        display: flex;
+        align-content: center;
+        
+      }
+
+      .scheduleRoutes div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        width: 75%;
+        height: 95%;
+        margin-top: 2px;
+      }
+
+      .scheduleRoutes p {
+        display: flex;
+        justify-content: center;
+        font-size: 0.8rem;
+      }
+
+      .scheduleRoutes h6 {
+        margin: 0px;
+      }
+
+      .scheduleRoutes .hr {
+        height: 5%;
+        width: 60%;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        margin: 0 auto;
+      }
+
 
     </style>
     <link rel="stylesheet" href="/Content/leaflet/leaflet.css" />
@@ -80,10 +199,14 @@
       <p><a href='mailto:yeahthattrolley@gmail.com'>Contact Us!</a></p>
       <p><button name="modal-close" class="button-close" onclick="javascript:closeInfo();"><i class='fa fa-close'></i>Close</button></p>
     </div>
-    <div id="schedules" class="info-popup" style="display:none">
-      <p id="scheduletitle"><b>Current Route Schedule:</b></p>
-      <p><button name="modal-close" class="button-close" onclick="javascript:closeSchedule();"><i class='fa fa-close'></i> Close</button></p>
-    </div>
+    <div id="schedules" class="info-popup" style="">
+      <div id="schedulesContentWrapper">
+        <div id="scheduletitle"><h4>Current Route Schedule:</h4></div>
+        <div id="endList">
+          <button name="modal-close" class="button-close" onclick="javascript:closeSchedule();"><i class='fa fa-close'></i> Close</button>
+        </div>
+      </div><!-- end of schedules content wrapper -->
+    </div><!-- end of schedules-->
 
     <!-- main map div -->
     <div id="map"></div>
