@@ -451,7 +451,30 @@ function showSchedule() {
 
 (function ($) {
     scheduledata.forEach(function (schedule, scheduleIndex) {
-        $("<p>" + schedule + "</p>").insertAfter("#scheduletitle");
+        
+        /*
+            Parses server result into more style friendly html.
+        */
+       let regex = /\<span(.*?)\>/;
+       let span = regex.exec(schedule);
+
+       let secondReg = /\<a(.*)a\>/;
+       let anchor = secondReg.exec(schedule);
+
+       let thirdReg = /\<br\>(.*)/;
+       let time = thirdReg.exec(schedule);
+
+       // Color for hr stand in.
+       let fourthReg = /\#(.*?)\"/;
+       let lineColor = fourthReg.exec(schedule);
+
+       // Builds the html.
+       let builder = span[0] + "</span><div><h6>" + anchor[0] + "</h6><div class='hr' style='background-color:#" + lineColor[1] + "'></div><p>" + time[1] + "</p></div>";
+
+       $("<div class='scheduleRoutes'>" + builder + "</div>").insertAfter("#scheduletitle");
+
+       
+       builder = "";
     });
 
     setTrolleyInfo();
