@@ -233,7 +233,15 @@ function addViewingSchedule() {
 
 (function($){
   scheduledata.forEach(function(schedule, scheduleIndex){
-    $("<p>" + schedule + "</p>").insertAfter("#scheduletitle");
+        
+	  let builder = '<span style="background-color: ' + schedule.RouteColorRGB + '"></span>' +
+			 '<div><h6><a href="' + schedule.RouteURL + '">' + schedule.RouteName + '</s></h6>' +
+			 "<div class='hr' style='background-color:" + schedule.RouteColorRGB + "'></div>" +
+			 "<p>" + schedule.DayOfWeek + " " + schedule.StartTime + " - " + schedule.EndTime + "</p></div>";
+
+	  $("<div class='scheduleRoutes'>" + builder + "</div>").insertAfter("#scheduletitle");
+       
+       builder = "";
   });
 
   //for debugging no trolley behavior while trolleys are running

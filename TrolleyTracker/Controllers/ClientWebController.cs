@@ -111,7 +111,7 @@ namespace TrolleyTracker.Controllers
         }
 
         /// <summary>
-        /// Build effective schedule string for client web page, with optional single route schedule list
+        /// Build effective schedule JSON for client web page, with optional single route schedule list
         /// </summary>
         /// <param name="db"></param>
         /// <param name="runsOnSchedule">String list to hold optional single route list</param>
@@ -122,15 +122,21 @@ namespace TrolleyTracker.Controllers
             var effectiveScheduleList = WebAPI.RouteSchedulesController.GetSchedules();
 
             // Massage and convert for display on web page - web page uses in reverse order
-            // "<b><a href=\"schedule/18/\">Heart Of Main:</a></b><br>Sunday 5:30 PM - 8:00 PM", 
 
-            // var runson = ["Sunday: 1:00 PM - 8:00 PM", "Saturday: 10:00 AM - 11:00 PM", "Friday: 6:00 PM - 11:00 PM", "Thursday: 6:00 PM - 11:00 PM"];
-
-            var webScheduleList = new List<String>();
+            var webScheduleList = new List<WebScheduleEntry>();
             foreach (var schedule in effectiveScheduleList)
             {
-                var thisSchedule = $"<b> <span style=\"background-color: {schedule.RouteColorRGB}\">&nbsp;&nbsp;&nbsp;</span>  <a href=\"/ClientWeb/RouteView/{schedule.RouteID}/\">{HttpUtility.HtmlEncode(schedule.RouteLongName)}:</a></b><br>{schedule.DayOfWeek} {schedule.StartTime} - {schedule.EndTime}";
-                webScheduleList.Insert(0, thisSchedule);  // For reverse sorting
+                var webScheduleEntry = new WebScheduleEntry();
+                webScheduleEntry.RouteColorRGB = schedule.RouteColorRGB;
+                webScheduleEntry.RouteURL = $"/ClientWeb/RouteView/{schedule.RouteID}";
+                webScheduleEntry.RouteName = HttpUtility.HtmlEncode(schedule.RouteLongName);
+                webScheduleEntry.DayOfWeek = schedule.DayOfWeek;
+                webScheduleEntry.StartTime = schedule.StartTime;
+                webScheduleEntry.EndTime = schedule.EndTime;
+
+
+                //var thisSchedule = $"<b> <span style=\"background-color: {schedule.RouteColorRGB}\">&nbsp;&nbsp;&nbsp;</span>  <a href=\"/ClientWeb/RouteView/{schedule.RouteID}/\">{HttpUtility.HtmlEncode(schedule.RouteLongName)}:</a></b><br>{schedule.DayOfWeek} {schedule.StartTime} - {schedule.EndTime}";
+                webScheduleList.Insert(0, webScheduleEntry);  // For reverse sorting
 
                 if (schedule.RouteID == routeID)
                 {
@@ -160,5 +166,18 @@ namespace TrolleyTracker.Controllers
             return routeDetailJSON;
         }
 
+    }
+
+    /// <summary>
+    /// To be serialized for display
+    /// </summary>
+    internal class WebScheduleEntry
+    {
+        public string RouteColorRGB { get; set; }
+        public string RouteURL { get; set; }
+        public string RouteName { get; set; }
+        public string DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
     }
 }
