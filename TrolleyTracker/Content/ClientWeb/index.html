@@ -1,4 +1,4 @@
-			  <!DOCTYPE html>
+﻿			  <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -180,13 +180,17 @@
         margin: 0px;
       }
 
+        .scheduleRoutes h4 {
+            margin: 0px;
+        }
+
       .scheduleRoutes .hr {
-        height: 5%;
-        width: 60%;
+        height: 3px;
+        width: 95%;
         display: flex;
         justify-content: center;
         align-content: center;
-        margin: 0 auto;
+        margin: 1 auto;
       }
 
 
@@ -207,7 +211,7 @@
       <p><a href='mailto:yeahthattrolley@gmail.com'>Contact Us!</a></p>
       <p><button name="modal-close" class="button-close" onclick="javascript:closeInfo();"><i class='fa fa-close'></i>Close</button></p>
     </div>
-    <div id="schedules" class="info-popup" style="">
+    <div id="schedules" class="info-popup" style="display:none">
       <div id="schedulesContentWrapper">
         <div id="scheduletitle"><h4>Current Route Schedule:</h4></div>
         <div id="endList">

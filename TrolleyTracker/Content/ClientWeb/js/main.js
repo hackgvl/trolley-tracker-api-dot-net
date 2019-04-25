@@ -454,7 +454,7 @@ function showSchedule() {
         
        // Builds the html.
        let builder = '<span style="background-color: ' + schedule.RouteColorRGB + '"></span>' +
-		      '<div><h6><a href="' + schedule.RouteURL + '">' + schedule.RouteName + '</s></h6>' +
+		      '<div><h4><a href="' + schedule.RouteURL + '">' + schedule.RouteName + '</s></h4>' +
 		      "<div class='hr' style='background-color:" + schedule.RouteColorRGB + "'></div>" +
 		      "<p>" + schedule.DayOfWeek + " " + schedule.StartTime + " - " + schedule.EndTime + "</p></div>";
 

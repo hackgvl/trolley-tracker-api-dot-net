@@ -4,13 +4,13 @@
 
 
 
-<div class="row">
+<div class="row" style="position:relative; z-index:-10;">
     <img src="~/Content/FadedTrolley.jpg" height="100%" width="100%" />
 </div>
 
 @if (Context.Request.Url.Host.Contains("yeahthattrolley.azurewebsites.net"))
 {
-    <p style="position: absolute; top: 80px; left: 20px; width: 120px; padding: 4px; background-color: #fff; font-weight: bold; font-size: 180px;">
+    <p style="position: absolute; z-index:-5; top: 80px; left: 20px; width: 120px; padding: 4px; background-color: transparent; font-weight: bold; font-size: 180px;">
         Dev/Test Server
     </p>
 }

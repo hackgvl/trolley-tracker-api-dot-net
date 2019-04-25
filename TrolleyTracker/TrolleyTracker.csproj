@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TrolleyTracker</RootNamespace>
     <AssemblyName>TrolleyTracker</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -485,6 +485,7 @@
     <None Include="Properties\PublishProfiles\DEV yeahthattrolley - Publish to Azure.pubxml" />
     <None Include="Properties\PublishProfiles\GreenvilleTrolleyTracker - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\GreenvilleTrolleyTracker - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\Hostgator FTP Direct.pubxml" />
     <None Include="Properties\PublishProfiles\PRODUCTION GreenvilleTrolleyTracker - Azure Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\Publish to File.pubxml" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
@@ -497,6 +498,7 @@
     <Content Include="Scripts\esm\popper.js" />
     <Content Include="Scripts\esm\popper.min.js" />
     <Content Include="Scripts\farbtastic.js" />
+    <None Include="Properties\PublishProfiles\SmarterASP Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\yeahthattrolley - FTP.pubxml" />
     <Content Include="Scripts\esm\popper.min.js.map" />
     <Content Include="Scripts\esm\popper.js.map" />
