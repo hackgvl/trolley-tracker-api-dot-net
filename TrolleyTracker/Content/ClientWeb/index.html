@@ -1,4 +1,4 @@
-﻿			  <!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -149,7 +149,7 @@
       #endList {
         background-color: #9AB87A;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         padding: 0px;
       }
 
@@ -166,7 +166,7 @@
         justify-content: center;
         align-content: center;
         width: 75%;
-        height: 95%;
+        height: 85%;
         margin-top: 2px;
       }
 
@@ -174,34 +174,74 @@
         display: flex;
         justify-content: center;
         font-size: 0.8rem;
+        padding-top: 2px;
+      }
+
+      .scheduleRoutes .routeName {
+        display: flex;
+        justify-content: center;
+        font-size: 1rem;
+        padding-bottom: 2px;
       }
 
       .scheduleRoutes h6 {
         margin: 0px;
       }
 
-        .scheduleRoutes h4 {
+        .scheduleRoutes h5 {
             margin: 0px;
         }
 
       .scheduleRoutes .hr {
-        height: 3px;
-        width: 95%;
+        height: 2px;
+        width: 60%;
         display: flex;
         justify-content: center;
         align-content: center;
-        margin: 1 auto;
+        margin: 0 auto;
       }
 
+      .scheduleRoutes a {
+        text-decoration: none;
+      }
 
+      .active {
+        display: flex;
+
+      }
+
+      .inactive {
+        display: none;
+      }
+
+      #page-menu {
+        list-style-type: none;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        color: white;
+        margin: 0px;
+      }
+
+      #page-menu li {
+        padding-right: 4px;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      #page-menu .current-page {
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
     </style>
     <link rel="stylesheet" href="/Content/leaflet/leaflet.css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css">
     <script src="http://cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js"></script>
+    
   </head>
   <body>
-
+    <div>Trolley tracker modal.</div>
     <div id='info' class='info-popup' style='display:none;'>
       <p>Map data is from <a href='http://openstreetmap.org'>OpenStreetMap&copy;</a> contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/'>CC-BY-SA</a>.</p>
       <p>Imagery&copy; <a href='http://mapbox.com'>Mapbox</a></p>
@@ -211,10 +251,11 @@
       <p><a href='mailto:yeahthattrolley@gmail.com'>Contact Us!</a></p>
       <p><button name="modal-close" class="button-close" onclick="javascript:closeInfo();"><i class='fa fa-close'></i>Close</button></p>
     </div>
-    <div id="schedules" class="info-popup" style="display:none">
+    <div id="schedules" class="info-popup" style="display:none;">
       <div id="schedulesContentWrapper">
         <div id="scheduletitle"><h4>Current Route Schedule:</h4></div>
         <div id="endList">
+          <ul id="page-menu"></ul>
           <button name="modal-close" class="button-close" onclick="javascript:closeSchedule();"><i class='fa fa-close'></i> Close</button>
         </div>
       </div><!-- end of schedules content wrapper -->
@@ -244,5 +285,6 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
     <script type="text/javascript" src="/content/ClientWeb/js/leaflet.textpath.js"></script>
     <script type="text/javascript" src="/content/ClientWeb/js/main.js"></script>
+    <script type="text/javascript" src="js/stripped.js"></script>
   </body>
 </html>

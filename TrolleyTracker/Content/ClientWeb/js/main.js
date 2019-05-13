@@ -450,18 +450,89 @@ function showSchedule() {
 }
 
 (function ($) {
+    
+    // Pagination state vars.
+    let page = 1;
+    let status = 'active'
+    let count = 0;
+
     scheduledata.forEach(function (schedule, scheduleIndex) {
+        // Builds the html.
+        let builder = '<span style="background-color: ' + schedule.RouteColorRGB + '"></span>' +
+        '<div><p class="routeName"><a href="' + schedule.RouteURL + '">' + schedule.RouteName + '</s></p>' +
+        "<div class='hr' style='background-color:" + schedule.RouteColorRGB + "'></div>" +
+        "<p>" + schedule.DayOfWeek + " " + schedule.StartTime + " - " + schedule.EndTime + "</p></div>";
+
+
+        // Each page will have 7 routes. Advances the page if there are more than 7. Makes the rest of the routes inactive.
+        if(count < 7){
+            count += 1;
+        } else {
+            count = 1;
+            page += 1;
+            status = 'inactive';
+        }
+
+        // Adds a page and status class for each new route.
+        $("<div class='scheduleRoutes" + " " +
+        'page-' + page + " " + status + "'>" + builder + "</div>").insertAfter("#scheduletitle");
+
+        builder = "";
+    });
+
+    /*
+    *   Manages pagination menu events.
+    *
+    * 
+    */
+
+    // Creates menu for pagination.
+    for(i = 0; i < page; i++ ){
+        let listItem = '';
+        if(i ==0){
+            // sets the first item to the current-page.
+            listItem = "<li class='current-page page-item'>" + (i+1) + "</li>";
+        } else {
+            // the inactive menu items.
+            listItem = "<li class='page-item'>" + (i+1) + "</li>";
+        }
+
+        $('#page-menu').append(listItem);
+    }
+
+    // Listener for pagination menu.
+    $('.page-item').click(function(event){
+        let thisPage = $(this).html();
+        let thisElement = $(this);
+        let theCurrent = $('.current-page');
+        let pageSlug = "";
         
-       // Builds the html.
-       let builder = '<span style="background-color: ' + schedule.RouteColorRGB + '"></span>' +
-		      '<div><h4><a href="' + schedule.RouteURL + '">' + schedule.RouteName + '</s></h4>' +
-		      "<div class='hr' style='background-color:" + schedule.RouteColorRGB + "'></div>" +
-		      "<p>" + schedule.DayOfWeek + " " + schedule.StartTime + " - " + schedule.EndTime + "</p></div>";
 
-       $("<div class='scheduleRoutes'>" + builder + "</div>").insertAfter("#scheduletitle");
+        // Makes sure it's not the current-page and changes the clicked element to the current-page.
+        if(!$(thisElement).hasClass("current-page")){
+            $(theCurrent).removeClass('current-page');
 
-       
-       builder = "";
+            $(thisElement).addClass('current-page');
+        }
+
+        // Makes the new page active, and all other pages inactive.
+        for(j = 1; j <= page; j++){
+
+            if(j != thisPage){
+                pageSlug = ".page-" + j;
+                $(pageSlug).each(function(){
+                    $(this).removeClass('active').addClass('inactive');
+                });
+            } else {
+                pageSlug = ".page-" + j;
+                
+                $(pageSlug).each(function(){
+                    $(this).removeClass('inactive').addClass('active');
+                });
+            }
+        }
+
+
     });
 
     setTrolleyInfo();
