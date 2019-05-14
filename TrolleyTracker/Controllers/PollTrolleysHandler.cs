@@ -425,6 +425,7 @@ namespace TrolleyTracker.Controllers
         private string FindLocalKeyword(string longName)
         {
             var lcaseName = longName.ToLower();
+            if (lcaseName.Contains("artisphere")) return "artisphere";
             if (lcaseName.Contains("comb")) return "comb";
             if (lcaseName.Contains("heart")) return "heart";
             if (lcaseName.Contains("arts")) return "arts";
