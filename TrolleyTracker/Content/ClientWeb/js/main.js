@@ -453,7 +453,7 @@ function showSchedule() {
     
     // Pagination state vars.
     let page = 1;
-    let status = 'active'
+    let status = 'active';
     let count = 0;
 
     scheduledata.forEach(function (schedule, scheduleIndex) {
