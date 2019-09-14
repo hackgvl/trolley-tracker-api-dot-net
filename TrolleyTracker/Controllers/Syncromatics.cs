@@ -43,6 +43,9 @@ namespace GreenlinkTracker
         {
             this.apiURL = apiURL;
 
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+
             httpClient.DefaultRequestHeaders.Add("User-Agent", "TrolleyTrackerServer");
             httpClient.DefaultRequestHeaders.Add("Api-Key", APIKey);
 
