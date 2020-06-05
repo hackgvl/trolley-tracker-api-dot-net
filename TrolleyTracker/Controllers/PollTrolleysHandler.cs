@@ -437,7 +437,7 @@ namespace TrolleyTracker.Controllers
 
             SingleLog(SingleLogType.UnmatchedRouteName, $"Unable to find keywords of route '{longName}' to match");
 
-            return ""; // Not found
+            return lcaseName; // Not found, try direct name match
         }
 
         private async Task<bool> CheckSyncromaticsData()
