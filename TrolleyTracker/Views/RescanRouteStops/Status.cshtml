@@ -1,0 +1,45 @@
+﻿@model IEnumerable<TrolleyTracker.Models.Route>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Find stops for all routes</h2>
+
+<div>
+
+
+
+    @{ switch ((string)ViewBag.Step)
+        {
+
+            case "Running":
+
+                <div>
+                    <h1> Scanning Route @ViewBag.Current of @ViewBag.Total ... </h1>
+                </div>
+
+                <script>
+                        setTimeout(function(){
+                            window.location.reload(1);
+                        }, 3000);
+                    </script>
+
+                break;
+
+            case "Finished":
+
+                <div>
+                    <h1>Route scan complete</h1>
+                </div>
+
+                break;
+        }
+    }
+
+
+</div>
+
+
+
+

@@ -34,6 +34,10 @@
                 <li>@Html.ActionLink("Trolleys", "Index", "Trolleys")</li>
                 <li>@Html.ActionLink("Stops", "Index", "Stops")</li>
                 <li>@Html.ActionLink("Stops List (text)", "List", "Stops")</li>
+                @if (User.IsInRole("RouteManagers"))
+                {
+                    <li>@Html.ActionLink("Assign routes for new stops", "Index", "RescanRouteStops")</li>
+                }
             </ul>
         </li>
         <li class="dropdown">

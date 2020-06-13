@@ -1,0 +1,42 @@
+﻿@model IEnumerable<TrolleyTracker.Models.Route>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Find stops for all routes</h2>
+
+<div>
+
+
+
+    @using (Html.BeginForm("Start", "RescanRouteStops", FormMethod.Post))
+    {
+        <div>
+            This function will re-scan all routes to assign stops located on the right side of the route.
+            It is normally necessary only if stops have been created or moved close to a route path.
+
+        </div>
+        <div>
+            Deleted stops are automatically  removed from all routes.
+        </div>
+        <div>
+            Stops are always rescanned when the route shape is updated.
+        </div>
+
+        <div>&nbsp;</div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Start scan" class="btn btn-default" />
+            </div>
+        </div>
+
+    }
+
+
+</div>
+
+
+
+

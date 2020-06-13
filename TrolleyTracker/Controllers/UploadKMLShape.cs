@@ -192,14 +192,20 @@ namespace TrolleyTracker.Controllers
 
                         SaveNewRouteShape(db, route, jsonShapes);
 
-                        var jsonStops = collection.Get("NewRouteStops");
-                        var newStopCount = SaveNewRouteStops(db, jsonStops);
+                        // ****
+                        // The commented lines automatically extract stops from the new route
+                        //   In practice, this also pulls in bus stops which shouldn't be included.
+                        //var jsonStops = collection.Get("NewRouteStops");
+                        //var newStopCount = SaveNewRouteStops(db, jsonStops);
 
-                        var assignStops = new AssignStopsToRoutes();
-                        assignStops.UpdateStopsForRoute(db, routeID);
+                        //var assignStops = new AssignStopsToRoutes();
+                        //assignStops.UpdateStopsForRoute(db, routeID);
 
-                        logger.Info($"Modified route shape of '{route.ShortName}' - '{route.LongName}, added {newStopCount} stops.'");
-                        resultText = $"Route path for {route.ShortName} Saved, added {newStopCount} stops.";
+                        //logger.Info($"Modified route shape of '{route.ShortName}' - '{route.LongName}, added {newStopCount} stops.'");
+                        //resultText = $"Route path for {route.ShortName} Saved, added {newStopCount} stops.";
+
+                        logger.Info($"Modified route shape of '{route.ShortName}' - '{route.LongName}.'");
+                        resultText = $"Route path for {route.ShortName} Saved.";
                     }
                 }
             }

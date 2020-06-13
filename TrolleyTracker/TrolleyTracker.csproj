@@ -219,6 +219,7 @@
     <Compile Include="Controllers\ParseKML.cs" />
     <Compile Include="Controllers\PollTrolleysHandler.cs" />
     <Compile Include="Controllers\PollTrolleysTask.cs" />
+    <Compile Include="Controllers\RescanRouteStopsController.cs" />
     <Compile Include="Controllers\Syncromatics.cs" />
     <Compile Include="Controllers\UploadKMLShape.cs" />
     <Compile Include="Controllers\Coordinate.cs" />
@@ -654,6 +655,8 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\RescanRouteStops\Status.cshtml" />
+    <Content Include="Views\RescanRouteStops\Index.cshtml" />
     <None Include="Web.PRODUCTION GreenvilleTrolleyTracker - Azure Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
