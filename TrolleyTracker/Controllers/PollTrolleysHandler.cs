@@ -397,10 +397,12 @@ namespace TrolleyTracker.Controllers
             var localKeyword = FindLocalKeyword(route.LongName);
             if (localKeyword == "") return null;
 
+            var localKeyword2 = FindLocalKeyword2(route.LongName); // For more possibilities
+
             foreach (var syncroRoute in trolleyService.routes)
             {
                 var lcaseName = syncroRoute.name.ToLower();
-                if (lcaseName.Contains(localKeyword))
+                if (lcaseName.Contains(localKeyword) || lcaseName.Contains(localKeyword2))
                 {
                     // Hack: since we cannot directly query by vehicle, don't perform final
                     // route selection until it can be confirmed to have a vehicle.
@@ -433,6 +435,9 @@ namespace TrolleyTracker.Controllers
             if (lcaseName.Contains("lunch")) return "lunch";
             if (lcaseName.Contains("drive")) return "drive";
             if (lcaseName.Contains("well")) return "well";
+            if (lcaseName.Contains("north main")) return "n. main";
+            if (lcaseName.Contains("south main")) return "s. main";
+
             if (lcaseName.Contains("top")) return "top";  // Last to avoid accidenatal match by substring of a longer name
 
             // This would be info, but not an error
@@ -440,6 +445,21 @@ namespace TrolleyTracker.Controllers
 
             return lcaseName; // Not found, try direct name match
         }
+
+        /// <summary>
+        /// Find defining keyword that will match routes by names on both systems
+        /// </summary>
+        /// <param name="longName"></param>
+        /// <returns>keyword or "" if not found</returns>
+        private string FindLocalKeyword2(string longName)
+        {
+            var lcaseName = longName.ToLower();
+            if (lcaseName.Contains("north main")) return "north main";
+            if (lcaseName.Contains("south main")) return "south main";
+
+            return lcaseName; // Not found, try direct name match
+        }
+
 
         private async Task<bool> CheckSyncromaticsData()
         {
