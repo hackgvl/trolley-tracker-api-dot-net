@@ -1,6 +1,16 @@
-# trolley-tracker
+# Trolley Tracker - [Archived in June 2023]
 
-From 2014-2021, [Code For Greenville](https://codeforgreenville.org/) members built and maintained the technology which allowed thousands of locals and visitors to track the downtown Greenville trolleys in real-time from their mobile devices.
+<p>From 2014-2021, Code For Greenville members built and maintained the technology which allowed thousands of locals and visitors to track the downtown Greenville trolleys in real-time from their mobile devices.<p>
+
+<p>As of June 30, 2023, <a href="https://codeforamerica.org/news/reflections-on-the-brigade-networks-next-chapter/">Code For America officially withdrew fiscal sponsorship and use of the "Code For" trademark to <strong>all</strong> national brigades</a>, including Code For Greenville.</p>
+
+<p>After July 1st, 2023, contributors can get involved with two re-branded efforts:</p>
+
+<ul>
+	<li>For ongoing civic projects, connect with <a href="https://opencollective.com/code-for-the-carolinas">Code For The Carolina</a> (which itself will rebrand by the end of 2023)</li>
+	<li>For local tech APIs and OpenData projects, see the <a href="https://github.com/hackgvl">HackGreenville Labs repositories on GitHub</a> and connect with the team in the _#hg-labs_ channel on the <a href="https://hackgreenville.com/join-slack">HackGreenville Slack</a></li>
+</ul>
+
 
 
 ### Trolley Tracker route data management and API interface
@@ -32,7 +42,7 @@ Parameters may be viewed from a web browser.  For changes, Login to the web app 
 
  NOTE: Refer to the Javascript located in source folder DBVisualizer / index.html for example parse sequences.   Most applications will only need a subset of those calls.
 
-API views may be entered into a browser and the results will be in XML.  API views called from CURL and specified with text/xml return as XML.   Applications wishing for JSON should specify in their request ìContent-type: application/json; charset=utf-8î
+API views may be entered into a browser and the results will be in XML.  API views called from CURL and specified with text/xml return as XML.   Applications wishing for JSON should specify in their request ‚ÄúContent-type: application/json; charset=utf-8‚Äù
 
 #### GET /api/v1/Trolleys/Running
 Returns list of all active trollies and their current locations.  This should be the call to use to get all trolley positions because it can handle many clients with minimal overhead.  
